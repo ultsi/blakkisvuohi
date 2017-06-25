@@ -22,5 +22,6 @@ create table if not exists users_drinks (
   userId int not null,
   alcohol int not null, /* in milligrams */
   description text,
-  created timestamp not null default now()
+  created timestamp not null default now(),
+  primary key (created)
 );

@@ -56,6 +56,8 @@ users.find = function find(userId) {
     if(rows.length > 0){
       let found = rows[0][0];
       deferred.resolve(user(found.userid, found.nick, found.weight, found.gender));
+    } else {
+      deferred.resolve();
     }
   }, function(err){
     console.error(err);
@@ -64,9 +66,9 @@ users.find = function find(userId) {
   return deferred.promise;
 };
 
-users.drinkBooze = function(user, amount) {
+users.drinkBooze = function(user, amount, description) {
   let deferred = when.defer();
-  query('insert into users_drinks (userId, alcohol) values($1, $2)', [user.userId, amount])
+  query('insert into users_drinks (userId, alcohol, description) values($1, $2, $3)', [user.userId, amount, description])
   .then(function(){
     deferred.resolve();
   }, function(err){
@@ -79,6 +81,19 @@ users.drinkBooze = function(user, amount) {
 users.getBooze = function(user) {
   let deferred = when.defer();
   query('select alcohol, description, created from users_drinks where userId = $1',[user.userId])
+  .then(function(res){
+    deferred.resolve(res[0]);
+  }, function(err){
+    console.error(err);
+    deferred.reject('Ota adminiin yhteyttä.');
+  });
+  return deferred.promise;
+};
+
+users.getBoozeForLast48h = function(user) {
+  let deferred = when.defer();
+  let twoDaysAgo = new Date(Date.now()-3600*48*1000);
+  query('select alcohol, description, created from users_drinks where userId = $1 and created > $2',[user.userId, twoDaysAgo.toISOString()])
   .then(function(res){
     deferred.resolve(res[0]);
   }, function(err){
