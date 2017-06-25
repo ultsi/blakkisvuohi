@@ -98,7 +98,6 @@ function sumGramsUnBurned(user, drinks) {
   let now = new Date();
   let lastTime = null;
   for(var i in drinks) {
-    console.log(drinks);
     let drink = drinks[i];
     let drinkTime = new Date(drink.created);
     milligrams += drink.alcohol;
@@ -137,8 +136,14 @@ cmd.register('/polttamatta', cmd.TYPE_ALL, function(msg, words){
   .then(function(user){
     users.getBooze(user)
     .then(function(drinks){
-      let grams = sumGramsUnBurned(user, drinks) / 1000.0;
-      utils.sendPrivateMsg(msg, 'Sinussa on jäljellä ' + grams + ' grammaa alkoholia, joka vastaa ' + Math.round(grams / 12.2, 2) + ' annosta.');
+      try {
+        let grams = sumGramsUnBurned(user, drinks) / 1000.0;
+        utils.sendPrivateMsg(msg, 'Sinussa on jäljellä ' + grams + ' grammaa alkoholia, joka vastaa ' + Math.round(grams / 12.2, 2) + ' annosta.');
+      } catch (err) {
+        console.error(err);
+        utils.sendPrivateMsg(msg, err);
+      }
+
     }, function(err){
       utils.sendPrivateMsg(msg, err);
     });
