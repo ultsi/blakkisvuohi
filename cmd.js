@@ -28,6 +28,12 @@ cmd.call = function call(cmd, msg, words) {
       console.log('Couldn\'t execute cmd "'+cmd+'"! ' + err);
       utils.sendMsg(msg, 'Virhe! Komennon käyttö: ' + cmds[cmd].help);
     }
+  } else if (cmd === '/komennot') {
+    let cmdstr = 'Komennot:\n';
+    for(cmd in cmds){
+      cmdstr + cmds[cmd].help + '\n';
+    }
+    utils.sendMsg(msg, cmdstr);
   }
 };
 

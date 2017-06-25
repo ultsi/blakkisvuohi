@@ -31,7 +31,7 @@ cmd.register('/whoami', cmd.TYPE_PRIVATE, function(msg, words){
   });
 }, '/whoami - tulosta omat tietosi.');
 
-cmd.register('/tolkki', cmd.TYPE_PRIVATE, function(msg, words){
+cmd.register('/tölkki', cmd.TYPE_PRIVATE, function(msg, words){
   users.find(msg.from.id)
   .then(function(user){
     user.drinkBooze(user, TOLKKI)
@@ -45,7 +45,7 @@ cmd.register('/tolkki', cmd.TYPE_PRIVATE, function(msg, words){
     utils.sendPrivateMsg(msg, 'Virhe: '+ err);
     throw 'Virhe!';
   });
-}, '/tolkki - juo yksi 0.33l');
+}, '/tölkki - juo yksi 0.33l');
 
 cmd.register('/pintti', cmd.TYPE_PRIVATE, function(msg, words){
   users.find(msg.from.id)
