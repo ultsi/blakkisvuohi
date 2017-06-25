@@ -29,7 +29,7 @@ users.new = function(userId, nick, weight, gender) {
   if(nick.length < 1){
     err.push('Komennon suorittamisessa tapahtui virhe. Kokeile myöhemmin uudelleen.');
   }
-  if(utils.isValidNumber(params[2])){
+  if(!utils.isValidNumber(params[2])){
     err.push('Paino on väärin. Käytä kokonaislukuja.');
   }
   if(!isValidGender(gender.toLowerCase())){
