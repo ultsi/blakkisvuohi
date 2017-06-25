@@ -210,7 +210,7 @@ function makeDrinksString(drinks) {
     }
     list.push(drink.description);
   }
-  list.join('\n');
+  return list.join('\n');
 }
 
 cmd.register('/otinko', cmd.TYPE_PRIVATE, function(msg, words){
