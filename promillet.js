@@ -10,8 +10,8 @@ function calcAlcoholMilliGrams(vol_perc, amount) {
   return Math.round(vol_perc * ETANOL_GRAMS_PER_LITRE * amount * 1000);
 }
 
-const TOLKKI = calcAlcoholGrams(0.047, 0.33);
-const PINTTI = calcAlcoholGrams(0.047, 0.50);
+const TOLKKI = calcAlcoholMilliGrams(0.047, 0.33);
+const PINTTI = calcAlcoholMilliGrams(0.047, 0.50);
 
 cmd.register('/luotunnus', cmd.TYPE_PRIVATE, function(msg, words){
   users.new(msg.from.id, msg.from.username, words[1], words[2])
