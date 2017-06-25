@@ -137,7 +137,7 @@ cmd.register('/polttamatta', cmd.TYPE_ALL, function(msg, words){
   .then(function(user){
     users.getBooze(user)
     .then(function(drinks){
-      let grams = sumGramsUnBurned(drinks) / 1000.0;
+      let grams = sumGramsUnBurned(user, drinks) / 1000.0;
       utils.sendPrivateMsg(msg, 'Sinussa on jäljellä ' + grams + ' grammaa alkoholia, joka vastaa ' + Math.round(grams / 12.2, 2) + ' annosta.');
     }, function(err){
       utils.sendPrivateMsg(msg, err);
