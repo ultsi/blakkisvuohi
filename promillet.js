@@ -31,10 +31,10 @@ cmd.register('/whoami', cmd.TYPE_PRIVATE, function(msg, words){
   });
 }, '/whoami - tulosta omat tietosi.');
 
-cmd.register('/tölkki', cmd.TYPE_PRIVATE, function(msg, words){
+cmd.register('/tolkki', cmd.TYPE_PRIVATE, function(msg, words){
   users.find(msg.from.id)
   .then(function(user){
-    user.drinkBooze(user, TOLKKI)
+    users.drinkBooze(user, TOLKKI)
     .then(function(){
       utils.sendPrivateMsg(msg, 'toimii');
     }, function(err){
@@ -133,7 +133,7 @@ cmd.register('/annokset', cmd.TYPE_ALL, function(msg, words){
   }, function(err){
     utils.sendPrivateMsg(msg, err);
   });
-});
+}, '/annokset - listaa kaikki annokset.');
 
 cmd.register('/polttamatta', cmd.TYPE_ALL, function(msg, words){
   users.find(msg.from.id)
@@ -154,4 +154,4 @@ cmd.register('/polttamatta', cmd.TYPE_ALL, function(msg, words){
   }, function(err){
     utils.sendPrivateMsg(msg, err);
   });
-});
+}, '/polttamatta - listaa kuinka paljon alkoholia sinulla on polttamatta.');
