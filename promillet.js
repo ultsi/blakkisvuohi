@@ -204,13 +204,12 @@ function makeDrinksString(drinks) {
   for(var i in drinks) {
     let drink = drinks[i];
     let drinkTime = new Date(Date.parse(drink.created));
-    let drinkShortDate = drinkTime.getDay() + '.' + (drinkTime.getMonth()+1);
+    let drinkShortDate = drinkTime.getDate() + '.' + (drinkTime.getMonth()+1);
     if(day !== drinkShortDate) {
       day = drinkShortDate;
       list.push(day);
     }
-    list.push(drink.description);
-    console.log(list);
+    list.push(drink.description + ' ' + drinkTime.getHours() + ':' + drinkTime.getMinutes());
   }
   return list.join('\n');
 }
