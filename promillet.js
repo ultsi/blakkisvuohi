@@ -83,3 +83,26 @@ cmd.register('/viina', cmd.TYPE_PRIVATE, function(msg, words){
     utils.sendPrivateMsg(msg, err);
   });
 }, '/viina (prosentti) (määrä litroissa). Esim. /viina 38 0.5');
+
+function sumGrams(drinks) {
+  let milligrams = 0;
+  for(var i in drinks) {
+    let drink = drinks[i];
+    milligrams += drink.alcohol;
+  }
+  return milligrams;
+}
+
+cmd.register('/grammat', cmd.TYPE_ALL, function(msg, words){
+  users.find(msg.from.id)
+  .then(function(user){
+    users.getBooze(user)
+    .then(function(drinks){
+      utils.sendPrivateMsg(msg, sumGrams(drinks));
+    }, function(err){
+      utils.sendPrivateMsg(msg, err);
+    });
+  }, function(err){
+    utils.sendPrivateMsg(msg, err);
+  });
+});

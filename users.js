@@ -53,7 +53,6 @@ users.find = function find(userId) {
   let deferred = when.defer();
   query('select userId, nick, weight, gender from users where userId=$1', [userId])
   .then(function(rows){
-    console.log(rows);
     if(rows.length > 0){
       let found = rows[0][0];
       deferred.resolve(user(found.userid, found.nick, found.weight, found.gender));
@@ -70,6 +69,18 @@ users.drinkBooze = function(user, amount) {
   query('insert into users_drinks (userId, alcohol) values($1, $2)', [user.userId, amount])
   .then(function(){
     deferred.resolve();
+  }, function(err){
+    console.error(err);
+    deferred.reject('Ota adminiin yhteyttä.');
+  });
+  return deferred.promise;
+};
+
+users.getBooze = function(user) {
+  let deferred = when.defer();
+  query('select alcohol, description, created from users_drinks where userId = $1',[user.userId])
+  .then(function(res){
+    deferred.resolve(res[0]);
   }, function(err){
     console.error(err);
     deferred.reject('Ota adminiin yhteyttä.');
