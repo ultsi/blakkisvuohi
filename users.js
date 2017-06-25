@@ -93,7 +93,7 @@ users.getBooze = function(user) {
 users.getBoozeForLast48h = function(user) {
   let deferred = when.defer();
   let twoDaysAgo = new Date(Date.now()-3600*48*1000);
-  query('select alcohol, description, created from users_drinks where userId = $1 and created > $2',[user.userId, twoDaysAgo.toISOString()])
+  query('select alcohol, description, created from users_drinks where userId = $1 and created > $2 order by created desc',[user.userId, twoDaysAgo.toISOString()])
   .then(function(res){
     deferred.resolve(res[0]);
   }, function(err){
