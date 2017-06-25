@@ -30,8 +30,8 @@ cmd.call = function call(cmd, msg, words) {
     }
   } else if (cmd === '/komennot') {
     let cmdstr = 'Komennot:\n';
-    for(cmd in cmds){
-      cmdstr + cmds[cmd].help + '\n';
+    for(var i in cmds){
+      cmdstr += cmds[i].help + '\n';
     }
     utils.sendMsg(msg, cmdstr);
   }
