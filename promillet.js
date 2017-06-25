@@ -26,7 +26,7 @@ cmd.register('/whoami', cmd.TYPE_PRIVATE, function(msg, words){
 }, '/whoami - tulosta omat tietosi.');
 
 cmd.register('/tolkki', cmd.TYPE_PRIVATE, function(msg, words){
-  users.find(msg.user.id)
+  users.find(msg.from.id)
   .then(function(user){
     user.drinkBooze(TOLKKI)
     .then(function(){
@@ -40,7 +40,7 @@ cmd.register('/tolkki', cmd.TYPE_PRIVATE, function(msg, words){
 }, '/tolkki - juo yksi 0.33l');
 
 cmd.register('/pintti', cmd.TYPE_PRIVATE, function(msg, words){
-  users.find(msg.user.id)
+  users.find(msg.from.id)
   .then(function(user){
     users.drinkBooze(user, PINTTI)
     .then(function(){
