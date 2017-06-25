@@ -17,3 +17,5 @@ cmd.call = function call(cmd, msg, words) {
     }
   }
 };
+
+module.exports = cmd;
