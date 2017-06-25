@@ -5,7 +5,7 @@ const utils = require('./utils.js');
 const users = require('./users.js');
 
 const ETANOL_GRAMS_PER_LITRE = 789;
-const LIQUID_PERCENT = {mies: 0.65, nainen: 0.55};
+const LIQUID_PERCENT = {mies: 0.7, nainen: 0.6};
 
 function calcAlcoholMilliGrams(vol_perc, amount) {
   return Math.round(vol_perc * ETANOL_GRAMS_PER_LITRE * amount * 1000);
