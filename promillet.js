@@ -131,7 +131,8 @@ cmd.register('/annokset', cmd.TYPE_ALL, function(msg, words){
   });
 });
 
-cmd.register('/jaljella', cmd.TYPE_ALL, function(msg, words){
+cmd.register('/polttamatta', cmd.TYPE_ALL, function(msg, words){
+  console.log(msg.from.username);
   users.find(msg.from.id)
   .then(function(user){
     users.getBooze(user)
