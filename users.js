@@ -44,7 +44,7 @@ users.new = function(userId, nick, weight, gender) {
   }, function(err) {
     deferred.reject(err);
   });
-  return deferred.promise();
+  return deferred.promise;
 };
 
 module.exports = users;
