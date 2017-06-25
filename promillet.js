@@ -97,21 +97,24 @@ function sumGramsUnBurned(user, drinks) {
   let milligrams = 0;
   let now = Date.now();
   let lastTime = null;
+  let hourInMillis = 3600 * 1000;
+  let userBurnRateMilligrams = user.weight / 10.0 * 1000;
   for(var i in drinks) {
     let drink = drinks[i];
     let drinkTime = Date.parse(drink.created);
     milligrams += drink.alcohol;
     if(lastTime) {
       let diff = drinkTime - lastTime;
-      let diffInHours = diff / 1000.0 / 3600;
-      console.log(milligrams, diffInHours, user.weight / 10.0 * 1000 * diffInHours);
-      milligrams -= user.weight / 10.0 * 1000 * diffInHours;
+      let diffInHours = diff / hourInMillis;
+      console.log(milligrams, diffInHours, userBurnRateMilligrams, userBurnRateMilligrams * diffInHours);
+      milligrams -= userBurnRateMilligrams * diffInHours;
     }
     lastTime = drinkTime;
   }
   let diff = lastTime - now;
-  let diffInHours = diff / 1000.0 / 3600;
-  milligrams -= user.weight / 10.0 * 1000 * diffInHours;
+  let diffInHours = diff / hourInMillis;
+  console.log(milligrams, diffInHours, userBurnRateMilligrams, userBurnRateMilligrams * diffInHours);
+  milligrams -= userBurnRateMilligrams * diffInHours;
   return milligrams;
 }
 
