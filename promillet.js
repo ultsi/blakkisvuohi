@@ -98,6 +98,7 @@ function sumGramsUnBurned(user, drinks) {
   let now = new Date();
   let lastTime = null;
   for(var i in drinks) {
+    console.log(drinks);
     let drink = drinks[i];
     let drinkTime = new Date(drink.created);
     milligrams += drink.alcohol;
