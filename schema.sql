@@ -20,6 +20,6 @@ create table if not exists users_in_groups (
 
 create table if not exists users_drinks (
   userId int not null,
-  alcohol int not null,
+  alcohol int not null, /* in milligrams */
   created timestamp not null default now()
 );

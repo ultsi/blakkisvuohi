@@ -4,8 +4,14 @@ const cmd = require('./cmd.js');
 const utils = require('./utils.js');
 const users = require('./users.js');
 
-const TOLKKI = 0.047*33;
-const PINTTI = 0.047*50;
+const ETANOL_GRAMS_PER_LITRE = 789;
+
+function calcAlcoholMilliGrams(vol_perc, amount) {
+  return Math.round(vol_perc * ETANOL_GRAMS_PER_LITRE * amount * 1000);
+}
+
+const TOLKKI = calcAlcoholGrams(0.047, 0.33);
+const PINTTI = calcAlcoholGrams(0.047, 0.50);
 
 cmd.register('/luotunnus', cmd.TYPE_PRIVATE, function(msg, words){
   users.new(msg.from.id, msg.from.username, words[1], words[2])
@@ -52,3 +58,28 @@ cmd.register('/pintti', cmd.TYPE_PRIVATE, function(msg, words){
     utils.sendPrivateMsg(msg, err);
   });
 }, '/pintti - juo yksi 0.5l');
+
+cmd.register('/viina', cmd.TYPE_PRIVATE, function(msg, words){
+  if(words.length < 3){
+    throw 'puuttuu prosentit ja tai määrä';
+  }
+
+  users.find(msg.from.id)
+  .then(function(user){
+    let percent = parseFloat(words[1])/100;
+    let amount = parseFloat(words[2]);
+    if(percent === 'NaN' || amount === 'NaN'){
+      utils.sendPrivateMsg(msg, 'Prosentti tai määrä on virheellinen!');
+      return;
+    }
+    let alcoholInMG = calcAlcoholMilliGrams(percent, amount);
+    users.drinkBooze(user, alcoholInMG)
+    .then(function(){
+      utils.sendPrivateMsg(msg, 'toimii');
+    }, function(err){
+      utils.sendPrivateMsg(msg, err);
+    });
+  }, function(err){
+    utils.sendPrivateMsg(msg, err);
+  });
+}, '/viina (prosentti) (määrä litroissa). Esim. /viina 38 0.5');
