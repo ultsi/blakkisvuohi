@@ -26,7 +26,7 @@ cmd.call = function call(cmd, msg, words) {
       cmds[cmd].func(msg, words);
     } catch (err) {
       console.log('Couldn\'t execute cmd "'+cmd+'"! ' + err);
-      utils.sendMsg(msg, 'Komento on rikki.');
+      utils.sendMsg(msg, 'Virhe! Komennon käyttö: ' + cmds[cmd].help);
     }
   }
 };
