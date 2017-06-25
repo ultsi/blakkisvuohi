@@ -207,8 +207,10 @@ function makeDrinksString(drinks) {
     let drinkShortDate = drinkTime.getDay() + '.' + (drinkTime.getMonth()+1);
     if(day !== drinkShortDate) {
       list.push(day);
+      day = drinkShortDate;
     }
     list.push(drink.description);
+    console.log(list);
   }
   return list.join('\n');
 }
