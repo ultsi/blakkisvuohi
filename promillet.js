@@ -34,7 +34,7 @@ cmd.register('/whoami', cmd.TYPE_PRIVATE, function(msg, words){
 cmd.register('/tolkki', cmd.TYPE_PRIVATE, function(msg, words){
   users.find(msg.from.id)
   .then(function(user){
-    user.drinkBooze(TOLKKI)
+    user.drinkBooze(user, TOLKKI)
     .then(function(){
       utils.sendPrivateMsg(msg, 'toimii');
     }, function(err){
@@ -106,14 +106,12 @@ function sumGramsUnBurned(user, drinks) {
     if(lastTime) {
       let diff = drinkTime - lastTime;
       let diffInHours = diff / hourInMillis;
-      console.log(milligrams, diffInHours, userBurnRateMilligrams, userBurnRateMilligrams * diffInHours);
       milligrams -= userBurnRateMilligrams * diffInHours;
     }
     lastTime = drinkTime;
   }
   let diff = now - lastTime;
   let diffInHours = diff / hourInMillis;
-  console.log(milligrams, diffInHours, userBurnRateMilligrams, userBurnRateMilligrams * diffInHours);
   milligrams -= userBurnRateMilligrams * diffInHours;
   return milligrams;
 }
@@ -124,7 +122,7 @@ cmd.register('/annokset', cmd.TYPE_ALL, function(msg, words){
     users.getBooze(user)
     .then(function(drinks){
       let grams = sumGrams(drinks) / 1000.0;
-      utils.sendPrivateMsg(msg, 'Olet aikojen saatossa tuhonnut ' + grams + ' grammaa alkoholia, joka vastaa ' + Math.round(grams / 12.2, 2) + ' annosta.');
+      utils.sendPrivateMsg(msg, 'Olet aikojen saatossa tuhonnut ' + grams + ' grammaa alkoholia, joka vastaa ' + (grams / 12.2).toFixed(2) + ' annosta.');
     }, function(err){
       utils.sendPrivateMsg(msg, err);
     });
@@ -134,14 +132,13 @@ cmd.register('/annokset', cmd.TYPE_ALL, function(msg, words){
 });
 
 cmd.register('/polttamatta', cmd.TYPE_ALL, function(msg, words){
-  console.log(msg.from.username);
   users.find(msg.from.id)
   .then(function(user){
     users.getBooze(user)
     .then(function(drinks){
       try {
         let grams = sumGramsUnBurned(user, drinks) / 1000.0;
-        utils.sendPrivateMsg(msg, 'Sinussa on jäljellä ' + grams + ' grammaa alkoholia, joka vastaa ' + Math.round(grams / 12.2, 2) + ' annosta.');
+        utils.sendPrivateMsg(msg, 'Sinussa on jäljellä ' + grams + ' grammaa alkoholia, joka vastaa ' + (grams / 12.2).toFixed(2) + ' annosta.');
       } catch (err) {
         console.error(err);
         utils.sendPrivateMsg(msg, err);
