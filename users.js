@@ -55,7 +55,7 @@ users.find = function find(userId) {
   .then(function(rows){
     console.log(rows);
     if(rows.length > 0){
-      let found = rows[0];
+      let found = rows[0][0];
       deferred.resolve(user(found.userId, found.nick, found.weight, found.gender));
     }
   }, function(err){
