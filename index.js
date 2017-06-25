@@ -19,7 +19,7 @@ const botOptions = {
 const url = process.env.APP_URL || 'https://hymybot.herokuapp.com:443';
 
 const bot = new Bot(TOKEN, botOptions);
-GLOBAL.bot = bot;
+global.bot = bot;
 
 // This informs the Telegram servers of the new webhook.
 // Note: we do not need to pass in the cert, as it already provided

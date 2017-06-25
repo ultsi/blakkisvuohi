@@ -20,12 +20,13 @@ cmd.call = function call(cmd, msg, words) {
   if(cmds[cmd]){
     try {
       if(cmd.type === cmd.TYPE_PRIVATE && msg.chat.type !== 'private'){
-        utils.sendPrivateMsg('Käytä komentoa vain minun kanssa! Komennon käyttö: ' + cmd.help);
+        utils.sendPrivateMsg(msg, 'Käytä komentoa vain minun kanssa! Komennon käyttö: ' + cmd.help);
         return;
       }
       cmds[cmd].func(msg, words);
     } catch (err) {
       console.log('Couldn\'t execute cmd "'+cmd+'"! ' + err);
+      utils.sendMsg(msg, 'Komento on rikki.');
     }
   }
 };

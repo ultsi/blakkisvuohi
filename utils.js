@@ -7,7 +7,7 @@ utils.isValidNumber = function(num){
 };
 
 utils.sendPrivateMsg = function(msg, text) {
-  GLOBAL.bot.sendMessage(msg.from.id, text)
+  global.bot.sendMessage(msg.from.id, text)
   .then(function () {
     console.log('sent ' + text + ' to ' + msg.from.username);
   }, function(err) {
@@ -16,7 +16,7 @@ utils.sendPrivateMsg = function(msg, text) {
 };
 
 utils.sendMsg = function(msg, text) {
-  GLOBAL.bot.sendMessage(msg.chat.id, text)
+  global.bot.sendMessage(msg.chat.id, text)
   .then(function () {
     console.log('sent ' + text + ' to ' + msg.from.username);
   }, function(err) {
