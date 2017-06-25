@@ -13,7 +13,7 @@ cmd.register = function register(cmd, type, func, help) {
     type: type === cmd.TYPE_PRIVATE ? cmd.TYPE_PRIVATE : cmd.TYPE_ALL,
     func: func,
     help: help
-  }
+  };
 };
 
 cmd.call = function call(cmd, msg, words) {

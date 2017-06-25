@@ -43,7 +43,24 @@ users.new = function(userId, nick, weight, gender) {
   .then(function(){
     deferred.resolve(user(params[0], nick, params[2], gender));
   }, function(err) {
+    console.error(err);
     deferred.reject(err);
+  });
+  return deferred.promise;
+};
+
+users.find = function find(userId) {
+  let deferred = when.defer();
+  query('select userId, nick, weight, gender from users where userId=$1', [userId])
+  .then(function(rows){
+    console.log(rows);
+    if(rows.length > 0){
+      let found = rows[0];
+      deferred.resolve(user(found.userId, found.nick, found.weight, found.gender));
+    }
+  }, function(err){
+    console.error(err);
+    deferred.reject('Ota adminiin yhteyttä.');
   });
   return deferred.promise;
 };
