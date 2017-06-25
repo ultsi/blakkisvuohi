@@ -121,7 +121,7 @@ cmd.register('/annokset', cmd.TYPE_ALL, function(msg, words){
     users.getBooze(user)
     .then(function(drinks){
       let grams = sumGrams(drinks) / 1000.0;
-      utils.sendPrivateMsg(msg, 'Olet aikojen saatossa tuhonnut ' + grams + ' grammaa alkoholia, joka vastaa ' + grams / 12.2 + ' annosta.');
+      utils.sendPrivateMsg(msg, 'Olet aikojen saatossa tuhonnut ' + grams + ' grammaa alkoholia, joka vastaa ' + Math.round(grams / 12.2, 2) + ' annosta.');
     }, function(err){
       utils.sendPrivateMsg(msg, err);
     });
@@ -136,7 +136,7 @@ cmd.register('/jaljella', cmd.TYPE_ALL, function(msg, words){
     users.getBooze(user)
     .then(function(drinks){
       let grams = sumGramsUnBurned(drinks) / 1000.0;
-      utils.sendPrivateMsg(msg, 'Sinussa on jäljellä ' + grams + ' grammaa alkoholia, joka vastaa ' + grams / 12.2 + ' annosta.');
+      utils.sendPrivateMsg(msg, 'Sinussa on jäljellä ' + grams + ' grammaa alkoholia, joka vastaa ' + Math.round(grams / 12.2, 2) + ' annosta.');
     }, function(err){
       utils.sendPrivateMsg(msg, err);
     });
