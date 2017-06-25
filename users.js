@@ -36,9 +36,10 @@ users.new = function(userId, nick, weight, gender) {
     err.push('Sukupuoli on väärin. Käytä mies/nainen.');
   }
   if(err.length > 0){
-    return deferred.reject(err.join('\n'));
+    deferred.reject(err.join('\n'));
+    return deferred.promise;
   }
-  query('insert into users (userId, nick, weight, gender) values ($1, $2, $3)', params)
+  query('insert into users (userId, nick, weight, gender) values ($1, $2, $3, $4)', params)
   .then(function(){
     deferred.resolve(user(params[0], nick, params[2], gender));
   }, function(err) {
