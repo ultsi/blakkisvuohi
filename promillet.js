@@ -4,6 +4,9 @@ const cmd = require('./cmd.js');
 const utils = require('./utils.js');
 const users = require('./users.js');
 
+const TOLKKI = 0.047*33;
+const PINTTI = 0.047*50;
+
 cmd.register('/luotunnus', cmd.TYPE_PRIVATE, function(msg, words){
   users.new(msg.from.id, msg.from.username, words[1], words[2])
   .then(function(user){
@@ -22,11 +25,30 @@ cmd.register('/whoami', cmd.TYPE_PRIVATE, function(msg, words){
   });
 }, '/whoami - tulosta omat tietosi.');
 
-cmd.register('/kalja', cmd.TYPE_PRIVATE, function(msg, words){
+cmd.register('/tolkki', cmd.TYPE_PRIVATE, function(msg, words){
   users.find(msg.user.id)
   .then(function(user){
-    utils.sendPrivateMsg(msg, 'Käyttäjä ' + user.nick + ', id: ' + user.userId + ', paino: ' + user.weight + ', sukupuoli: ' + user.gender);
+    user.drinkBooze(TOLKKI)
+    .then(function(){
+      utils.sendPrivateMsg(msg, 'toimii');
+    }, function(err){
+      utils.sendPrivateMsg(msg, err);
+    });
   }, function(err){
     utils.sendPrivateMsg(msg, err);
   });
-}, '/kalja - juo yksi kalja talteen');
+}, '/tolkki - juo yksi 0.33l');
+
+cmd.register('/pintti', cmd.TYPE_PRIVATE, function(msg, words){
+  users.find(msg.user.id)
+  .then(function(user){
+    users.drinkBooze(user, PINTTI)
+    .then(function(){
+      utils.sendPrivateMsg(msg, 'toimii');
+    }, function(err){
+      utils.sendPrivateMsg(msg, err);
+    });
+  }, function(err){
+    utils.sendPrivateMsg(msg, err);
+  });
+}, '/pintti - juo yksi 0.5l');

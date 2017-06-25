@@ -56,8 +56,20 @@ users.find = function find(userId) {
     console.log(rows);
     if(rows.length > 0){
       let found = rows[0][0];
-      deferred.resolve(user(found.userId, found.nick, found.weight, found.gender));
+      deferred.resolve(user(found.userid, found.nick, found.weight, found.gender));
     }
+  }, function(err){
+    console.error(err);
+    deferred.reject('Ota adminiin yhteyttä.');
+  });
+  return deferred.promise;
+};
+
+users.drinkBooze = function(user, amount) {
+  let deferred = when.defer();
+  query('insert into users_drinks (userId, amount) values($1, $2)', [user.userId, amount])
+  .then(function(){
+    deferred.resolve();
   }, function(err){
     console.error(err);
     deferred.reject('Ota adminiin yhteyttä.');
