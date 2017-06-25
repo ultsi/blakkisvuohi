@@ -106,8 +106,8 @@ function sumGramsUnBurned(user, drinks) {
       let diffInHours = diff / 1000.0 / 3600;
       console.log(milligrams, diffInHours, user.weight / 10.0 * 1000 * diffInHours);
       milligrams -= user.weight / 10.0 * 1000 * diffInHours;
-      lastTime = drinkTime;
     }
+    lastTime = drinkTime;
   }
   let diff = lastTime.getMillis() - now.getMillis();
   let diffInHours = diff / 1000.0 / 3600;
