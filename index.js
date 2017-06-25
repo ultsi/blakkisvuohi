@@ -3,6 +3,8 @@ const TOKEN = process.env.TOKEN;
 
 const Bot = require('node-telegram-bot-api');
 const cmd = require('./cmd.js');
+const users = require('./users.js');
+const promillet = require('./promillet.js');
 
 const botOptions = {
   webHook: {
@@ -17,6 +19,7 @@ const botOptions = {
 const url = process.env.APP_URL || 'https://hymybot.herokuapp.com:443';
 
 const bot = new Bot(TOKEN, botOptions);
+GLOBAL.bot = bot;
 
 // This informs the Telegram servers of the new webhook.
 // Note: we do not need to pass in the cert, as it already provided
@@ -24,24 +27,11 @@ bot.setWebHook(`${url}/bot${TOKEN}`);
 
 console.log('Hymybot started in the ' + process.env.NODE_ENV + ' mode');
 
-function sendMsg(msg, confirm_text) {
-  bot.sendMessage(msg.chat.id, confirm_text)
-  .then(function () {
-    console.log('sent confirmation');
-  }, function(err) {
-    console.error('couldn\'t send confirmation of updated text! Err: ' + err);
-  });
-}
-
 bot.on('message', function(msg) {
   console.log(msg);
   const words = msg.text.split(' ');
   const cmd_only = words[0].replace(/@.+/, '');
   cmd.call(cmd_only, msg, words);
-});
-
-cmd.register('/testi', function(msg, words){
-  bot.sendMessage(msg.chat.id, "Moi! " + words[1]);
 });
 
 module.exports = bot;

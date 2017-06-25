@@ -7,7 +7,7 @@ create table users (
 );
 
 create table groups (
-  userId int not null,
   groupId int not null,
+  title text not null,
   primary key (userId, groupId)
 );
