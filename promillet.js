@@ -5,7 +5,7 @@ const utils = require('./utils.js');
 const users = require('./users.js');
 
 const ETANOL_GRAMS_PER_LITRE = 789;
-const LIQUID_PERCENT = {mies: 0.6, nainen: 0.5};
+const LIQUID_PERCENT = {mies: 0.65, nainen: 0.55};
 
 function calcAlcoholMilliGrams(vol_perc, amount) {
   return Math.round(vol_perc * ETANOL_GRAMS_PER_LITRE * amount * 1000);
@@ -165,7 +165,7 @@ cmd.register('/promillet', cmd.TYPE_ALL, function(msg, words){
       try {
         let grams = sumGramsUnBurned(user, drinks) / 1000.0;
         let liquid = user.weight * LIQUID_PERCENT[user.gender] * 1000;
-        utils.sendPrivateMsg(msg, grams / liquid + '‰');
+        utils.sendPrivateMsg(msg, (grams / liquid*1000).toFixed(2) + '‰');
       } catch (err) {
         console.error(err);
         utils.sendPrivateMsg(msg, err);
