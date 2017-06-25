@@ -14,7 +14,7 @@ cmd.register('/luotunnus', cmd.TYPE_PRIVATE, function(msg, words){
 }, '/luotunnus <paino> <mies/nainen>');
 
 cmd.register('/whoami', cmd.TYPE_PRIVATE, function(msg, words){
-  users.find(msg.user.id)
+  users.find(msg.from.id)
   .then(function(user){
     utils.sendPrivateMsg(msg, 'Käyttäjä ' + user.nick + ', id: ' + user.userId + ', paino: ' + user.weight + ', sukupuoli: ' + user.gender);
   }, function(err){
