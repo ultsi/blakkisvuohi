@@ -67,7 +67,7 @@ users.find = function find(userId) {
 
 users.drinkBooze = function(user, amount) {
   let deferred = when.defer();
-  query('insert into users_drinks (userId, amount) values($1, $2)', [user.userId, amount])
+  query('insert into users_drinks (userId, alcohol) values($1, $2)', [user.userId, amount])
   .then(function(){
     deferred.resolve();
   }, function(err){
