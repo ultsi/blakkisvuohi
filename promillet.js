@@ -38,10 +38,12 @@ cmd.register('/tolkki', cmd.TYPE_PRIVATE, function(msg, words){
     .then(function(){
       utils.sendPrivateMsg(msg, 'toimii');
     }, function(err){
-      utils.sendPrivateMsg(msg, err);
+      utils.sendPrivateMsg(msg, 'Virhe: '+ err);
+      throw 'Virhe!';
     });
   }, function(err){
-    utils.sendPrivateMsg(msg, err);
+    utils.sendPrivateMsg(msg, 'Virhe: '+ err);
+    throw 'Virhe!';
   });
 }, '/tolkki - juo yksi 0.33l');
 
@@ -52,10 +54,12 @@ cmd.register('/pintti', cmd.TYPE_PRIVATE, function(msg, words){
     .then(function(){
       utils.sendPrivateMsg(msg, 'toimii');
     }, function(err){
-      utils.sendPrivateMsg(msg, err);
+      utils.sendPrivateMsg(msg, 'Virhe: '+ err);
+      throw 'Virhe!';
     });
   }, function(err){
-    utils.sendPrivateMsg(msg, err);
+    utils.sendPrivateMsg(msg, 'Virhe: '+ err);
+    throw 'Virhe!';
   });
 }, '/pintti - juo yksi 0.5l');
 
@@ -113,7 +117,7 @@ function sumGramsUnBurned(user, drinks) {
   let diff = now - lastTime;
   let diffInHours = diff / hourInMillis;
   milligrams -= userBurnRateMilligrams * diffInHours;
-  return milligrams;
+  return milligrams > 0 ? milligrams : 0;
 }
 
 cmd.register('/annokset', cmd.TYPE_ALL, function(msg, words){
