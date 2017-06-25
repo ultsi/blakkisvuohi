@@ -5,6 +5,7 @@ const utils = require('./utils.js');
 const users = require('./users.js');
 
 const ETANOL_GRAMS_PER_LITRE = 789;
+const LIQUID_PERCENT = {mies: 0.6, nainen: 0.5};
 
 function calcAlcoholMilliGrams(vol_perc, amount) {
   return Math.round(vol_perc * ETANOL_GRAMS_PER_LITRE * amount * 1000);
@@ -155,3 +156,24 @@ cmd.register('/polttamatta', cmd.TYPE_ALL, function(msg, words){
     utils.sendPrivateMsg(msg, err);
   });
 }, '/polttamatta - listaa kuinka paljon alkoholia sinulla on polttamatta.');
+
+cmd.register('/promillet', cmd.TYPE_ALL, function(msg, words){
+  users.find(msg.from.id)
+  .then(function(user){
+    users.getBooze(user)
+    .then(function(drinks){
+      try {
+        let grams = sumGramsUnBurned(user, drinks) / 1000.0;
+        let liquid = user.weight * LIQUID_PERCENT[user.gender] * 1000;
+        utils.sendPrivateMsg(msg, grams / liquid + '‰');
+      } catch (err) {
+        console.error(err);
+        utils.sendPrivateMsg(msg, err);
+      }
+    }, function(err){
+      utils.sendPrivateMsg(msg, err);
+    });
+  }, function(err){
+    utils.sendPrivateMsg(msg, err);
+  });
+}, '/promillet - listaa kuinka paljon promilleja sinulla suunnilleen on.');
