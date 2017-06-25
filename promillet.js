@@ -4,5 +4,5 @@ const cmd = require('./cmd.js');
 const utils = require('./utils.js');
 
 cmd.register('/luotunnus', cmd.TYPE_PRIVATE, function(msg, words){
-  utils.sendPrivateMsg('luotu!');
+  utils.sendPrivateMsg(msg, 'luotu!');
 }, 'Komennon käyttö: /luotunnus <paino> <mies/nainen>');
