@@ -93,12 +93,50 @@ function sumGrams(drinks) {
   return milligrams;
 }
 
-cmd.register('/grammat', cmd.TYPE_ALL, function(msg, words){
+function sumGramsUnBurned(user, drinks) {
+  let milligrams = 0;
+  let now = new Date();
+  let lastTime = null;
+  for(var i in drinks) {
+    let drink = drinks[i];
+    let drinkTime = new Date(drink.created);
+    milligrams += drink.alcohol;
+    if(lastTime) {
+      let diff = drinkTime.getMillis() - lastTime.getMillis();
+      let diffInHours = diff / 1000.0 / 3600;
+      console.log(milligrams, diffInHours, user.weight / 10.0 * 1000 * diffInHours);
+      milligrams -= user.weight / 10.0 * 1000 * diffInHours;
+      lastTime = drinkTime;
+    }
+  }
+  let diff = lastTime.getMillis() - now.getMillis();
+  let diffInHours = diff / 1000.0 / 3600;
+  milligrams -= user.weight / 10.0 * 1000 * diffInHours;
+  return milligrams;
+}
+
+cmd.register('/annokset', cmd.TYPE_ALL, function(msg, words){
   users.find(msg.from.id)
   .then(function(user){
     users.getBooze(user)
     .then(function(drinks){
-      utils.sendPrivateMsg(msg, sumGrams(drinks));
+      let grams = sumGrams(drinks) / 1000.0;
+      utils.sendPrivateMsg(msg, 'Olet aikojen saatossa tuhonnut ' + grams + ' grammaa alkoholia, joka vastaa ' + grams / 12.2 + ' annosta.');
+    }, function(err){
+      utils.sendPrivateMsg(msg, err);
+    });
+  }, function(err){
+    utils.sendPrivateMsg(msg, err);
+  });
+});
+
+cmd.register('/jaljella', cmd.TYPE_ALL, function(msg, words){
+  users.find(msg.from.id)
+  .then(function(user){
+    users.getBooze(user)
+    .then(function(drinks){
+      let grams = sumGramsUnBurned(drinks) / 1000.0;
+      utils.sendPrivateMsg(msg, 'Sinussa on jäljellä ' + grams + ' grammaa alkoholia, joka vastaa ' + grams / 12.2 + ' annosta.');
     }, function(err){
       utils.sendPrivateMsg(msg, err);
     });
