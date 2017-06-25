@@ -206,8 +206,8 @@ function makeDrinksString(drinks) {
     let drinkTime = new Date(Date.parse(drink.created));
     let drinkShortDate = drinkTime.getDay() + '.' + (drinkTime.getMonth()+1);
     if(day !== drinkShortDate) {
-      list.push(day);
       day = drinkShortDate;
+      list.push(day);
     }
     list.push(drink.description);
     console.log(list);
