@@ -220,7 +220,7 @@ cmd.register('/otinko', cmd.TYPE_PRIVATE, function(msg, words){
     .then(function(drinks){
       try {
         let drinkList = makeDrinksString(drinks);
-        utils.sendPrivateMsg(msg, (grams / liquid*1000).toFixed(2) + '‰');
+        utils.sendPrivateMsg(msg, drinkList);
       } catch (err) {
         console.error(err);
         utils.sendPrivateMsg(msg, err);
