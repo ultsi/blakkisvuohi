@@ -194,12 +194,30 @@ cmd.register('/promillet', cmd.TYPE_ALL, function(msg, words){
           utils.sendPrivateMsg(msg, err);
         }
       }, function(err){
+        console.error(err);
         utils.sendPrivateMsg(msg, err);
       });
     }, function(err){
+      console.error(err);
       utils.sendPrivateMsg(msg, err);
     });
   } else {
+    users.getDrinksForGroup(msg.chat.id)
+    .then(function(drinksByUser){
+      let info = [msg.chat.title + ' -kavereiden rippitaso:\n'];
+      for(var userId in drinksByUser){
+        let details = drinksByUser[userId];
+        let user = users.create(details.userid, details.nick, details.weight, details.gender);
+        let grams = sumGramsUnBurned(user, details.drinks) / 1000.0;
+        let liquid = user.weight * LIQUID_PERCENT[user.gender] * 1000;
+        let permilles = (grams / liquid*1000).toFixed(2);
+        info.push(user.nick + '... ' + permilles + '‰');
+      }
+      utils.sendMsg(msg, info.join('\n'));
+    }, function(err) {
+      console.error(err);
+      utils.sendMsg(msg, 'Virhe!');
+    });
   }
 }, '/promillet - listaa kuinka paljon promilleja sinulla tai chatissa olevilla suunnilleen on.');
 

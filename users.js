@@ -118,4 +118,29 @@ users.joinGroup = function(user, msg) {
   return deferred.promise;
 };
 
+function groupDrinksByUser(drinks) {
+  let drinksByUser = {};
+  for(var i in drinks){
+    let drink = drinks[i];
+    if(!drinksByUser[drink.userid]){
+      drinksByUser[drink.userid] = {userid: drink.userid, nick: drink.nick, weight: drink.weight, gender: drink.gender, drinks: []};
+    }
+    drinksByUser[drink.userid].drinks.push(drink);
+  }
+  return drinksByUser;
+}
+
+users.getBoozeForGroup = function(groupId) {
+  let deferred = when.defer();
+  query('select users.userId, users.nick, users.weight, users.gender, alcohol, description, created from users_drinks where users.userId = users_in_groups.userId join users_in_groups on users_in_groups.groupId=$1 join users on users.userId=users_in_groups.userId',[groupId])
+  .then(function(res){
+    let drinksByUser = groupDrinksByUser(res[0]);
+    deferred.resolve(drinksByUser);
+  }, function(err){
+    console.error(err);
+    deferred.reject('Ota adminiin yhteyttä.');
+  });
+  return deferred.promise;
+};
+
 module.exports = users;
