@@ -56,8 +56,12 @@ users.find = function find(userId) {
   query('select userId, nick, weight, gender from users where userId=$1', [userId])
   .then(function(rows){
     if(rows.length > 0){
-      let found = rows[0][0];
-      deferred.resolve(user(found.userid, found.nick, found.weight, found.gender));
+      try {
+        let found = rows[0][0];
+        deferred.resolve(user(found.userid, found.nick, found.weight, found.gender));
+      } catch (err) {
+        deferred.resolve();
+      }
     } else {
       deferred.resolve();
     }
