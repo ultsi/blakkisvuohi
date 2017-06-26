@@ -9,7 +9,8 @@ cmd.TYPE_PRIVATE = 'private';
 cmd.TYPE_ALL = 'all';
 
 cmd.register = function register(cmd, type, func, help) {
-  console.log(cmd, type, func, help);
+  type = type === cmd.TYPE_PRIVATE ? cmd.TYPE_PRIVATE : cmd.TYPE_ALL;
+  console.log(cmd, type, help);
   cmds[cmd] = {
     type: type === cmd.TYPE_PRIVATE ? cmd.TYPE_PRIVATE : cmd.TYPE_ALL,
     func: func,
