@@ -21,7 +21,7 @@ function findUser(msg) {
   users.find(msg.from.id)
   .then(function(user){
     if(!user){
-      utils.sendPrivateMsg(msg, 'Luo tunnus käyttämällä komentoa /luotunnus');
+      utils.sendMessage(msg, 'Moi! Juttele minulle ensiksi privassa ja luo tunnus käyttämällä komentoa /luotunnus');
       return deferred.reject('Not found');
     }
     deferred.resolve(user);
@@ -235,3 +235,22 @@ cmd.register('/otinko', cmd.TYPE_PRIVATE, function(msg, words){
     utils.sendPrivateMsg(msg, err);
   });
 }, '/otinko - näyttää otitko ja kuinka monta viime yönä.');
+
+cmd.register('/moro', cmd.TYPE_ALL, function(msg, words){
+  if(msg.chat.type !== 'group'){
+    throw 'Käytä tätä komentoa ryhmässä!';
+  }
+  findUser(msg)
+  .then(function(user){
+    users.joinGroup(user, msg)
+    .then(function(){
+      utils.sendMsg(msg, 'Rippaa rauhassa kera ' + msg.chat.title + ' -kavereiden.');
+    }, function(err){
+      console.error(err);
+      utils.sendMsg(msg, 'Virhe!');
+    });
+  }, function(err){
+    console.error(err);
+    utils.sendMsg(msg, 'Virhe!');
+  });
+}, '/moro - Lisää sinut ryhmään mukaan.');

@@ -92,8 +92,21 @@ users.getBooze = function(user) {
 
 users.getBoozeForLast48h = function(user) {
   let deferred = when.defer();
-  let twoDaysAgo = new Date(Date.now()-3600*48*1000);
+  let hourInMillis = 3600*1000;
+  let twoDaysAgo = new Date(Date.now()-48*hourInMillis);
   query('select alcohol, description, created from users_drinks where userId = $1 and created > $2 order by created desc',[user.userId, twoDaysAgo.toISOString()])
+  .then(function(res){
+    deferred.resolve(res[0]);
+  }, function(err){
+    console.error(err);
+    deferred.reject('Ota adminiin yhteyttä.');
+  });
+  return deferred.promise;
+};
+
+users.joinGroup = function(user, msg) {
+  let deferred = when.defer();
+  query('insert into users_in_groups (userId, groupId) values ($1, $2)', [user.userId, msg.chat.id])
   .then(function(res){
     deferred.resolve(res[0]);
   }, function(err){
