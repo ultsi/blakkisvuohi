@@ -21,7 +21,7 @@ cmd.call = function call(cmd, msg, words) {
   if(cmds[cmd]){
     try {
       console.log(cmds[cmd]);
-      if(cmds[cmd].type == cmd.TYPE_PRIVATE && msg.chat.type !== 'private'){
+      if(cmds[cmd].type === 'private' && msg.chat.type !== 'private'){
         utils.sendPrivateMsg(msg, 'Käytä komentoa vain minun kanssa! Komennon käyttö: ' + cmds[cmd].help);
         return;
       }
