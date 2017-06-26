@@ -21,12 +21,14 @@ function findUser(msg) {
   users.find(msg.from.id)
   .then(function(user){
     if(!user){
+      console.log('didn\'t find user ' + msg.from.id);
       utils.sendMsg(msg, 'Moi! Juttele minulle ensiksi privassa ja luo tunnus käyttämällä komentoa /luotunnus');
       return deferred.reject('Not found');
     }
+    console.log('found user ' + user.nick);
     deferred.resolve(user);
   }, function(err){
-    utils.sendPrivateMsg(msg, 'Virhe');
+    utils.sendMsg(msg, 'Moi! Juttele minulle ensiksi privassa ja luo tunnus käyttämällä komentoa /luotunnus');
     deferred.reject(err);
   });
   return deferred.promise;
@@ -178,25 +180,28 @@ cmd.register('/polttamatta', cmd.TYPE_ALL, function(msg, words){
 }, '/polttamatta - listaa kuinka paljon alkoholia sinulla on polttamatta.');
 
 cmd.register('/promillet', cmd.TYPE_ALL, function(msg, words){
-  findUser(msg)
-  .then(function(user){
-    users.getBooze(user)
-    .then(function(drinks){
-      try {
-        let grams = sumGramsUnBurned(user, drinks) / 1000.0;
-        let liquid = user.weight * LIQUID_PERCENT[user.gender] * 1000;
-        utils.sendPrivateMsg(msg, (grams / liquid*1000).toFixed(2) + '‰');
-      } catch (err) {
-        console.error(err);
+  if(msg.chat.type === 'private'){
+    findUser(msg)
+    .then(function(user){
+      users.getBooze(user)
+      .then(function(drinks){
+        try {
+          let grams = sumGramsUnBurned(user, drinks) / 1000.0;
+          let liquid = user.weight * LIQUID_PERCENT[user.gender] * 1000;
+          utils.sendPrivateMsg(msg, (grams / liquid*1000).toFixed(2) + '‰');
+        } catch (err) {
+          console.error(err);
+          utils.sendPrivateMsg(msg, err);
+        }
+      }, function(err){
         utils.sendPrivateMsg(msg, err);
-      }
+      });
     }, function(err){
       utils.sendPrivateMsg(msg, err);
     });
-  }, function(err){
-    utils.sendPrivateMsg(msg, err);
-  });
-}, '/promillet - listaa kuinka paljon promilleja sinulla suunnilleen on.');
+  } else {
+  }
+}, '/promillet - listaa kuinka paljon promilleja sinulla tai chatissa olevilla suunnilleen on.');
 
 function makeDrinksString(drinks) {
   let list = [];

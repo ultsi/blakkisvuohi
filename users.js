@@ -19,6 +19,8 @@ function user(userId, nick, weight, gender) {
   };
 }
 
+users.create = user;
+
 users.new = function(userId, nick, weight, gender) {
   let deferred = when.defer();
   let params = [parseInt(userId, 10), nick, parseInt(weight, 10), gender];
