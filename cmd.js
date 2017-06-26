@@ -9,10 +9,9 @@ cmd.TYPE_PRIVATE = 'private';
 cmd.TYPE_ALL = 'all';
 
 cmd.register = function register(cmd, type, func, help) {
-  type = type === cmd.TYPE_PRIVATE ? cmd.TYPE_PRIVATE : cmd.TYPE_ALL;
-  console.log(cmd, type, help);
+  console.log('Added command ' + cmd + ' : (' + type + ')');
   cmds[cmd] = {
-    type: type === cmd.TYPE_PRIVATE ? cmd.TYPE_PRIVATE : cmd.TYPE_ALL,
+    type: type,
     func: func,
     help: help
   };
