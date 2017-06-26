@@ -21,7 +21,7 @@ function findUser(msg) {
   users.find(msg.from.id)
   .then(function(user){
     if(!user){
-      utils.sendMessage(msg, 'Moi! Juttele minulle ensiksi privassa ja luo tunnus käyttämällä komentoa /luotunnus');
+      utils.sendMsg(msg, 'Moi! Juttele minulle ensiksi privassa ja luo tunnus käyttämällä komentoa /luotunnus');
       return deferred.reject('Not found');
     }
     deferred.resolve(user);
