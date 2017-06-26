@@ -202,7 +202,7 @@ cmd.register('/promillet', cmd.TYPE_ALL, function(msg, words){
       utils.sendPrivateMsg(msg, err);
     });
   } else {
-    users.getDrinksForGroup(msg.chat.id)
+    users.getBoozeForGroup(msg.chat.id)
     .then(function(drinksByUser){
       let info = [msg.chat.title + ' -kavereiden rippitaso:\n'];
       for(var userId in drinksByUser){
