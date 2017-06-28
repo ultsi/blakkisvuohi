@@ -93,7 +93,7 @@ cmd.register('/viina', cmd.TYPE_PRIVATE, function(msg, words){
   .then(function(user){
     let percent = parseFloat(words[1])/100;
     let amount = parseFloat(words[2]);
-    if(percent === 'NaN' || amount === 'NaN' || percent > 99 || percent < 1 || amount > 10 || amount < 0){
+    if(percent === 'NaN' || amount === 'NaN' || percent > 1 || percent < 0 || amount > 10 || amount < 0){
       utils.sendPrivateMsg(msg, 'Prosentti tai määrä on virheellinen!');
       return;
     }
