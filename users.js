@@ -31,8 +31,8 @@ users.new = function(userId, nick, weight, gender) {
   if(nick.length < 1){
     err.push('Komennon suorittamisessa tapahtui virhe. Kokeile myöhemmin uudelleen.');
   }
-  if(!utils.isValidNumber(params[2])){
-    err.push('Paino on väärin. Käytä kokonaislukuja.');
+  if(!utils.isValidNumber(params[2]) && params[2] >= 40 && params[2] <= 200){
+    err.push('Paino on väärin. Käytä kokonaislukuja. Minimipaino on 40kg ja maksimipaino 200kg.');
   }
   if(!isValidGender(gender.toLowerCase())){
     err.push('Sukupuoli on väärin. Käytä mies/nainen.');
