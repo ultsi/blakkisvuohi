@@ -136,7 +136,7 @@ function groupDrinksByUser(drinks) {
 
 users.getBoozeForGroup = function(groupId) {
   let deferred = when.defer();
-  query('select users.userId, users.nick, users.weight, users.gender, alcohol, description, created from users_drinks join users_in_groups on users_in_groups.userId=users_drinks.userId join users on users.userId=users_in_groups.userId where users_in_groups.groupId=$1',[groupId])
+  query('select users.userId, users.nick, users.weight, users.gender, coalesce(alcohol, 0), description, created from users_in_groups left outer join users_drinks on users_in_groups.userId=users_drinks.userId join users on users.userId=users_in_groups.userId where users_in_groups.groupId=$1',[groupId])
   .then(function(res){
     let drinksByUser = groupDrinksByUser(res[0]);
     deferred.resolve(drinksByUser);
