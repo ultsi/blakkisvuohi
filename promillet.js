@@ -215,8 +215,7 @@ cmd.register('/promillet', cmd.TYPE_ALL, function(msg, words){
           permilles.push([user.nick, userPermilles]);
         }
         permilles = permilles.sort(user => user[1]).map(user => user[0] + '... ' + user[1]);
-        permilles.insertAt(0, msg.chat.title + ' -kavereiden rippitaso:\n');
-        utils.sendMsg(msg, permilles.join('\n'));
+        utils.sendMsg(msg, msg.chat.title + ' -kavereiden rippitaso:\n' + permilles.join('\n'));
       } catch (err) {
         console.error(err);
         utils.sendMsg(msg, 'Virhe!');
