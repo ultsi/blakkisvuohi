@@ -214,7 +214,7 @@ cmd.register('/promillet', cmd.TYPE_ALL, function(msg, words){
           let userPermilles = (grams / liquid*1000).toFixed(2);
           permilles.push([user.nick, userPermilles]);
         }
-        permilles = permilles.sort(user => user[1]).map(user => user[0] + '... ' + user[1] + '‰');
+        permilles = permilles.sort(user => -user[1]).map(user => user[0] + '... ' + user[1] + '‰');
         utils.sendMsg(msg, msg.chat.title + ' -kavereiden rippitaso:\n' + permilles.join('\n'));
       } catch (err) {
         console.error(err);
