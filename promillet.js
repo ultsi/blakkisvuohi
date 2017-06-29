@@ -41,7 +41,7 @@ cmd.register('/luotunnus', cmd.TYPE_PRIVATE, function(msg, words){
   }, function(err){
     utils.sendPrivateMsg(msg, err);
   });
-}, '/luotunnus <paino> <mies/nainen>');
+}, '/luotunnus <paino> <mies/nainen>. Esim. /luotunnus 90 mies');
 
 cmd.register('/whoami', cmd.TYPE_PRIVATE, function(msg, words){
   findUser(msg)
@@ -276,7 +276,7 @@ cmd.register('/moro', cmd.TYPE_ALL, function(msg, words){
       utils.sendMsg(msg, 'Rippaa rauhassa kera ' + msg.chat.title + ' -kavereiden.');
     }, function(err){
       console.error(err);
-      utils.sendMsg(msg, 'Virhe!');
+      utils.sendMsg(msg, 'Rippaa rauhassa kera ' + msg.chat.title + ' -kavereiden.');
     });
   }, function(err){
     console.error(err);
