@@ -35,7 +35,7 @@ function findUser(msg) {
 }
 
 cmd.register('/luotunnus', cmd.TYPE_PRIVATE, function(msg, words){
-  users.new(msg.from.id, msg.from.username, words[1], words[2])
+  users.new(msg.from.id, msg.from.username || msg.from.first_name + ' ' + msg.from.last_name, words[1], words[2])
   .then(function(user){
     utils.sendPrivateMsg(msg, 'Moikka ' + user.nick);
   }, function(err){
