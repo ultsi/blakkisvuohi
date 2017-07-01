@@ -118,7 +118,7 @@ function sumGramsUnBurned(user, drinks) {
 }
 
 function getPermilles(user, grams) {
-  let standard_drinks = grams / 12;
+  let standard_drinks = grams / 11;
   return (0.806 * (standard_drinks)) / (LIQUID_PERCENT[user.gender] * user.weight) * 10;
 }
 
