@@ -19,7 +19,7 @@ function createSendPrivateMsgFunction(msg) {
 }
 
 function createSendChatMsgFunction(msg) {
-  return function(msg, text) {
+  return function(text) {
     let deferred = when.defer();
     global.bot.sendMessage(msg.chat.id, text)
     .then(function () {
