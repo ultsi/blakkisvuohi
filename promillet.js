@@ -17,7 +17,7 @@ const PINTTI = calcAlcoholMilliGrams(0.047, 0.50);
 
 function registerUserCmd(cmdName, cmdType, cmdFunc, cmdHelp) {
   cmd.register(cmdName, cmdType, function(msg, words){
-    var deferred = when.defer();
+    let deferred = when.defer();
     console.log('running user cmd ' + cmdName);
     users.find(msg.from.id)
     .then(function(user){
@@ -57,12 +57,14 @@ function findUser(msg) {
 }
 
 cmd.register('/luotunnus', cmd.TYPE_PRIVATE, function(msg, words){
+  let deferred = when.defer();
   users.new(msg.from.id, msg.from.username || msg.from.first_name + ' ' + msg.from.last_name, words[1], words[2])
   .then(function(user){
     msg.sendPrivateMsg('Moikka ' + user.nick);
   }, function(err){
     msg.sendPrivateMsg(err);
   });
+  return deferred.promise;
 }, '/luotunnus <paino> <mies/nainen>. Esim. /luotunnus 90 mies');
 
 registerUserCmd('/whoami', cmd.TYPE_PRIVATE, function(msg, words, user){
