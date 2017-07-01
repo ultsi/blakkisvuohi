@@ -26,7 +26,13 @@ cmd.call = function call(cmdName, msg, words) {
       if(cmds[cmdName].type === cmd.TYPE_PRIVATE && msg.chat.type !== 'private'){
         return msg.sendPrivateMsg('Käytä komentoa vain minun kanssa! Komennon käyttö: ' + cmds[cmdName].help);
       }
-      return cmds[cmdName].func(msg, words);
+      cmds[cmdName].func(msg, words)
+        .then(function(res){
+          console.log('executed ' + cmdName + ' successfully');
+        }, function(err){
+          console.error('Couldn\'t execute cmd "'+cmdName+'"! ' + err);
+          return msg.sendChatMsg('Virhe! Komennon käyttö: ' + cmds[cmdName].help);
+        });
     } catch (err) {
       console.log('Couldn\'t execute cmd "'+cmdName+'"! ' + err);
       return msg.sendChatMsg('Virhe! Komennon käyttö: ' + cmds[cmdName].help);
