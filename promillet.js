@@ -127,13 +127,14 @@ function sumGramsUnBurned(user, drinks) {
     let drink = drinks[i];
     let drinkTime = Date.parse(drink.created);
     console.log(drink);
-    milligrams += drink.alcohol;
     if(lastTime) {
       let diff = drinkTime - lastTime;
       let diffInHours = diff / hourInMillis;
       console.log('diffInHours: ', diffInHours, userBurnRateMilligrams, userBurnRateMilligrams * diffInHours);
       milligrams -= (userBurnRateMilligrams * diffInHours);
+      milligrams = milligrams > 0 ? milligrams : 0;
     }
+    milligrams += drink.alcohol;
     lastTime = drinkTime;
   }
   let diff = now - lastTime;
