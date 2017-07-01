@@ -153,7 +153,7 @@ function groupDrinksByUser(drinks) {
 users.getDrinkCountFor24hForGroup = function(groupId) {
   let deferred = when.defer();
   let oneDayAgo = getOneDayAgo();
-  query('select users.userId, users.nick, count(alcohol) as count from users_in_groups left outer join users_drinks on users_drinks.userid=users_in_groups.userid join users on users.userId=users_in_groups.userId where users_in_groups.groupId=$1 and users_drinks.created >= $2 group by users_in_groups.userId', [groupId, oneDayAgo])
+  query('select users.userId, users.nick, count(alcohol) as count from users_in_groups left outer join users_drinks on users_drinks.userid=users_in_groups.userid join users on users.userId=users_in_groups.userId where users_in_groups.groupId=$1 and users_drinks.created >= $2 group by users.userId', [groupId, oneDayAgo])
   .then(function(res){
     let drinkCounts = res[0];
     let drinkCountsByUser = {};
