@@ -222,7 +222,7 @@ cmd.registerUserCmd('/otinko', cmd.TYPE_PRIVATE, function(msg, words, user){
   return deferred.promise;
 }, '/otinko - näyttää otitko ja kuinka monta viime yönä.');
 
-cmd.register('/moro', cmd.TYPE_ALL, function(msg, words, user){
+cmd.registerUserCmd('/moro', cmd.TYPE_ALL, function(msg, words, user){
   let deferred = when.defer();
   if(msg.chat.type !== 'group'){
     deferred.reject('Käytä tätä komentoa ryhmässä!');
