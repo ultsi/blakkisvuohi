@@ -56,11 +56,10 @@ users.new = function(userId, nick, weight, gender) {
 users.find = function find(userId) {
   let deferred = when.defer();
   query('select userId, nick, weight, gender from users where userId=$1', [userId])
-  .then(function(rows){
-    console.log(rows);
-    if(rows.length > 0){
+  .then(function(res){
+    if(res.rowCount > 0){
       try {
-        let found = rows[0][0];
+        let found = res.rows[0];
         deferred.resolve(user(found.userid, found.nick, found.weight, found.gender));
       } catch (err) {
         deferred.reject();
@@ -70,7 +69,7 @@ users.find = function find(userId) {
     }
   }, function(err){
     console.error(err);
-    deferred.reject('Ota adminiin yhteyttä.');
+    deferred.reject(err);
   });
   return deferred.promise;
 };

@@ -39,13 +39,13 @@ function findUser(msg) {
   .then(function(user){
     if(!user){
       console.log('didn\'t find user ' + msg.from.id);
-      utils.sendMsg(msg, 'Moi! Juttele minulle ensiksi privassa ja luo tunnus käyttämällä komentoa /luotunnus');
+      msg.sendChatMsg('Moi! Juttele minulle ensiksi privassa ja luo tunnus käyttämällä komentoa /luotunnus');
       return deferred.reject('Not found');
     }
     console.log('found user ' + user.nick);
     deferred.resolve(user);
   }, function(err){
-    utils.sendMsg(msg, 'Moi! Juttele minulle ensiksi privassa ja luo tunnus käyttämällä komentoa /luotunnus');
+    msg.sendChatMsg('Moi! Juttele minulle ensiksi privassa ja luo tunnus käyttämällä komentoa /luotunnus');
     deferred.reject(err);
   });
   return deferred.promise;
@@ -54,19 +54,14 @@ function findUser(msg) {
 cmd.register('/luotunnus', cmd.TYPE_PRIVATE, function(msg, words){
   users.new(msg.from.id, msg.from.username || msg.from.first_name + ' ' + msg.from.last_name, words[1], words[2])
   .then(function(user){
-    utils.sendPrivateMsg(msg, 'Moikka ' + user.nick);
+    msg.sendPrivateMsg('Moikka ' + user.nick);
   }, function(err){
-    utils.sendPrivateMsg(msg, err);
+    msg.sendPrivateMsg(err);
   });
 }, '/luotunnus <paino> <mies/nainen>. Esim. /luotunnus 90 mies');
 
 registerUserCmd('/whoami', cmd.TYPE_PRIVATE, function(msg, words, user){
-  findUser(msg)
-  .then(function(user){
-    utils.sendPrivateMsg(msg, 'Käyttäjä ' + user.nick + ', id: ' + user.userId + ', paino: ' + user.weight + ', sukupuoli: ' + user.gender);
-  }, function(err){
-    utils.sendPrivateMsg(msg, err);
-  });
+  msg.sendPrivateMsg('Käyttäjä ' + user.nick + ', id: ' + user.userId + ', paino: ' + user.weight + ', sukupuoli: ' + user.gender);
 }, '/whoami - tulosta omat tietosi.');
 
 cmd.register('/tolkki', cmd.TYPE_PRIVATE, function(msg, words){
@@ -74,13 +69,13 @@ cmd.register('/tolkki', cmd.TYPE_PRIVATE, function(msg, words){
   .then(function(user){
     users.drinkBooze(user, TOLKKI, '/tolkki')
     .then(function(){
-      utils.sendPrivateMsg(msg, 'Got it.');
+      msg.sendPrivateMsg('Got it.');
     }, function(err){
-      utils.sendPrivateMsg(msg, 'Virhe: '+ err);
+      msg.sendPrivateMsg('Virhe: '+ err);
       throw 'Virhe!';
     });
   }, function(err){
-    utils.sendPrivateMsg(msg, 'Virhe: '+ err);
+    msg.sendPrivateMsg('Virhe: '+ err);
     throw 'Virhe!';
   });
 }, '/tolkki - juo yksi 0.33l');
@@ -90,13 +85,13 @@ cmd.register('/pintti', cmd.TYPE_PRIVATE, function(msg, words){
   .then(function(user){
     users.drinkBooze(user, PINTTI, '/pintti')
     .then(function(){
-      utils.sendPrivateMsg(msg, 'toimii');
+      msg.sendPrivateMsg('toimii');
     }, function(err){
-      utils.sendPrivateMsg(msg, 'Virhe: '+ err);
+      msg.sendPrivateMsg('Virhe: '+ err);
       throw 'Virhe!';
     });
   }, function(err){
-    utils.sendPrivateMsg(msg, 'Virhe: '+ err);
+    msg.sendPrivateMsg('Virhe: '+ err);
     throw 'Virhe!';
   });
 }, '/pintti - juo yksi 0.5l');
@@ -111,18 +106,18 @@ cmd.register('/viina', cmd.TYPE_PRIVATE, function(msg, words){
     let percent = parseFloat(words[1])/100;
     let amount = parseFloat(words[2]);
     if(percent === 'NaN' || amount === 'NaN' || percent > 1 || percent < 0 || amount > 10 || amount < 0){
-      utils.sendPrivateMsg(msg, 'Prosentti tai määrä on virheellinen!');
+      msg.sendPrivateMsg('Prosentti tai määrä on virheellinen!');
       return;
     }
     let alcoholInMG = calcAlcoholMilliGrams(percent, amount);
     users.drinkBooze(user, alcoholInMG, words.join(' '))
     .then(function(){
-      utils.sendPrivateMsg(msg, 'toimii');
+      msg.sendPrivateMsg('toimii');
     }, function(err){
-      utils.sendPrivateMsg(msg, err);
+      msg.sendPrivateMsg(err);
     });
   }, function(err){
-    utils.sendPrivateMsg(msg, err);
+    msg.sendPrivateMsg(err);
   });
 }, '/viina (prosentti) (määrä litroissa). Esim. /viina 38 0.5');
 
@@ -165,12 +160,12 @@ cmd.register('/annokset', cmd.TYPE_ALL, function(msg, words){
     users.getBooze(user)
     .then(function(drinks){
       let grams = sumGrams(drinks) / 1000.0;
-      utils.sendPrivateMsg(msg, 'Olet aikojen saatossa tuhonnut ' + grams.toFixed(2) + ' grammaa alkoholia, joka vastaa ' + (grams / 12.2).toFixed(2) + ' annosta.');
+      msg.sendPrivateMsg('Olet aikojen saatossa tuhonnut ' + grams.toFixed(2) + ' grammaa alkoholia, joka vastaa ' + (grams / 12.2).toFixed(2) + ' annosta.');
     }, function(err){
-      utils.sendPrivateMsg(msg, err);
+      msg.sendPrivateMsg(err);
     });
   }, function(err){
-    utils.sendPrivateMsg(msg, err);
+    msg.sendPrivateMsg(err);
   });
 }, '/annokset - listaa kaikki annokset.');
 
@@ -181,19 +176,19 @@ cmd.register('/polttamatta', cmd.TYPE_ALL, function(msg, words){
     .then(function(drinks){
       try {
         let grams = sumGramsUnBurned(user, drinks) / 1000.0;
-        utils.sendPrivateMsg(msg, 'Sinussa on jäljellä ' + grams.toFixed(2) + ' grammaa alkoholia, joka vastaa ' + (grams / 12.2).toFixed(2) + ' annosta.');
+        msg.sendPrivateMsg('Sinussa on jäljellä ' + grams.toFixed(2) + ' grammaa alkoholia, joka vastaa ' + (grams / 12.2).toFixed(2) + ' annosta.');
       } catch (err) {
         console.error(err);
-        utils.sendPrivateMsg(msg, err);
+        msg.sendPrivateMsg(err);
       }
 
     }, function(err){
       console.error(err);
-      utils.sendPrivateMsg(msg, err);
+      msg.sendPrivateMsg(err);
     });
   }, function(err){
     console.error(err);
-    utils.sendPrivateMsg(msg, err);
+    msg.sendPrivateMsg(err);
   });
 }, '/polttamatta - listaa kuinka paljon alkoholia sinulla on polttamatta.');
 
@@ -206,18 +201,18 @@ cmd.register('/promillet', cmd.TYPE_ALL, function(msg, words){
         try {
           let grams = sumGramsUnBurned(user, drinks) / 1000.0;
           let liquid = user.weight * LIQUID_PERCENT[user.gender] * 1000;
-          utils.sendPrivateMsg(msg, (grams / liquid*1000).toFixed(2) + '‰');
+          msg.sendPrivateMsg((grams / liquid*1000).toFixed(2) + '‰');
         } catch (err) {
           console.error(err);
-          utils.sendPrivateMsg(msg, err);
+          msg.sendPrivateMsg(err);
         }
       }, function(err){
         console.error(err);
-        utils.sendPrivateMsg(msg, err);
+        msg.sendPrivateMsg(err);
       });
     }, function(err){
       console.error(err);
-      utils.sendPrivateMsg(msg, err);
+      msg.sendPrivateMsg(err);
     });
   } else {
     users.getBoozeForGroup(msg.chat.id)
@@ -233,14 +228,14 @@ cmd.register('/promillet', cmd.TYPE_ALL, function(msg, words){
           permilles.push([user.nick, userPermilles, grams]);
         }
         permilles = permilles.sort(user => -user[1]).map(user => user[0] + '... ' + user[1] + '‰' + '(' + user[2].toFixed(1) + ' annosta)');
-        utils.sendMsg(msg, msg.chat.title + ' -kavereiden rippitaso:\n' + permilles.join('\n'));
+        msg.sendChatMsg(msg.chat.title + ' -kavereiden rippitaso:\n' + permilles.join('\n'));
       } catch (err) {
         console.error(err);
-        utils.sendMsg(msg, 'Virhe!');
+        msg.sendChatMsg('Virhe!');
       }
     }, function(err) {
       console.error(err);
-      utils.sendMsg(msg, 'Virhe!');
+      msg.sendChatMsg('Virhe!');
     });
   }
 }, '/promillet - listaa kuinka paljon promilleja sinulla tai chatissa olevilla suunnilleen on.');
@@ -268,18 +263,18 @@ cmd.register('/otinko', cmd.TYPE_PRIVATE, function(msg, words){
     .then(function(drinks){
       try {
         let drinkList = makeDrinksString(drinks);
-        utils.sendPrivateMsg(msg, drinkList);
+        msg.sendPrivateMsg(drinkList);
       } catch (err) {
         console.error(err);
-        utils.sendPrivateMsg(msg, err);
+        msg.sendPrivateMsg(err);
       }
     }, function(err){
       console.error(err);
-      utils.sendPrivateMsg(msg, err);
+      msg.sendPrivateMsg(err);
     });
   }, function(err){
     console.error(err);
-    utils.sendPrivateMsg(msg, err);
+    msg.sendPrivateMsg(err);
   });
 }, '/otinko - näyttää otitko ja kuinka monta viime yönä.');
 
@@ -291,13 +286,13 @@ cmd.register('/moro', cmd.TYPE_ALL, function(msg, words){
   .then(function(user){
     users.joinGroup(user, msg)
     .then(function(){
-      utils.sendMsg(msg, 'Rippaa rauhassa kera ' + msg.chat.title + ' -kavereiden.');
+      msg.sendChatMsg('Rippaa rauhassa kera ' + msg.chat.title + ' -kavereiden.');
     }, function(err){
       console.error(err);
-      utils.sendMsg(msg, 'Rippaa rauhassa kera ' + msg.chat.title + ' -kavereiden.');
+      msg.sendChatMsg('Rippaa rauhassa kera ' + msg.chat.title + ' -kavereiden.');
     });
   }, function(err){
     console.error(err);
-    utils.sendMsg(msg, 'Virhe!');
+    msg.sendChatMsg('Virhe!');
   });
 }, '/moro - Lisää sinut ryhmään mukaan.');
