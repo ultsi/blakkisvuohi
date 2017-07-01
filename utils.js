@@ -33,9 +33,16 @@ function createSendChatMsgFunction(msg) {
   };
 }
 
+function createUserToStringFunction(msg) {
+  return function(){
+    return 'user: {id: '+msg.from.id+', name: '+msg.from.first_name + ' ' + msg.from.last_name + ', username: ' + msg.from.username + '}';
+  };
+}
+
 utils.attachMethods = function attachMethods(msg) {
   msg.sendPrivateMsg = createSendPrivateMsgFunction(msg);
   msg.sendChatMsg = createSendChatMsgFunction(msg);
+  msg.userToString = createUserToStringFunction(msg);
 };
 
 utils.isValidNumber = function(num){
