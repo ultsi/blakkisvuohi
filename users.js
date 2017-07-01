@@ -60,9 +60,10 @@ users.find = function find(userId) {
     if(res.rowCount > 0){
       try {
         let found = res.rows[0];
+        console.log(found);
         deferred.resolve(user(found.userid, found.nick, found.weight, found.gender));
       } catch (err) {
-        deferred.reject();
+        deferred.reject(err);
       }
     } else {
       deferred.resolve();
