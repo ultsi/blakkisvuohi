@@ -126,11 +126,9 @@ function sumGramsUnBurned(user, drinks) {
   for(var i in drinks) {
     let drink = drinks[i];
     let drinkTime = Date.parse(drink.created);
-    console.log(drink);
     if(lastTime) {
       let diff = drinkTime - lastTime;
       let diffInHours = diff / hourInMillis;
-      console.log('diffInHours: ', diffInHours, userBurnRateMilligrams, userBurnRateMilligrams * diffInHours);
       milligrams -= (userBurnRateMilligrams * diffInHours);
       milligrams = milligrams > 0 ? milligrams : 0;
     }
@@ -149,7 +147,7 @@ cmd.register('/annokset', cmd.TYPE_ALL, function(msg, words){
     users.getBooze(user)
     .then(function(drinks){
       let grams = sumGrams(drinks) / 1000.0;
-      utils.sendPrivateMsg(msg, 'Olet aikojen saatossa tuhonnut ' + grams + ' grammaa alkoholia, joka vastaa ' + (grams / 12.2).toFixed(2) + ' annosta.');
+      utils.sendPrivateMsg(msg, 'Olet aikojen saatossa tuhonnut ' + grams.toFixed(2) + ' grammaa alkoholia, joka vastaa ' + (grams / 12.2).toFixed(2) + ' annosta.');
     }, function(err){
       utils.sendPrivateMsg(msg, err);
     });
@@ -165,7 +163,7 @@ cmd.register('/polttamatta', cmd.TYPE_ALL, function(msg, words){
     .then(function(drinks){
       try {
         let grams = sumGramsUnBurned(user, drinks) / 1000.0;
-        utils.sendPrivateMsg(msg, 'Sinussa on jäljellä ' + grams + ' grammaa alkoholia, joka vastaa ' + (grams / 12.2).toFixed(2) + ' annosta.');
+        utils.sendPrivateMsg(msg, 'Sinussa on jäljellä ' + grams.toFixed(2) + ' grammaa alkoholia, joka vastaa ' + (grams / 12.2).toFixed(2) + ' annosta.');
       } catch (err) {
         console.error(err);
         utils.sendPrivateMsg(msg, err);
