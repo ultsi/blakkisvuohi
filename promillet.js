@@ -108,6 +108,7 @@ function sumGramsUnBurned(user, drinks) {
       milligrams -= (userBurnRateMilligrams * diffInHours);
       milligrams = milligrams > 0 ? milligrams : 0;
     }
+    console.log(i, getPermilles(user, milligrams/1000.0));
     milligrams += drink.alcohol;
     console.log(i, getPermilles(user, milligrams/1000.0));
     lastTime = drinkTime;
