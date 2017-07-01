@@ -56,12 +56,14 @@ users.new = function(userId, nick, weight, gender) {
 users.find = function find(userId) {
   let deferred = when.defer();
   query('select userId, nick, weight, gender from users where userId=$1', [userId])
-  .then(function(rows, res){
-    console.log(rows.length);
-    console.log(res.rowCount);
-    if(rows.length > 0 && res.rowCount > 0){
+  .then(function(rows, other){
+    console.log(rows);
+    console.log(rows[0]);
+    console.log(rows[1]);
+    console.log(other);
+    if(rows[0].length > 0){
       try {
-        let found = rows[0];
+        let found = rows[0][0];
         console.log(found);
         deferred.resolve(user(found.userid, found.nick, found.weight, found.gender));
       } catch (err) {
