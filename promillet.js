@@ -160,7 +160,6 @@ cmd.registerUserCmd('/promillet', cmd.TYPE_ALL, function(msg, words, user){
       .then(function(drinks){
         try {
           let grams = sumGramsUnBurned(user, drinks) / 1000.0;
-          let liquid = user.weight * LIQUID_PERCENT[user.gender] * 1000;
           deferred.resolve(cmd.privateResponse((getPermilles(user, grams).toFixed(2) + '‰')));
         } catch (err) {
           console.error(err);
@@ -179,10 +178,8 @@ cmd.registerUserCmd('/promillet', cmd.TYPE_ALL, function(msg, words, user){
             let details = drinksByUser[userId];
             let user = users.create(details.userid, details.nick, details.weight, details.gender);
             let grams = sumGramsUnBurned(user, details.drinks) / 1000.0;
-            let liquid = user.weight * LIQUID_PERCENT[user.gender] * 1000;
-            let userPermilles = (grams / liquid*1000).toFixed(2);
             if(grams > 0){
-              permilles.push([user.nick, userPermilles]);
+              permilles.push([user.nick, getPermilles(user, grams)]);
             }
           }
           permilles = permilles.sort(user => -user[1]).map(user => user[0] + '... ' + user[1] + '‰');
