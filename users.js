@@ -88,6 +88,12 @@ users.drinkBooze = function(user, amount, description) {
   return deferred.promise;
 };
 
+function getOneDayAgo() {
+  let hourInMillis = 3600*1000;
+  let oneDayAgo = new Date(Date.now()-24*hourInMillis);
+  return oneDayAgo;
+}
+
 function getTwoDaysAgo() {
   let hourInMillis = 3600*1000;
   let twoDaysAgo = new Date(Date.now()-48*hourInMillis);
@@ -143,6 +149,25 @@ function groupDrinksByUser(drinks) {
   }
   return drinksByUser;
 }
+
+users.getDrinkCountFor24hForGroup = function(groupId) {
+  let deferred = when.defer();
+  let oneDayAgo = getOneDayAgo();
+  query('select users.userId, users.nick, count(alcohol) as count from users_in_groups left outer join users_drinks on users_drinks.userid=users_in_groups.userid join users on users.userId=users_in_groups.userId where users_in_groups.groupId=$1 and users_drinks.created >= $2 group by users_in_groups.userId', [groupId, oneDayAgo])
+  .then(function(res){
+    let drinkCounts = res[0];
+    let drinkCountsByUser = {};
+    for(var i in drinkCounts){
+      let drinkCount = drinkCounts[i];
+      byUser[drinkCount.userid] = {userid: drinkCount.userid, nick: drinkCount.nick, count: drinkCount.count};
+    }
+    deferred.resolve(drinkCountsByUser);
+  }, function(err){
+    console.error(err);
+    deferred.reject('Ota adminiin yhteyttä.');
+  });
+  return deferred.promise;
+};
 
 users.getBoozeForGroup = function(groupId) {
   let deferred = when.defer();

@@ -170,8 +170,10 @@ cmd.registerUserCmd('/promillet', cmd.TYPE_ALL, function(msg, words, user){
         deferred.reject('Isompi ongelma, ota yhteyttä adminiin.');
       });
   } else {
-    users.getBoozeForGroup(msg.chat.id)
-      .then(function(drinksByUser){
+    when.all([
+      users.getBoozeForGroup(msg.chat.id),
+      users.getDrinkCountFor24hForGroup(msg.chat.id)
+    ]).spread(function(drinksByUser, drinkCountsByUser){
         try {
           let permilles = [];
           for(var userId in drinksByUser){
@@ -179,11 +181,11 @@ cmd.registerUserCmd('/promillet', cmd.TYPE_ALL, function(msg, words, user){
             let user = users.create(details.userid, details.nick, details.weight, details.gender);
             let grams = sumGramsUnBurned(user, details.drinks) / 1000.0;
             if(grams > 0){
-              permilles.push([user.nick, getPermilles(user, grams).toFixed(2)]);
+              permilles.push([user.nick, getPermilles(user, grams).toFixed(2), drinkCountsByUser[details.userid].count]);
             }
           }
-          permilles = permilles.sort(user => -user[1]).map(user => user[0] + '... ' + user[1] + '‰');
-          deferred.resolve(cmd.chatResponse(msg.chat.title + ' -kavereiden rippitaso:\n' + permilles.join('\n')));
+          permilles = permilles.sort(user => -user[1]).map(user => user[0] + '... ' + user[1] + '‰ ('+user[2]+'/24h)');
+          deferred.resolve(cmd.chatResponse(msg.chat.title + ' -kavereiden rippitaso:\n\n' + permilles.join('\n')));
         } catch (err) {
           console.error(err);
           deferred.reject('Isompi ongelma, ota yhteyttä adminiin.');
