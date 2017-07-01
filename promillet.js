@@ -15,6 +15,24 @@ function calcAlcoholMilliGrams(vol_perc, amount) {
 const TOLKKI = calcAlcoholMilliGrams(0.047, 0.33);
 const PINTTI = calcAlcoholMilliGrams(0.047, 0.50);
 
+function registerUserCmd(cmdName, cmdType, cmdFunc, cmdHelp) {
+  cmd.register(cmdName, cmdType, function(msg, words){
+    var deferred = when.defer();
+    users.find(msg.from.id)
+    .then(function(user){
+      cmdFunc(msg, words, user)
+      .then(function(res){
+        deferred.resolve(res);
+      }, function(err){
+        deferred.reject(err);
+      });
+    }, function(err){
+      deferred.reject(err);
+    });
+    return deferred.promise;
+  }, cmdHelp);
+}
+
 function findUser(msg) {
   let deferred = when.defer();
   users.find(msg.from.id)
@@ -42,7 +60,7 @@ cmd.register('/luotunnus', cmd.TYPE_PRIVATE, function(msg, words){
   });
 }, '/luotunnus <paino> <mies/nainen>. Esim. /luotunnus 90 mies');
 
-cmd.register('/whoami', cmd.TYPE_PRIVATE, function(msg, words){
+registerUserCmd('/whoami', cmd.TYPE_PRIVATE, function(msg, words, user){
   findUser(msg)
   .then(function(user){
     utils.sendPrivateMsg(msg, 'Käyttäjä ' + user.nick + ', id: ' + user.userId + ', paino: ' + user.weight + ', sukupuoli: ' + user.gender);

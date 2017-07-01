@@ -2,6 +2,7 @@
 const query = require('pg-query');
 const when = require('when');
 const utils = require('./utils.js');
+const cmd = require('./cmd.js');
 query.connectionParameters = process.env.DATABASE_URL;
 
 let users = {};
@@ -26,21 +27,22 @@ users.new = function(userId, nick, weight, gender) {
   let params = [parseInt(userId, 10), nick, parseInt(weight, 10), gender];
   let err = [];
   if(!utils.isValidNumber(params[0])){
-    err.push('Komennon suorittamisessa tapahtui virhe. Kokeile myöhemmin uudelleen.');
+    err.push('userid');
   }
   if(nick.length < 1){
-    err.push('Komennon suorittamisessa tapahtui virhe. Kokeile myöhemmin uudelleen.');
+    err.push('nick');
   }
   if(!utils.isValidNumber(params[2]) && params[2] >= 40 && params[2] <= 200){
-    err.push('Paino on väärin. Käytä kokonaislukuja. Minimipaino on 40kg ja maksimipaino 200kg.');
+    err.push('weight');
   }
   if(!isValidGender(gender.toLowerCase())){
-    err.push('Sukupuoli on väärin. Käytä mies/nainen.');
+    err.push('gender');
   }
   if(err.length > 0){
-    deferred.reject(err.join('\n'));
+    deferred.reject(err);
     return deferred.promise;
   }
+
   query('insert into users (userId, nick, weight, gender) values ($1, $2, $3, $4)', params)
   .then(function(){
     deferred.resolve(user(params[0], nick, params[2], gender));
@@ -55,12 +57,13 @@ users.find = function find(userId) {
   let deferred = when.defer();
   query('select userId, nick, weight, gender from users where userId=$1', [userId])
   .then(function(rows){
+    console.log(rows);
     if(rows.length > 0){
       try {
         let found = rows[0][0];
         deferred.resolve(user(found.userid, found.nick, found.weight, found.gender));
       } catch (err) {
-        deferred.resolve();
+        deferred.reject();
       }
     } else {
       deferred.resolve();

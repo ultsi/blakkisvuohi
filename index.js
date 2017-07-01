@@ -25,7 +25,7 @@ global.bot = bot;
 // Note: we do not need to pass in the cert, as it already provided
 bot.setWebHook(`${url}/bot${TOKEN}`);
 
-console.log('Hymybot started in the ' + process.env.NODE_ENV + ' mode');
+console.log('BläkkisVuohi started in the ' + process.env.NODE_ENV + ' mode');
 
 bot.on('message', function(msg) {
   console.log(msg);
