@@ -179,7 +179,7 @@ cmd.registerUserCmd('/promillet', cmd.TYPE_ALL, function(msg, words, user){
             let user = users.create(details.userid, details.nick, details.weight, details.gender);
             let grams = sumGramsUnBurned(user, details.drinks) / 1000.0;
             if(grams > 0){
-              permilles.push([user.nick, getPermilles(user, grams)]);
+              permilles.push([user.nick, getPermilles(user, grams).toFixed(2)]);
             }
           }
           permilles = permilles.sort(user => -user[1]).map(user => user[0] + '... ' + user[1] + '‰');
