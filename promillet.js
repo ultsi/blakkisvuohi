@@ -119,7 +119,7 @@ function sumGramsUnBurned(user, drinks) {
 
 function getPermilles(user, grams) {
   let standard_drinks = grams / 10.0;
-  return (0.806 * (standard_drinks) * 1.2) / (LIQUID_PERCENT[user.gender] * user.weight) * 10;
+  return (0.806 * (standard_drinks) * 1.1) / (LIQUID_PERCENT[user.gender] * user.weight) * 10;
 }
 
 cmd.registerUserCmd('/annokset', cmd.TYPE_ALL, function(msg, words, user){
