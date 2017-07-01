@@ -15,7 +15,6 @@ function calcAlcoholMilliGrams(vol_perc, amount) {
 const TOLKKI = calcAlcoholMilliGrams(0.047, 0.33);
 const PINTTI = calcAlcoholMilliGrams(0.047, 0.50);
 
-
 function findUser(msg) {
   let deferred = when.defer();
   users.find(msg.from.id)
@@ -127,12 +126,13 @@ function sumGramsUnBurned(user, drinks) {
   for(var i in drinks) {
     let drink = drinks[i];
     let drinkTime = Date.parse(drink.created);
+    console.log(drink);
     milligrams += drink.alcohol;
     if(lastTime) {
       let diff = drinkTime - lastTime;
       let diffInHours = diff / hourInMillis;
+      console.log('diffInHours: ', diffInHours, userBurnRateMilligrams, userBurnRateMilligrams * diffInHours);
       milligrams -= (userBurnRateMilligrams * diffInHours);
-      milligrams = milligrams > 0 ? milligrams : 0; 
     }
     lastTime = drinkTime;
   }
