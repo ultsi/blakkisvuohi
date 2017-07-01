@@ -14,17 +14,17 @@ function calcAlcoholMilliGrams(vol_perc, amount) {
 
 const TOLKKI = calcAlcoholMilliGrams(0.047, 0.33);
 const PINTTI = calcAlcoholMilliGrams(0.047, 0.50);
-const DRINK_RESPONSES = ['Got it.', 'Bäää', 'Uuteen nousuun.', 'Aamu alkaa A:lla', 'Juo viinaa, viina on hyvää'];
+const DRINK_RESPONSES = ['Bäää.', 'Uuteen nousuun.', 'Aamu alkaa A:lla.', 'Juo viinaa, viina on hyvää.', 'Meno on meno.', 'Lörs lärä, viinaa!'];
 
 function getRandomResponse(){
-  return DRINK_RESPONSES[Math.floor(Math.random()*DRINK_RESPONSES.length)];
+  return 'Tallennettu. ' + DRINK_RESPONSES[Math.floor(Math.random()*DRINK_RESPONSES.length)];
 }
 
 cmd.register('/luotunnus', cmd.TYPE_PRIVATE, function(msg, words){
   let deferred = when.defer();
   users.new(msg.from.id, msg.from.username || msg.from.first_name + ' ' + msg.from.last_name, words[1], words[2])
   .then(function(user){
-    msg.sendPrivateMsg('Moikka ' + user.nick);
+    msg.sendPrivateMsg('Moikka ' + user.nick + '! Tunnuksesi luotiin onnistuneesti. Muista, että antamani luvut alkoholista ovat vain arvioita, eikä niihin voi täysin luottaa. Ja eikun juomaan!');
   }, function(err){
     msg.sendPrivateMsg(err);
   });
