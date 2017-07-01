@@ -57,7 +57,7 @@ users.find = function find(userId) {
   let deferred = when.defer();
   query('select userId, nick, weight, gender from users where userId=$1', [userId])
   .then(function(res){
-    console.log(res);
+    console.log(res.rows[0]);
     if(res.rowCount > 0){
       try {
         let found = res.rows[0];
