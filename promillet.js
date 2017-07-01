@@ -185,7 +185,7 @@ cmd.registerUserCmd('/promillet', cmd.TYPE_ALL, function(msg, words, user){
             }
           }
           permilles = permilles.sort(user => -user[1]).map(user => user[0] + '... ' + user[1] + '‰ ('+user[2]+')');
-          deferred.resolve(cmd.chatResponse(msg.chat.title + ' -kavereiden rippitaso:\n Käyttäjä...‰ (annokset/24h)\n' + permilles.join('\n')));
+          deferred.resolve(cmd.chatResponse(msg.chat.title + ' -kavereiden rippitaso:\nKäyttäjä...‰ (annokset/24h)\n\n' + permilles.join('\n')));
         } catch (err) {
           console.error(err);
           deferred.reject('Isompi ongelma, ota yhteyttä adminiin.');
