@@ -106,7 +106,7 @@ users.getBooze = function(user) {
 users.getBoozeForLast48h = function(user) {
   let deferred = when.defer();
   let twoDaysAgo = getTwoDaysAgo();
-  query('select alcohol, description, created from users_drinks where userId = $1 and created > $2 order by created asc',[user.userId, twoDaysAgo.toISOString()])
+  query('select alcohol, description, created from users_drinks where userId = $1 and created > $2 order by created desc',[user.userId, twoDaysAgo.toISOString()])
   .then(function(res){
     deferred.resolve(res[0]);
   }, function(err){
@@ -143,7 +143,7 @@ function groupDrinksByUser(drinks) {
 users.getBoozeForGroup = function(groupId) {
   let deferred = when.defer();
   let twoDaysAgo = getTwoDaysAgo();
-  query('select users.userId, users.nick, users.weight, users.gender, coalesce(alcohol, 0) as alcohol, description, created from users_in_groups left outer join users_drinks on users_in_groups.userId=users_drinks.userId join users on users.userId=users_in_groups.userId where users_in_groups.groupId=$1 and created > $2 order by created desc',[groupId, twoDaysAgo.toISOString()])
+  query('select users.userId, users.nick, users.weight, users.gender, coalesce(alcohol, 0) as alcohol, description, created from users_in_groups left outer join users_drinks on users_in_groups.userId=users_drinks.userId join users on users.userId=users_in_groups.userId where users_in_groups.groupId=$1 and created > $2 order by created asc',[groupId, twoDaysAgo.toISOString()])
   .then(function(res){
     let drinksByUser = groupDrinksByUser(res[0]);
     deferred.resolve(drinksByUser);
