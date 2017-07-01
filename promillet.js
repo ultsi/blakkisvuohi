@@ -126,7 +126,7 @@ cmd.registerUserCmd('/annokset', cmd.TYPE_ALL, function(msg, words, user){
     return deferred.promise;
 }, '/annokset - listaa kaikki annokset.');
 
-cmd.register('/polttamatta', cmd.TYPE_ALL, function(msg, words, user){
+cmd.registerUserCmd('/polttamatta', cmd.TYPE_ALL, function(msg, words, user){
   let deferred = when.defer();
   users.getBooze(user)
   .then(function(drinks){
