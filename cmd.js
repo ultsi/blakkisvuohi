@@ -17,21 +17,21 @@ cmd.register = function register(cmd, type, func, help) {
   };
 };
 
-cmd.call = function call(cmd, msg, words) {
+cmd.call = function call(cmdName, msg, words) {
   utils.attachMethods(msg);
-  if(cmds[cmd]){
+  if(cmds[cmdName]){
     try {
-      console.log(cmds[cmd]);
-      if(cmds[cmd].type === 'private' && msg.chat.type !== 'private'){
-        msg.sendPrivateMsg('Käytä komentoa vain minun kanssa! Komennon käyttö: ' + cmds[cmd].help);
+      console.log(cmds[cmdName]);
+      if(cmds[cmdName].type === cmd.TYPE_PRIVATE && msg.chat.type !== 'private'){
+        msg.sendPrivateMsg('Käytä komentoa vain minun kanssa! Komennon käyttö: ' + cmds[cmdName].help);
         return;
       }
-      cmds[cmd].func(msg, words);
+      cmds[cmdName].func(msg, words);
     } catch (err) {
-      console.log('Couldn\'t execute cmd "'+cmd+'"! ' + err);
-      msg.sendMsg('Virhe! Komennon käyttö: ' + cmds[cmd].help);
+      console.log('Couldn\'t execute cmd "'+cmdName+'"! ' + err);
+      msg.sendMsg('Virhe! Komennon käyttö: ' + cmds[cmdName].help);
     }
-  } else if (cmd === '/komennot'|| cmd === '/start' || cmd === '/help') {
+  } else if (cmdName === '/komennot'|| cmdName === '/start' || cmdName === '/help') {
     let cmdstr = 'Komennot:\n';
     for(var i in cmds){
       cmdstr += cmds[i].help + '\n';
