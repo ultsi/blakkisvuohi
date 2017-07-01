@@ -159,7 +159,7 @@ users.getDrinkCountFor24hForGroup = function(groupId) {
     let drinkCountsByUser = {};
     for(var i in drinkCounts){
       let drinkCount = drinkCounts[i];
-      byUser[drinkCount.userid] = {userid: drinkCount.userid, nick: drinkCount.nick, count: drinkCount.count};
+      drinkCountsByUser[drinkCount.userid] = {userid: drinkCount.userid, nick: drinkCount.nick, count: drinkCount.count};
     }
     deferred.resolve(drinkCountsByUser);
   }, function(err){
