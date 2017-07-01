@@ -108,21 +108,18 @@ function sumGramsUnBurned(user, drinks) {
       milligrams -= (userBurnRateMilligrams * diffInHours);
       milligrams = milligrams > 0 ? milligrams : 0;
     }
-    console.log(i, getPermilles(user, milligrams/1000.0));
     milligrams += drink.alcohol;
-    console.log(i, getPermilles(user, milligrams/1000.0));
     lastTime = drinkTime;
   }
   let diff = now - lastTime;
   let diffInHours = diff / hourInMillis;
-  console.log(getPermilles(user, milligrams/1000.0));
   milligrams -= userBurnRateMilligrams * diffInHours;
-  console.log(getPermilles(user, milligrams/1000.0));
   return milligrams > 0 ? milligrams : 0;
 }
 
 function getPermilles(user, grams) {
-  return (0.806 * grams / 12.2) / (LIQUID_PERCENT[user.gender] * user.weight) * 10;
+  let standard_drinks = grams / 10.0;
+  return (0.806 * (standard_drinks) * 1.2) / (LIQUID_PERCENT[user.gender] * user.weight) * 10;
 }
 
 cmd.registerUserCmd('/annokset', cmd.TYPE_ALL, function(msg, words, user){
