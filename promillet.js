@@ -94,7 +94,7 @@ function sumGramsUnBurned(user, drinks) {
   let now = Date.now();
   let lastTime = null;
   let hourInMillis = 3600 * 1000;
-  let userBurnRateMilligrams = user.weight / 10.0 * 1000;
+  let userBurnRateMilligrams = user.weight / 9.0 * 1000;
   for(var i in drinks) {
     let drink = drinks[i];
     let drinkTime = Date.parse(drink.created);
