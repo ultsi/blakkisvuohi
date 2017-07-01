@@ -20,6 +20,7 @@ function registerUserCmd(cmdName, cmdType, cmdFunc, cmdHelp) {
     var deferred = when.defer();
     users.find(msg.from.id)
     .then(function(user){
+      console.log('Running command '+ cmdName + ', found user: ' + user.nick);
       cmdFunc(msg, words, user)
       .then(function(res){
         deferred.resolve(res);
@@ -31,6 +32,7 @@ function registerUserCmd(cmdName, cmdType, cmdFunc, cmdHelp) {
     });
     return deferred.promise;
   }, cmdHelp);
+  console.log('Registerer user cmd ' + cmdName);
 }
 
 function findUser(msg) {
