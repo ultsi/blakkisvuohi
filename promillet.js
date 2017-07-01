@@ -172,7 +172,9 @@ cmd.registerUserCmd('/promillet', cmd.TYPE_ALL, function(msg, words, user){
             let grams = sumGramsUnBurned(user, details.drinks) / 1000.0;
             let liquid = user.weight * LIQUID_PERCENT[user.gender] * 1000;
             let userPermilles = (grams / liquid*1000).toFixed(2);
-            permilles.push([user.nick, userPermilles]);
+            if(grams > 0){
+              permilles.push([user.nick, userPermilles]);
+            }
           }
           permilles = permilles.sort(user => -user[1]).map(user => user[0] + '... ' + user[1] + '‰');
           deferred.resolve(cmd.chatResponse(msg.chat.title + ' -kavereiden rippitaso:\n' + permilles.join('\n')));
