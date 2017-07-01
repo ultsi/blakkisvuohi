@@ -18,24 +18,25 @@ cmd.register = function register(cmd, type, func, help) {
 };
 
 cmd.call = function call(cmd, msg, words) {
+  utils.attachMethods(msg);
   if(cmds[cmd]){
     try {
       console.log(cmds[cmd]);
       if(cmds[cmd].type === 'private' && msg.chat.type !== 'private'){
-        utils.sendPrivateMsg(msg, 'Käytä komentoa vain minun kanssa! Komennon käyttö: ' + cmds[cmd].help);
+        msg.sendPrivateMsg('Käytä komentoa vain minun kanssa! Komennon käyttö: ' + cmds[cmd].help);
         return;
       }
       cmds[cmd].func(msg, words);
     } catch (err) {
       console.log('Couldn\'t execute cmd "'+cmd+'"! ' + err);
-      utils.sendMsg(msg, 'Virhe! Komennon käyttö: ' + cmds[cmd].help);
+      msg.sendMsg('Virhe! Komennon käyttö: ' + cmds[cmd].help);
     }
-  } else if (cmd === '/komennot') {
+  } else if (cmd === '/komennot'|| cmd === '/start' || cmd === '/help') {
     let cmdstr = 'Komennot:\n';
     for(var i in cmds){
       cmdstr += cmds[i].help + '\n';
     }
-    utils.sendMsg(msg, cmdstr);
+    msg.sendPrivateMsg(cmdstr);
   }
 };
 

@@ -212,9 +212,9 @@ cmd.register('/promillet', cmd.TYPE_ALL, function(msg, words){
           let grams = sumGramsUnBurned(user, details.drinks) / 1000.0;
           let liquid = user.weight * LIQUID_PERCENT[user.gender] * 1000;
           let userPermilles = (grams / liquid*1000).toFixed(2);
-          permilles.push([user.nick, userPermilles]);
+          permilles.push([user.nick, userPermilles, grams]);
         }
-        permilles = permilles.sort(user => -user[1]).map(user => user[0] + '... ' + user[1] + '‰');
+        permilles = permilles.sort(user => -user[1]).map(user => user[0] + '... ' + user[1] + '‰' + '(' + user[2].toFixed(1) + ' annosta)');
         utils.sendMsg(msg, msg.chat.title + ' -kavereiden rippitaso:\n' + permilles.join('\n'));
       } catch (err) {
         console.error(err);
