@@ -24,15 +24,18 @@ cmd.register('/luotunnus', cmd.TYPE_PRIVATE, function(msg, words){
   let deferred = when.defer();
   users.new(msg.from.id, msg.from.username || msg.from.first_name + ' ' + msg.from.last_name, words[1], words[2])
   .then(function(user){
-    msg.sendPrivateMsg('Moikka ' + user.nick + '! Tunnuksesi luotiin onnistuneesti. Muista, että antamani luvut alkoholista ovat vain arvioita, eikä niihin voi täysin luottaa. Ja eikun juomaan!');
+    deferred.resolve(cmd.privateResponse('Moikka ' + user.nick + '! Tunnuksesi luotiin onnistuneesti. Muista, että antamani luvut alkoholista ovat vain arvioita, eikä niihin voi täysin luottaa. Ja eikun juomaan!'));
   }, function(err){
-    msg.sendPrivateMsg(err);
+    console.log(err);
+    deferred.reject('Isompi ongelma, ota yhteyttä adminiin.');
   });
   return deferred.promise;
 }, '/luotunnus <paino> <mies/nainen>. Esim. /luotunnus 90 mies');
 
 cmd.registerUserCmd('/whoami', cmd.TYPE_PRIVATE, function(msg, words, user){
-  msg.sendPrivateMsg('Käyttäjä ' + user.nick + ', id: ' + user.userId + ', paino: ' + user.weight + ', sukupuoli: ' + user.gender);
+  let deferred = when.defer();
+  deferred.resolve(cmd.privateResponse('Käyttäjä ' + user.nick + ', id: ' + user.userId + ', paino: ' + user.weight + ', sukupuoli: ' + user.gender));
+  return deferred.promise;
 }, '/whoami - tulosta omat tietosi.');
 
 cmd.registerUserCmd('/tolkki', cmd.TYPE_PRIVATE, function(msg, words, user){
@@ -78,6 +81,7 @@ cmd.registerUserCmd('/viina', cmd.TYPE_PRIVATE, function(msg, words, user){
       console.error(err);
       deferred.reject('Isompi ongelma, ota yhteyttä adminiin.');
     });
+  return deferred.promise;
 }, '/viina (prosentti) (määrä litroissa). Esim. /viina 38 0.5. Käytä erottimena pistettä.');
 
 function sumGrams(drinks) {
@@ -123,7 +127,7 @@ cmd.registerUserCmd('/annokset', cmd.TYPE_ALL, function(msg, words, user){
       console.error(err);
       deferred.reject('Isompi ongelma, ota yhteyttä adminiin.');
     });
-    return deferred.promise;
+  return deferred.promise;
 }, '/annokset - listaa kaikki annokset.');
 
 cmd.registerUserCmd('/polttamatta', cmd.TYPE_ALL, function(msg, words, user){
