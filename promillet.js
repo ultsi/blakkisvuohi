@@ -21,6 +21,12 @@ function registerUserCmd(cmdName, cmdType, cmdFunc, cmdHelp) {
     console.log('running user cmd ' + cmdName);
     users.find(msg.from.id)
     .then(function(user){
+      if(!user){
+        console.log('didn\'t find user ' + msg.from.id);
+        msg.sendChatMsg('Moi! Juttele minulle ensiksi privassa ja luo tunnus käyttämällä komentoa /luotunnus');
+        deferred.reject('Not found');
+        return deferred.promise;
+      }
       console.log('Found user: ' + user.nick);
       cmdFunc(msg, words, user)
       .then(function(res){
