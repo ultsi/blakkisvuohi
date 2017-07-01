@@ -18,6 +18,7 @@ const PINTTI = calcAlcoholMilliGrams(0.047, 0.50);
 function registerUserCmd(cmdName, cmdType, cmdFunc, cmdHelp) {
   cmd.register(cmdName, cmdType, function(msg, words){
     var deferred = when.defer();
+    console.log('running user cmd ' + cmdName);
     users.find(msg.from.id)
     .then(function(user){
       console.log('Running command '+ cmdName + ', found user: ' + user.nick);
@@ -25,9 +26,11 @@ function registerUserCmd(cmdName, cmdType, cmdFunc, cmdHelp) {
       .then(function(res){
         deferred.resolve(res);
       }, function(err){
+        console.log(err);
         deferred.reject(err);
       });
     }, function(err){
+      console.log(err);
       deferred.reject(err);
     });
     return deferred.promise;
