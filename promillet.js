@@ -6,7 +6,7 @@ const users = require('./users.js');
 const when = require('when');
 
 const ETANOL_GRAMS_PER_LITRE = 789;
-const LIQUID_PERCENT = {mies: 0.75, nainen: 0.65};
+const LIQUID_PERCENT = {mies: 0.58, nainen: 0.49};
 
 function calcAlcoholMilliGrams(vol_perc, amount) {
   return Math.round(vol_perc * ETANOL_GRAMS_PER_LITRE * amount * 1000);
@@ -98,7 +98,7 @@ function sumGramsUnBurned(user, drinks) {
   let now = Date.now();
   let lastTime = null;
   let hourInMillis = 3600 * 1000;
-  let userBurnRateMilligrams = user.weight / 9.0 * 1000;
+  let userBurnRateMilligrams = user.weight / 10.0 * 1000;
   for(var i in drinks) {
     let drink = drinks[i];
     let drinkTime = Date.parse(drink.created);
@@ -115,6 +115,10 @@ function sumGramsUnBurned(user, drinks) {
   let diffInHours = diff / hourInMillis;
   milligrams -= userBurnRateMilligrams * diffInHours;
   return milligrams > 0 ? milligrams : 0;
+}
+
+function getPermilles(user, grams) {
+  return (0.806 * grams / 12.2) / (LIQUID_PERCENT[user.gender] * user.weight) * 10;
 }
 
 cmd.registerUserCmd('/annokset', cmd.TYPE_ALL, function(msg, words, user){
@@ -156,7 +160,7 @@ cmd.registerUserCmd('/promillet', cmd.TYPE_ALL, function(msg, words, user){
         try {
           let grams = sumGramsUnBurned(user, drinks) / 1000.0;
           let liquid = user.weight * LIQUID_PERCENT[user.gender] * 1000;
-          deferred.resolve(cmd.privateResponse(((grams / liquid*1000).toFixed(2) + '‰')));
+          deferred.resolve(cmd.privateResponse((getPermilles(user, grams).toFixed(2) + '‰')));
         } catch (err) {
           console.error(err);
           deferred.reject('Isompi ongelma, ota yhteyttä adminiin.');
