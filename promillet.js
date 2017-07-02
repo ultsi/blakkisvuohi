@@ -179,8 +179,8 @@ cmd.registerUserCmd('/promillet', cmd.TYPE_ALL, function(msg, words, user){
             let details = drinksByUser[userId];
             let user = users.create(details.userid, details.nick, details.weight, details.gender);
             let userPermilles = alcomath.getPermillesFromDrinks(user, details.drinks);
-            let count12h = drinkCountsByUser12h[details.userid];
-            let count24h = drinkCountsByUser24h[details.userid];
+            let count12h = drinkCountsByUser12h[details.userid].count || 0;
+            let count24h = drinkCountsByUser24h[details.userid].count || 0;
             if(userPermilles > 0){
               permilles.push([user.nick, userPermilles, count12h, count24h]);
             }
