@@ -48,7 +48,10 @@ function drinkBoozeReturnPermilles(user, amount, description, msg){
       for(var i in drinkCountsByGroups){
         let drinkCount = drinkCountsByGroups[i];
         if(drinkCount.count % 10 === 0){
-          msg.sendMsgTo(drinkCount.groupid, user.nick + ' joi juuri ryhmän ' + drinkCount.count + '. juoman!');
+          msg.sendMsgTo(drinkCount.groupid, user.nick + ' joi juuri ryhmän ' + drinkCount.count + '. juoman!')
+            .then(function(){}, function(err){
+              console.error(err);
+            });
         }
       }
     }, function(err){
