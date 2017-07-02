@@ -211,7 +211,7 @@ cmd.registerUserCmd('/promillet', cmd.TYPE_ALL, function(msg, words, user){
     getPermillesTextForGroup(msg.chat.id)
       .then(function(text){
         text = msg.chat.title + ' -kavereiden rippitaso:\n' + text;
-        deferred.resolve(cmd.privateResponse(text));
+        deferred.resolve(cmd.chatResponse(text));
       }, function(err){
         deferred.reject(err);
       });
