@@ -80,7 +80,7 @@ users.drinkBooze = function(user, amount, description) {
   let deferred = when.defer();
   query('insert into users_drinks (userId, alcohol, description) values($1, $2, $3)', [user.userId, amount, description])
   .then(function(){
-    deferred.resolve();
+    deferred.resolve(amount);
   }, function(err){
     console.error(err);
     deferred.reject('Ota adminiin yhteyttä.');
@@ -160,18 +160,18 @@ users.getDrinkCountFor24hForGroup = function(groupId) {
   let deferred = when.defer();
   let oneDayAgo = getOneDayAgo();
   query('select users.userId, users.nick, count(alcohol) as count from users_in_groups left outer join users_drinks on users_drinks.userid=users_in_groups.userid join users on users.userId=users_in_groups.userId where users_in_groups.groupId=$1 and users_drinks.created >= $2 group by users.userId', [groupId, oneDayAgo])
-  .then(function(res){
-    let drinkCounts = res[0];
-    let drinkCountsByUser = {};
-    for(var i in drinkCounts){
-      let drinkCount = drinkCounts[i];
-      drinkCountsByUser[drinkCount.userid] = {userid: drinkCount.userid, nick: drinkCount.nick, count: drinkCount.count};
-    }
-    deferred.resolve(drinkCountsByUser);
-  }, function(err){
-    console.error(err);
-    deferred.reject('Ota adminiin yhteyttä.');
-  });
+    .then(function(res){
+      let drinkCounts = res[0];
+      let drinkCountsByUser = {};
+      for(var i in drinkCounts){
+        let drinkCount = drinkCounts[i];
+        drinkCountsByUser[drinkCount.userid] = {userid: drinkCount.userid, nick: drinkCount.nick, count: drinkCount.count};
+      }
+      deferred.resolve(drinkCountsByUser);
+    }, function(err){
+      console.error(err);
+      deferred.reject('Ota adminiin yhteyttä.');
+    });
   return deferred.promise;
 };
 
@@ -179,18 +179,18 @@ users.getDrinkCountFor12hForGroup = function(groupId) {
   let deferred = when.defer();
   let halfDayAgo = getHalfDayAgo();
   query('select users.userId, users.nick, count(alcohol) as count from users_in_groups left outer join users_drinks on users_drinks.userid=users_in_groups.userid join users on users.userId=users_in_groups.userId where users_in_groups.groupId=$1 and users_drinks.created >= $2 group by users.userId', [groupId, halfDayAgo])
-  .then(function(res){
-    let drinkCounts = res[0];
-    let drinkCountsByUser = {};
-    for(var i in drinkCounts){
-      let drinkCount = drinkCounts[i];
-      drinkCountsByUser[drinkCount.userid] = {userid: drinkCount.userid, nick: drinkCount.nick, count: drinkCount.count};
-    }
-    deferred.resolve(drinkCountsByUser);
-  }, function(err){
-    console.error(err);
-    deferred.reject('Ota adminiin yhteyttä.');
-  });
+    .then(function(res){
+      let drinkCounts = res[0];
+      let drinkCountsByUser = {};
+      for(var i in drinkCounts){
+        let drinkCount = drinkCounts[i];
+        drinkCountsByUser[drinkCount.userid] = {userid: drinkCount.userid, nick: drinkCount.nick, count: drinkCount.count};
+      }
+      deferred.resolve(drinkCountsByUser);
+    }, function(err){
+      console.error(err);
+      deferred.reject('Ota adminiin yhteyttä.');
+    });
   return deferred.promise;
 };
 
@@ -198,13 +198,26 @@ users.getBoozeForGroup = function(groupId) {
   let deferred = when.defer();
   let twoDaysAgo = getTwoDaysAgo();
   query('select users.userId, users.nick, users.weight, users.gender, coalesce(alcohol, 0) as alcohol, description, created from users_in_groups left outer join users_drinks on users_in_groups.userId=users_drinks.userId join users on users.userId=users_in_groups.userId where users_in_groups.groupId=$1 order by created asc',[groupId])
-  .then(function(res){
-    let drinksByUser = groupDrinksByUser(res[0]);
-    deferred.resolve(drinksByUser);
-  }, function(err){
-    console.error(err);
-    deferred.reject('Ota adminiin yhteyttä.');
-  });
+    .then(function(res){
+      let drinksByUser = groupDrinksByUser(res[0]);
+      deferred.resolve(drinksByUser);
+    }, function(err){
+      console.error(err);
+      deferred.reject('Ota adminiin yhteyttä.');
+    });
+  return deferred.promise;
+};
+
+users.getDrinkCountsByGroupsForUser = function(user) {
+  let deferred = when.defer();
+  query('select count(*) as count, groupid from users_drinks join users_in_groups on users_drinks.userid=users_in_groups.userid where groupId IN (select groupId from users_in_groups where userid=$1) group by groupId', [user.userId])
+    .then(function(res){
+      let rows = res[0];
+      deferred.resolve(rows);
+    }, function(err){
+      console.error(err);
+      deferred.reject('Ota adminiin yhteyttä.');
+    });
   return deferred.promise;
 };
 

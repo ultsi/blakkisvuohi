@@ -30,18 +30,39 @@ cmd.registerUserCmd('/whoami', cmd.TYPE_PRIVATE, function(msg, words, user){
   return deferred.promise;
 }, '/whoami - tulosta omat tietosi.');
 
-cmd.registerUserCmd('/kalja033', cmd.TYPE_PRIVATE, function(msg, words, user){
+function drinkBoozeReturnPermilles(user, amount, description, msg){
   let deferred = when.defer();
-  users.drinkBooze(user, alcomath.KALJA033, '/kalja033')
-    .then(function(){
+  when.all([
+    users.drinkBooze(user, amount, description),
+    users.getDrinkCountsByGroupsForUser(user)
+  ]).spread(function(amount, drinkCountsByGroups){
       users.getBooze(user)
       .then(function(drinks){
         let permilles = alcomath.getPermillesFromDrinks(user, drinks);
-        deferred.resolve(cmd.privateResponse(getRandomResponse() + ' ' + permilles.toFixed(2) + '‰'));
-      }, function(err){
+        deferred.resolve(permilles);
+      }, function(err) {
         console.log(err);
-        deferred.resolve(cmd.privateResponse(getRandomResponse()));
+        deferred.reject(err);
       });
+      // do announcements based on drink counts
+      for(var i in drinkCountsByGroups){
+        let drinkCount = drinkCountsByGroups[i];
+        if(drinkCount.count % 10 === 0){
+          msg.sendMsgTo(drinkCount.groupid, user.nick + ' joi juuri ryhmän ' + drinkCount.count + '. juoman!');
+        }
+      }
+    }, function(err){
+      console.error(err);
+      deferred.reject('Isompi ongelma, ota yhteyttä adminiin.');
+    });
+  return deferred.promise;
+}
+
+cmd.registerUserCmd('/kalja033', cmd.TYPE_PRIVATE, function(msg, words, user){
+  let deferred = when.defer();
+  drinkBoozeReturnPermilles(user, alcomath.KALJA033, '/kalja033', msg)
+    .then(function(permilles){
+      deferred.resolve(cmd.privateResponse(getRandomResponse() + ' ' + permilles.toFixed(2) + '‰'));
     }, function(err){
       console.error(err);
       deferred.reject('Isompi ongelma, ota yhteyttä adminiin.');
@@ -51,16 +72,9 @@ cmd.registerUserCmd('/kalja033', cmd.TYPE_PRIVATE, function(msg, words, user){
 
 cmd.registerUserCmd('/kalja05', cmd.TYPE_PRIVATE, function(msg, words, user){
   let deferred = when.defer();
-  users.drinkBooze(user, alcomath.KALJA05, '/kalja05')
-    .then(function(){
-      users.getBooze(user)
-      .then(function(drinks){
-        let permilles = alcomath.getPermillesFromDrinks(user, drinks);
-        deferred.resolve(cmd.privateResponse(getRandomResponse() + ' ' + permilles.toFixed(2) + '‰'));
-      }, function(err){
-        console.log(err);
-        deferred.resolve(cmd.privateResponse(getRandomResponse()));
-      });
+  drinkBoozeReturnPermilles(user, alcomath.KALJA05, '/kalja05', msg)
+    .then(function(permilles){
+      deferred.resolve(cmd.privateResponse(getRandomResponse() + ' ' + permilles.toFixed(2) + '‰'));
     }, function(err){
       console.error(err);
       deferred.reject('Isompi ongelma, ota yhteyttä adminiin.');
@@ -70,16 +84,9 @@ cmd.registerUserCmd('/kalja05', cmd.TYPE_PRIVATE, function(msg, words, user){
 
 cmd.registerUserCmd('/shotti40', cmd.TYPE_PRIVATE, function(msg, words, user){
   let deferred = when.defer();
-  users.drinkBooze(user, alcomath.SHOTTI40, '/shotti40')
-    .then(function(){
-      users.getBooze(user)
-      .then(function(drinks){
-        let permilles = alcomath.getPermillesFromDrinks(user, drinks);
-        deferred.resolve(cmd.privateResponse(getRandomResponse() + ' ' + permilles.toFixed(2) + '‰'));
-      }, function(err){
-        console.log(err);
-        deferred.resolve(cmd.privateResponse(getRandomResponse()));
-      });
+  drinkBoozeReturnPermilles(user, alcomath.SHOTTI40, '/shotti40', msg)
+    .then(function(permilles){
+      deferred.resolve(cmd.privateResponse(getRandomResponse() + ' ' + permilles.toFixed(2) + '‰'));
     }, function(err){
       console.error(err);
       deferred.reject('Isompi ongelma, ota yhteyttä adminiin.');
@@ -102,16 +109,9 @@ cmd.registerUserCmd('/viina', cmd.TYPE_PRIVATE, function(msg, words, user){
   }
 
   let alcoholInMG = alcomath.calcAlcoholMilliGrams(percent, amount);
-  users.drinkBooze(user, alcoholInMG, words.join(' '))
-    .then(function(){
-      users.getBooze(user)
-      .then(function(drinks){
-        let permilles = alcomath.getPermillesFromDrinks(user, drinks);
-        deferred.resolve(cmd.privateResponse(getRandomResponse() + ' ' + permilles.toFixed(2) + '‰'));
-      }, function(err){
-        console.log(err);
-        deferred.resolve(cmd.privateResponse(getRandomResponse()));
-      });
+  drinkBoozeReturnPermilles(user, alcoholInMG, words.join(' '), msg)
+    .then(function(permilles){
+      deferred.resolve(cmd.privateResponse(getRandomResponse() + ' ' + permilles.toFixed(2) + '‰'));
     }, function(err){
       console.error(err);
       deferred.reject('Isompi ongelma, ota yhteyttä adminiin.');
