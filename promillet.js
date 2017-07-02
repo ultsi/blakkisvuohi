@@ -82,7 +82,7 @@ function drinkBoozeReturnPermilles(user, amount, description, msg){
         if(drinkCount.count % 10 === 0){
           getPermillesTextForGroup(drinkCount.groupid)
             .then(function(text){
-              msg.sendMsgTo(drinkCount.groupid, user.nick + ' joi juuri ryhmän ' + drinkCount.count + '. juoman!\nRippiä:\n'+text)
+              msg.sendMsgTo(drinkCount.groupid, user.nick + ' joi juuri ryhmän ' + drinkCount.count + '. juoman!\n\nRippiä:\n'+text)
                 .then(function(){}, function(err){
                   console.error(err);
                 });
