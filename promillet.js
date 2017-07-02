@@ -30,6 +30,38 @@ cmd.registerUserCmd('/whoami', cmd.TYPE_PRIVATE, function(msg, words, user){
   return deferred.promise;
 }, '/whoami - tulosta omat tietosi.');
 
+function getPermillesTextForGroup(groupId){
+  let deferred = when.defer();
+  when.all([
+    users.getBoozeForGroup(groupId),
+    users.getDrinkCountFor12hForGroup(groupId),
+    users.getDrinkCountFor24hForGroup(groupId)
+  ]).spread(function(drinksByUser, drinkCountsByUser12h, drinkCountsByUser24h){
+      try {
+        let permilles = [];
+        for(var userId in drinksByUser){
+          let details = drinksByUser[userId];
+          let user = users.create(details.userid, details.nick, details.weight, details.gender);
+          let userPermilles = alcomath.getPermillesFromDrinks(user, details.drinks);
+          if(userPermilles > 0){
+            let count12h = drinkCountsByUser12h[details.userid].count || 0;
+            let count24h = drinkCountsByUser24h[details.userid].count || 0;
+            permilles.push([user.nick, userPermilles, count12h, count24h]);
+          }
+        }
+        permilles = permilles.sort(function(a,b){return b[1]-a[1];}).map(user => user[0] + '... ' + user[1].toFixed(2) + '‰ ('+user[2]+'/'+user[3]+')');
+        deferred.resolve('Käyttäjä...‰ (juomia (kpl) 12h/24h)\n\n' + permilles.join('\n'));
+      } catch (err) {
+        console.error(err);
+        deferred.reject('Isompi ongelma, ota yhteyttä adminiin.');
+      }
+  }, function(err) {
+    console.error(err);
+    deferred.reject('Isompi ongelma, ota yhteyttä adminiin.');
+  });
+  return deferred.promise;
+}
+
 function drinkBoozeReturnPermilles(user, amount, description, msg){
   let deferred = when.defer();
   when.all([
@@ -48,8 +80,13 @@ function drinkBoozeReturnPermilles(user, amount, description, msg){
       for(var i in drinkCountsByGroups){
         let drinkCount = drinkCountsByGroups[i];
         if(drinkCount.count % 10 === 0){
-          msg.sendMsgTo(drinkCount.groupid, user.nick + ' joi juuri ryhmän ' + drinkCount.count + '. juoman!')
-            .then(function(){}, function(err){
+          getPermillesTextForGroup(drinkCount.groupid)
+            .then(function(text){
+              msg.sendMsgTo(drinkCount.groupid, user.nick + ' joi juuri ryhmän ' + drinkCount.count + '. juoman!\nRippiä:\n'+text)
+                .then(function(){}, function(err){
+                  console.error(err);
+                });
+            }, function(err){
               console.error(err);
             });
         }
@@ -171,33 +208,13 @@ cmd.registerUserCmd('/promillet', cmd.TYPE_ALL, function(msg, words, user){
         deferred.reject('Isompi ongelma, ota yhteyttä adminiin.');
       });
   } else {
-    when.all([
-      users.getBoozeForGroup(msg.chat.id),
-      users.getDrinkCountFor12hForGroup(msg.chat.id),
-      users.getDrinkCountFor24hForGroup(msg.chat.id)
-    ]).spread(function(drinksByUser, drinkCountsByUser12h, drinkCountsByUser24h){
-        try {
-          let permilles = [];
-          for(var userId in drinksByUser){
-            let details = drinksByUser[userId];
-            let user = users.create(details.userid, details.nick, details.weight, details.gender);
-            let userPermilles = alcomath.getPermillesFromDrinks(user, details.drinks);
-            if(userPermilles > 0){
-              let count12h = drinkCountsByUser12h[details.userid].count || 0;
-              let count24h = drinkCountsByUser24h[details.userid].count || 0;
-              permilles.push([user.nick, userPermilles, count12h, count24h]);
-            }
-          }
-          permilles = permilles.sort(function(a,b){return b[1]-a[1];}).map(user => user[0] + '... ' + user[1].toFixed(2) + '‰ ('+user[2]+'/'+user[3]+')');
-          deferred.resolve(cmd.chatResponse(msg.chat.title + ' -kavereiden rippitaso:\nKäyttäjä...‰ (juomia (kpl) 12h/24h)\n\n' + permilles.join('\n')));
-        } catch (err) {
-          console.error(err);
-          deferred.reject('Isompi ongelma, ota yhteyttä adminiin.');
-        }
-    }, function(err) {
-      console.error(err);
-      deferred.reject('Isompi ongelma, ota yhteyttä adminiin.');
-    });
+    getPermillesTextForGroup(msg.chat.id)
+      .then(function(text){
+        text = msg.chat.title + ' -kavereiden rippitaso:\n' + text;
+        deferred.resolve(cmd.privateResponse(text));
+      }, function(err){
+        deferred.reject(err);
+      });
   }
   return deferred.promise;
 }, '/promillet - listaa kuinka paljon promilleja sinulla tai chatissa olevilla suunnilleen on.');
