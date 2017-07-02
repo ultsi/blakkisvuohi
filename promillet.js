@@ -37,7 +37,7 @@ cmd.registerUserCmd('/kalja033', cmd.TYPE_PRIVATE, function(msg, words, user){
       users.getBooze(user)
       .then(function(drinks){
         let permilles = alcomath.getPermillesFromDrinks(user, drinks);
-        deferred.resolve(cmd.privateResponse(getRandomResponse()) + ' ' + permilles.toFixed(2) + '‰');
+        deferred.resolve(cmd.privateResponse(getRandomResponse() + ' ' + permilles.toFixed(2) + '‰'));
       }, function(err){
         console.log(err);
         deferred.resolve(cmd.privateResponse(getRandomResponse()));
@@ -56,7 +56,7 @@ cmd.registerUserCmd('/kalja05', cmd.TYPE_PRIVATE, function(msg, words, user){
       users.getBooze(user)
       .then(function(drinks){
         let permilles = alcomath.getPermillesFromDrinks(user, drinks);
-        deferred.resolve(cmd.privateResponse(getRandomResponse()) + ' ' + permilles.toFixed(2) + '‰');
+        deferred.resolve(cmd.privateResponse(getRandomResponse() + ' ' + permilles.toFixed(2) + '‰'));
       }, function(err){
         console.log(err);
         deferred.resolve(cmd.privateResponse(getRandomResponse()));
@@ -75,7 +75,7 @@ cmd.registerUserCmd('/shotti40', cmd.TYPE_PRIVATE, function(msg, words, user){
       users.getBooze(user)
       .then(function(drinks){
         let permilles = alcomath.getPermillesFromDrinks(user, drinks);
-        deferred.resolve(cmd.privateResponse(getRandomResponse()) + ' ' + permilles.toFixed(2) + '‰');
+        deferred.resolve(cmd.privateResponse(getRandomResponse() + ' ' + permilles.toFixed(2) + '‰'));
       }, function(err){
         console.log(err);
         deferred.resolve(cmd.privateResponse(getRandomResponse()));
@@ -107,7 +107,7 @@ cmd.registerUserCmd('/viina', cmd.TYPE_PRIVATE, function(msg, words, user){
       users.getBooze(user)
       .then(function(drinks){
         let permilles = alcomath.getPermillesFromDrinks(user, drinks);
-        deferred.resolve(cmd.privateResponse(getRandomResponse()) + ' ' + permilles.toFixed(2) + '‰');
+        deferred.resolve(cmd.privateResponse(getRandomResponse() + ' ' + permilles.toFixed(2) + '‰'));
       }, function(err){
         console.log(err);
         deferred.resolve(cmd.privateResponse(getRandomResponse()));
