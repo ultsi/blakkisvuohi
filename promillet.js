@@ -44,8 +44,8 @@ function getPermillesTextForGroup(groupId){
           let user = users.create(details.userid, details.nick, details.weight, details.gender);
           let userPermilles = alcomath.getPermillesFromDrinks(user, details.drinks);
           if(userPermilles > 0){
-            let count12h = drinkCountsByUser12h[details.userid].count || 0;
-            let count24h = drinkCountsByUser24h[details.userid].count || 0;
+            let count12h = drinkCountsByUser12h[details.userid] && drinkCountsByUser12h[details.userid].count || 0;
+            let count24h = drinkCountsByUser24h[details.userid] && drinkCountsByUser24h[details.userid].count || 0;
             permilles.push([user.nick, userPermilles, count12h, count24h]);
           }
         }
