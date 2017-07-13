@@ -185,26 +185,6 @@ cmd.registerUserCmd('/annokset', cmd.TYPE_ALL, function(msg, words, user){
   return deferred.promise;
 }, '/annokset - listaa kaikki annokset.');
 
-cmd.registerUserCmd('/polttamatta', cmd.TYPE_ALL, function(msg, words, user){
-  let deferred = when.defer();
-  users.getBooze(user)
-  .then(function(drinks){
-    try {
-      let grams = alcomath.sumGramsUnBurned(user, drinks);
-      let burnRate = alcomath.getUserBurnRate(user);
-      let hours = grams / burnRate;
-      deferred.resolve(cmd.privateResponse('Sinussa on jäljellä ' + grams.toFixed(2) + ' grammaa alkoholia, joka vastaa ' + (grams / 12.2).toFixed(2) + ' annosta. Olet selvinpäin ' + hours.toFixed(2) + ' tunnin päästä.'));
-    } catch (err) {
-      console.error(err);
-      deferred.reject('Isompi ongelma, ota yhteyttä adminiin.');
-    }
-  }, function(err){
-    console.error(err);
-    deferred.reject('Isompi ongelma, ota yhteyttä adminiin.');
-  });
-  return deferred.promise;
-}, '/polttamatta - listaa kuinka paljon alkoholia sinulla on polttamatta ja milloin olet selvinpäin.');
-
 cmd.registerUserCmd('/promillet', cmd.TYPE_ALL, function(msg, words, user){
   let deferred = when.defer();
   if(msg.chat.type === 'private'){
@@ -212,7 +192,12 @@ cmd.registerUserCmd('/promillet', cmd.TYPE_ALL, function(msg, words, user){
       .then(function(drinks){
         try {
           let permilles = alcomath.getPermillesFromDrinks(user, drinks);
-          deferred.resolve(cmd.privateResponse(permilles.toFixed(2) + '‰'));
+          let grams = alcomath.sumGramsUnBurned(user, drinks);
+          let burnRate = alcomath.getUserBurnRate(user);
+          let time = grams / burnRate;
+          let hours = Math.floor(time);
+          let minutes = Math.ceil((time - hours) * 60);
+          deferred.resolve(cmd.privateResponse('Olet '+ permilles.toFixed(2) + '‰ humalassa. Veressäsi on ' + grams.toFixed(2) + ' grammaa alkoholia, joka vastaa ' + (grams / 12.2).toFixed(2) + ' annosta. Olet selvinpäin ' + hours + ':'+minutes+' päästä.'));
         } catch (err) {
           console.error(err);
           deferred.reject('Isompi ongelma, ota yhteyttä adminiin.');
