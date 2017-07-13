@@ -7,14 +7,14 @@ create table if not exists users (
 );
 
 create table if not exists groups (
-  groupId int not null,
+  groupId bigint not null,
   title text not null,
   primary key (groupId)
 );
 
 create table if not exists users_in_groups (
   userId int not null,
-  groupId int not null,
+  groupId bigint not null,
   primary key (userId, groupId)
 );
 

@@ -134,6 +134,18 @@ cmd.registerUserCmd('/shotti40', cmd.TYPE_PRIVATE, function(msg, words, user){
   return deferred.promise;
 }, '/shotti40 - juo yksi shotti 40% viinaa');
 
+cmd.registerUserCmd('/nelonen', cmd.TYPE_PRIVATE, function(msg, words, user){
+  let deferred = when.defer();
+  drinkBoozeReturnPermilles(user, alcomath.NELONEN, '/nelonen', msg)
+    .then(function(permilles){
+      deferred.resolve(cmd.privateResponse(getRandomResponse() + ' ' + permilles.toFixed(2) + '‰'));
+    }, function(err){
+      console.error(err);
+      deferred.reject('Isompi ongelma, ota yhteyttä adminiin.');
+    });
+  return deferred.promise;
+}, '/nelonen - juo yksi 0.33l tölkki nelosta (5.5% lonkero tai olut tai siideri tai joku prkl)');
+
 cmd.registerUserCmd('/viina', cmd.TYPE_PRIVATE, function(msg, words, user){
   let deferred = when.defer();
   if(words.length < 3){

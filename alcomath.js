@@ -11,6 +11,7 @@ alcomath.calcAlcoholMilliGrams = function(vol_perc, amount) {
 };
 
 alcomath.KALJA033 = alcomath.calcAlcoholMilliGrams(0.047, 0.33);
+alcomath.NELONEN = alcomath.calcAlcoholMilliGrams(0.055, 0.33);
 alcomath.KALJA05 = alcomath.calcAlcoholMilliGrams(0.047, 0.50);
 alcomath.SHOTTI40 = alcomath.calcAlcoholMilliGrams(0.4, 0.04);
 

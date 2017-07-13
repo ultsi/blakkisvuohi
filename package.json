@@ -11,6 +11,9 @@
     "set_env_win": "env.cmd",
     "switch_to_dev": "export $(cat .env | xargs) && wget --spider https://api.telegram.org/bot$TOKEN/setWebhook?url= --delete-after && node index.js"
   },
+  "engines": {
+    "node": "6.11.1"
+  },
   "author": "Volodymyr Lut",
   "license": "ISC",
   "dependencies": {
