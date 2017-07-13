@@ -196,8 +196,8 @@ cmd.registerUserCmd('/promillet', cmd.TYPE_ALL, function(msg, words, user){
           let burnRate = alcomath.getUserBurnRate(user);
           let time = grams / burnRate;
           let hours = Math.floor(time);
-          let minutes = Math.ceil((time - hours) * 60);
-          deferred.resolve(cmd.privateResponse('Olet '+ permilles.toFixed(2) + '‰ humalassa. Veressäsi on ' + grams.toFixed(2) + ' grammaa alkoholia, joka vastaa ' + (grams / 12.2).toFixed(2) + ' annosta. Olet selvinpäin ' + hours + ':'+minutes+' päästä.'));
+          let minutes = ('0' + Math.ceil((time - hours) * 60)).slice(-2);
+          deferred.resolve(cmd.privateResponse('Olet '+ permilles.toFixed(2) + '‰ humalassa. Veressäsi on ' + grams.toFixed(2) + ' grammaa alkoholia, joka vastaa ' + (grams / 12.2).toFixed(2) + ' annosta. Olet selvinpäin ' + hours + 'h'+minutes+'min päästä.'));
         } catch (err) {
           console.error(err);
           deferred.reject('Isompi ongelma, ota yhteyttä adminiin.');
