@@ -191,7 +191,9 @@ cmd.registerUserCmd('/polttamatta', cmd.TYPE_ALL, function(msg, words, user){
   .then(function(drinks){
     try {
       let grams = alcomath.sumGramsUnBurned(user, drinks);
-      deferred.resolve(cmd.privateResponse('Sinussa on jäljellä ' + grams.toFixed(2) + ' grammaa alkoholia, joka vastaa ' + (grams / 12.2).toFixed(2) + ' annosta.'));
+      let burnRate = alcomath.getUserBurnRate(user);
+      let hours = grams / burnRate;
+      deferred.resolve(cmd.privateResponse('Sinussa on jäljellä ' + grams.toFixed(2) + ' grammaa alkoholia, joka vastaa ' + (grams / 12.2).toFixed(2) + ' annosta. Olet selvinpäin ' + hours.toFixed(2) + ' tunnin päästä.'));
     } catch (err) {
       console.error(err);
       deferred.reject('Isompi ongelma, ota yhteyttä adminiin.');
@@ -201,7 +203,7 @@ cmd.registerUserCmd('/polttamatta', cmd.TYPE_ALL, function(msg, words, user){
     deferred.reject('Isompi ongelma, ota yhteyttä adminiin.');
   });
   return deferred.promise;
-}, '/polttamatta - listaa kuinka paljon alkoholia sinulla on polttamatta.');
+}, '/polttamatta - listaa kuinka paljon alkoholia sinulla on polttamatta ja milloin olet selvinpäin.');
 
 cmd.registerUserCmd('/promillet', cmd.TYPE_ALL, function(msg, words, user){
   let deferred = when.defer();
@@ -242,7 +244,7 @@ function makeDrinksString(drinks) {
       day = drinkShortDate;
       list.push(day);
     }
-    list.push(drink.description + ' ' + drinkTime.getHours() + ':' + drinkTime.getMinutes());
+    list.push(drinkTime.getHours() + ':' + drinkTime.getMinutes() + ' ' + drink.description);
   }
   return list.join('\n');
 }
