@@ -79,7 +79,7 @@ function drinkBoozeReturnPermilles(user, amount, description, msg){
       // do announcements based on drink counts
       for(var i in drinkCountsByGroups){
         let drinkCount = drinkCountsByGroups[i];
-        if(drinkCount.count % 25 === 0){
+        if(drinkCount.count % 100 === 0){
           getPermillesTextForGroup(drinkCount.groupid)
             .then(function(text){
               msg.sendMsgTo(drinkCount.groupid, user.nick + ' joi juuri ryhmän ' + drinkCount.count + '. juoman!\n\nRippiä:\n'+text)
