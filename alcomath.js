@@ -30,7 +30,7 @@ alcomath.sumGrams = function(drinks) {
 };
 
 alcomath.getUserBurnRate = function(user) {
-  return user.weight / 10.0;
+  return user.weight / 9.0;
 };
 
 alcomath.sumGramsUnBurned = function(user, drinks) {
