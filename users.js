@@ -184,7 +184,7 @@ users.getDrinkSumFor12hForGroup = function(groupId) {
       let drinkSumsByUser = {};
       for(var i in drinkSums){
         let drinkSum = drinkSums[i];
-        drinkSumsByUser[drinkSum.userid] = {userid: drinkSum.userid, nick: drinkSum.nick, count: drinkSum.sum};
+        drinkSumsByUser[drinkSum.userid] = {userid: drinkSum.userid, nick: drinkSum.nick, sum: drinkSum.sum};
       }
       deferred.resolve(drinkSumsByUser);
     }, function(err){
