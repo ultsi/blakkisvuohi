@@ -51,7 +51,8 @@ cmd.registerUserCmd = function register(cmdName, cmdType, cmdFunc, cmdHelp) {
   cmds[cmdName] = {
     type: cmdType,
     func: func,
-    help: cmdHelp
+    help: cmdHelp,
+    state: {}
   };
   console.log('Added user command ' + cmdName + ' : (' + cmdType + ')');
 };
