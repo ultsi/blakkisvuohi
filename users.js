@@ -156,18 +156,18 @@ function groupDrinksByUser(drinks) {
   return drinksByUser;
 }
 
-users.getDrinkCountFor24hForGroup = function(groupId) {
+users.getDrinkSumFor24hForGroup = function(groupId) {
   let deferred = when.defer();
   let oneDayAgo = getOneDayAgo();
-  query('select users.userId, users.nick, count(alcohol) as count from users_in_groups left outer join users_drinks on users_drinks.userid=users_in_groups.userid join users on users.userId=users_in_groups.userId where users_in_groups.groupId=$1 and users_drinks.created >= $2 group by users.userId', [groupId, oneDayAgo])
+  query('select users.userId, users.nick, sum(alcohol) as sum from users_in_groups left outer join users_drinks on users_drinks.userid=users_in_groups.userid join users on users.userId=users_in_groups.userId where users_in_groups.groupId=$1 and users_drinks.created >= $2 group by users.userId', [groupId, oneDayAgo])
     .then(function(res){
-      let drinkCounts = res[0];
-      let drinkCountsByUser = {};
-      for(var i in drinkCounts){
-        let drinkCount = drinkCounts[i];
-        drinkCountsByUser[drinkCount.userid] = {userid: drinkCount.userid, nick: drinkCount.nick, count: drinkCount.count};
+      let drinkSums = res[0];
+      let drinkSumsByUser = {};
+      for(var i in drinkSums){
+        let drinkSum = drinkSums[i];
+        drinkSumsByUser[drinkSum.userid] = {userid: drinkSum.userid, nick: drinkSum.nick, sum: drinkSum.sum};
       }
-      deferred.resolve(drinkCountsByUser);
+      deferred.resolve(drinkSumsByUser);
     }, function(err){
       console.error(err);
       deferred.reject('Ota adminiin yhteyttä.');
@@ -175,18 +175,18 @@ users.getDrinkCountFor24hForGroup = function(groupId) {
   return deferred.promise;
 };
 
-users.getDrinkCountFor12hForGroup = function(groupId) {
+users.getDrinkSumFor12hForGroup = function(groupId) {
   let deferred = when.defer();
   let halfDayAgo = getHalfDayAgo();
-  query('select users.userId, users.nick, count(alcohol) as count from users_in_groups left outer join users_drinks on users_drinks.userid=users_in_groups.userid join users on users.userId=users_in_groups.userId where users_in_groups.groupId=$1 and users_drinks.created >= $2 group by users.userId', [groupId, halfDayAgo])
+  query('select users.userId, users.nick, sum(alcohol) as sum from users_in_groups left outer join users_drinks on users_drinks.userid=users_in_groups.userid join users on users.userId=users_in_groups.userId where users_in_groups.groupId=$1 and users_drinks.created >= $2 group by users.userId', [groupId, halfDayAgo])
     .then(function(res){
-      let drinkCounts = res[0];
-      let drinkCountsByUser = {};
-      for(var i in drinkCounts){
-        let drinkCount = drinkCounts[i];
-        drinkCountsByUser[drinkCount.userid] = {userid: drinkCount.userid, nick: drinkCount.nick, count: drinkCount.count};
+      let drinkSums = res[0];
+      let drinkSumsByUser = {};
+      for(var i in drinkSums){
+        let drinkSum = drinkSums[i];
+        drinkSumsByUser[drinkSum.userid] = {userid: drinkSum.userid, nick: drinkSum.nick, count: drinkSum.sum};
       }
-      deferred.resolve(drinkCountsByUser);
+      deferred.resolve(drinkSumsByUser);
     }, function(err){
       console.error(err);
       deferred.reject('Ota adminiin yhteyttä.');

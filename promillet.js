@@ -34,9 +34,9 @@ function getPermillesTextForGroup(groupId){
   let deferred = when.defer();
   when.all([
     users.getBoozeForGroup(groupId),
-    users.getDrinkCountFor12hForGroup(groupId),
-    users.getDrinkCountFor24hForGroup(groupId)
-  ]).spread(function(drinksByUser, drinkCountsByUser12h, drinkCountsByUser24h){
+    users.getDrinkSumFor12hForGroup(groupId),
+    users.getDrinkSumFor24hForGroup(groupId)
+  ]).spread(function(drinksByUser, drinkSumsByUser12h, drinkSumsByUser24h){
       try {
         let permilles = [];
         for(var userId in drinksByUser){
@@ -44,13 +44,13 @@ function getPermillesTextForGroup(groupId){
           let user = users.create(details.userid, details.nick, details.weight, details.gender);
           let userPermilles = alcomath.getPermillesFromDrinks(user, details.drinks);
           if(userPermilles > 0){
-            let count12h = drinkCountsByUser12h[details.userid] && drinkCountsByUser12h[details.userid].count || 0;
-            let count24h = drinkCountsByUser24h[details.userid] && drinkCountsByUser24h[details.userid].count || 0;
-            permilles.push([user.nick, userPermilles, count12h, count24h]);
+            let sum12h = drinkSumsByUser12h[details.userid] && drinkSumsByUser12h[details.userid].sum || 0;
+            let sum24h = drinkSumsByUser24h[details.userid] && drinkSumsByUser24h[details.userid].sum || 0;
+            permilles.push([user.nick, userPermilles, sum12h / alcomath.KALJA033, sum24h / alcomath.KALJA033]);
           }
         }
-        permilles = permilles.sort(function(a,b){return b[1]-a[1];}).map(user => user[0] + '... ' + user[1].toFixed(2) + '‰ ('+user[2]+'/'+user[3]+')');
-        deferred.resolve('Käyttäjä...‰ (juomia (kpl) 12h/24h)\n\n' + permilles.join('\n'));
+        permilles = permilles.sort(function(a,b){return b[1]-a[1];}).map(user => user[0] + '... ' + user[1].toFixed(2) + '‰ ('+user[2].tofixed(2)+'/'+user[3].toFixed(2)+')');
+        deferred.resolve('Käyttäjä...‰ (annoksia 12h/24h)\n\n' + permilles.join('\n'));
       } catch (err) {
         console.error(err);
         deferred.reject('Isompi ongelma, ota yhteyttä adminiin.');
