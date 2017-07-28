@@ -49,7 +49,7 @@ function getPermillesTextForGroup(groupId){
             permilles.push([user.nick, userPermilles, sum12h / alcomath.KALJA033, sum24h / alcomath.KALJA033]);
           }
         }
-        permilles = permilles.sort(function(a,b){return b[1]-a[1];}).map(user => user[0] + '... ' + user[1].toFixed(2) + '‰ ('+user[2].toFixed(2)+'/'+user[3].toFixed(2)+')');
+        permilles = permilles.sort(function(a,b){return b[1]-a[1];}).map(user => user[0] + '... ' + user[1].toFixed(2) + '‰ ('+user[2].toFixed(1)+'/'+user[3].toFixed(1)+')');
         deferred.resolve('Käyttäjä...‰ (annoksia 12h/24h)\n\n' + permilles.join('\n'));
       } catch (err) {
         console.error(err);
