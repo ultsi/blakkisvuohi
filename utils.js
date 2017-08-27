@@ -61,7 +61,7 @@ utils.attachMethods = function attachMethods(msg) {
   msg.userToString = createUserToStringFunction(msg);
 };
 
-utils.isValidNumber = function(num){
+utils.isValidInt = function(num){
   return !!parseInt(num, 10);
 };
 

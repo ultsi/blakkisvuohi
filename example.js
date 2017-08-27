@@ -29,7 +29,7 @@ let viinaPhase2 = function(context, msg, words) {
 
 let viinaPhase3 = function(context, msg, words) {
   let centiliters = parseInt(words[0]);
-  if(!utils.isValidNumber(centiliters)){
+  if(!utils.isValidInt(centiliters)){
     return context.privateReply('Kirjoita määrä senttilitroissa numerona.');
   } else if(centiliters < 1) {
     return context.privateReply('Alle 1 senttilitraa on liian vähän.');

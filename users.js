@@ -26,13 +26,13 @@ users.new = function(userId, nick, weight, gender) {
   let deferred = when.defer();
   let params = [parseInt(userId, 10), nick, parseInt(weight, 10), gender];
   let err = [];
-  if(!utils.isValidNumber(params[0])){
+  if(!utils.isValidInt(params[0])){
     err.push('userid');
   }
   if(nick.length < 1){
     err.push('nick');
   }
-  if(!utils.isValidNumber(params[2]) && params[2] >= 40 && params[2] <= 200){
+  if(!utils.isValidInt(params[2]) && params[2] >= 40 && params[2] <= 200){
     err.push('weight');
   }
   if(!isValidGender(gender.toLowerCase())){
