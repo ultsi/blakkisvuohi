@@ -36,7 +36,7 @@ function signupPhase2(context, msg, words) {
     return context.privateReply('Paino ei ole kokonaisluku');
   }
 
-  let weight = parseInt(words[1], 10);
+  let weight = parseInt(words[0], 10);
   if(weight < 30 || weight > 200){
     return context.privateReply('Painon ala- ja ylärajat ovat 30kg ja 200kg.')
   }

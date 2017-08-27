@@ -18,7 +18,11 @@ contexts.Context = function(cmd, msg){
 contexts.Context.prototype.privateReply = function(text) {
   let deferred = when.defer();
   let self = this;
-  global.bot.sendMessage(self.msg.from.id, text)
+  let options = {
+    "parse_mode": "Markdown",
+    "reply_to_message_id": this.msg.message_id
+  };
+  global.bot.sendMessage(self.msg.from.id, text, options)
   .then(function () {
     console.log('Sent ' + text + ' to ' + self.msg.from.username);
     deferred.resolve();
@@ -29,16 +33,17 @@ contexts.Context.prototype.privateReply = function(text) {
   return deferred.promise;
 };
 
-contexts.Context.prototype.privateReplyWithKeyboard = function(text, options) {
+contexts.Context.prototype.privateReplyWithKeyboard = function(text, keyboardButtons) {
   let deferred = when.defer();
   let self = this;
-  var option = {
+  let options = {
     "parse_mode": "Markdown",
     "reply_markup": {
-      "keyboard": options,
+      "keyboard": keyboardButtons,
       "resize_keyboard": true,
       "one_time_keyboard": true
-    }
+    },
+    "reply_to_message_id": this.msg.message_id
   };
   global.bot.sendMessage(self.msg.from.id, text, options)
   .then(function () {
