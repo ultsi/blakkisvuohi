@@ -2,6 +2,9 @@
 /*
   Example of phased cmds
 */
+'use strict';
+const Commands = require('./cmd.js');
+const utils = require('./utils.js');
 
 // First phase, just tell what to do
 let viinaPhase1 = function(context, msg, words) {
@@ -42,4 +45,4 @@ let viinaPhase3 = function(context, msg, words) {
   return context.privateReply('Onnistui. Joit ' + centilites + 'cl ' + vol + '% viinaa.');
 };
 
-cmd.registerUserCommand('/viina', 'Kellota viinaa prosenttien ja määrän mukaan.', cmd.TYPE_PRIVATE, [viinaPhase1, viinaPhase2, viinaPhase3]);
+Commands.registerUserCommand('/viina', 'Kellota viinaa prosenttien ja määrän mukaan.', cmd.TYPE_PRIVATE, [viinaPhase1, viinaPhase2, viinaPhase3]);
