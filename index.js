@@ -4,7 +4,8 @@ const TOKEN = process.env.TOKEN;
 const Bot = require('node-telegram-bot-api');
 const cmd = require('./cmd.js');
 const users = require('./users.js');
-const promillet = require('./promillet.js');
+//const promillet = require('./promillet.js');
+const example = require('./example.js');
 
 const botOptions = {
   webHook: {

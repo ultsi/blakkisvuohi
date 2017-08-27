@@ -65,4 +65,8 @@ utils.isValidNumber = function(num){
   return parseInt(num, 10) !== 'NaN';
 };
 
+utils.isValidFloat = function(num){
+  return parseFloat(num) !== 'NaN';
+};
+
 module.exports = utils;
