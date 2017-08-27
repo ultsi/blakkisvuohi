@@ -95,12 +95,17 @@ Commands.call = function call(firstWord, msg, words) {
     }
   } else {
     const context = retrieveContext(userId, msg);
-    if(!context.isPrivateChat()){
-      // don't spam chats if not a command this bot recognizes
-      return;
+    try {
+      if(!context.isPrivateChat()){
+        // don't spam chats if not a command this bot recognizes
+        return;
+      }
+      const cmd = context.cmd;
+      return callCommandFunction(context, cmd, msg, words);
+    } catch (err) {
+      console.log('Couldn\'t execute cmd "'+firstWord+'"! ' + err);
+      return msg.sendChatMsg('Virhe! Komennon käyttö: ' + cmd.help);
     }
-    const cmd = context.cmd;
-    return callCommandFunction(context, cmd, msg, words);
   }
 };
 
