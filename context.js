@@ -34,7 +34,7 @@ contexts.Context.prototype.privateReplyWithKeyboard = function(text, options) {
   let self = this;
   var option = {
     "parse_mode": "Markdown",
-    "reply_markup": { "keyboard": [options] }
+    "reply_markup": { "keyboard": options }
   };
   global.bot.sendMessage(self.msg.from.id, text, options)
   .then(function () {
