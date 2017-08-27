@@ -69,3 +69,5 @@ contexts.Context.prototype.reset = function() {
 contexts.Context.prototype.isPrivateChat = function() {
   return this.msg.chat.type === 'private';
 };
+
+module.exports = contexts;
