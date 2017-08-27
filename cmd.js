@@ -99,6 +99,7 @@ Commands.call = function call(firstWord, msg, words) {
       // don't spam chats if not a command this bot recognizes
       return;
     }
+    const cmd = context.cmd;
     return callCommandFunction(context, cmd, msg, words);
   }
 };
