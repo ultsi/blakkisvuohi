@@ -34,25 +34,53 @@ Commands.registerUserCommand = function(cmdName, cmdHelp, cmdType, cmdFunctions)
   console.log('Added command ' + cmdName + ' : (' + cmdType + ') with ' + cmdFunctions.length + ' phases.');
 };
 
-function getContext(userId, cmd, msg) {
-  let earlierContext = userContexts[userId];
-  if(earlierContext && earlierContext.cmd.name === cmd.name){
-    earlierContext.msg = msg; // Update msg object to current one
-    return earlierContext;
-  } else {
-    let context = new contexts.Context(msg, cmd);
-    userContexts[userId] = context;
-    return context;
-  }
+function initContext(userId, cmd, msg) {
+  let context = new contexts.Context(msg, cmd);
+  userContexts[userId] = context;
+  return context;
 }
 
-Commands.call = function call(cmdName, msg, words) {
-  utils.attachMethods(msg);
-  if(cmds[cmdName]){
-    const cmd = cmds[cmdName];
+function retrieveContext(userId, msg) {
+  let earlierContext = userContexts[userId];
+  earlierContext.msg = msg; // Update msg object to current one
+  return earlierContext;
+}
 
-    // get context for command
-    const context = getContext(msg.from.id, cmd, msg);
+function callCommandFunction(context, cmd, msg) {
+  const phaseFunc = cmd.funcs[context.phase];
+
+  return phaseFunc(context, msg, words)
+    .then(function(res){
+      console.log('Phase ' + context.phase + ' of cmd ' + firstWord + ' executed perfectly.');
+    }, function(err){
+      console.error('Couldn\'t execute cmd "'+firstWord+'" phase ' + context.phase +'! ' + err);
+      return msg.sendPrivateMsg('Virhe: ' + err + ' Komennon käyttö: ' + cmd.help);
+    });
+}
+
+function printHelp(msg) {
+  let cmdstr = 'Komennot:\n';
+  for(var i in cmds){
+    cmdstr += cmds[i].help + '\n';
+  }
+  return msg.sendPrivateMsg(cmdstr);
+}
+
+Commands.call = function call(firstWord, msg, words) {
+  utils.attachMethods(msg);
+  const userId = msg.from.id;
+
+  // Print command list
+  if(firstWord === '/komennot' || firstWord === '/start' || firstWord === '/help') {
+    return printHelp(msg);
+  }
+
+  if(cmds[firstWord]){
+    const cmd = cmds[firstWord];
+
+    // init context for command. Command context is always reinitialised
+    // when calling just the command
+    const context = initContext(userId, cmd, msg);
 
     try {
       console.log(cmd);
@@ -60,25 +88,18 @@ Commands.call = function call(cmdName, msg, words) {
         return context.privateReply('Käytä komentoa vain minun kanssa!');
       }
 
-      const phaseFunc = cmd.funcs[context.phase];
-
-      phaseFunc(context, msg, words)
-        .then(function(res){
-          console.log('Phase ' + context.phase + ' of cmd ' + cmdName + ' executed perfectly.');
-        }, function(err){
-          console.error('Couldn\'t execute cmd "'+cmdName+'" phase ' + context.phase +'! ' + err);
-          return msg.sendPrivateMsg('Virhe: ' + err + ' Komennon käyttö: ' + cmd.help);
-        });
+      callCommandFunction(context, cmd, msg);
     } catch (err) {
-      console.log('Couldn\'t execute cmd "'+cmdName+'"! ' + err);
+      console.log('Couldn\'t execute cmd "'+firstWord+'"! ' + err);
       return msg.sendChatMsg('Virhe! Komennon käyttö: ' + cmd.help);
     }
-  } else if (cmdName === '/komennot'|| cmdName === '/start' || cmdName === '/help') {
-    let cmdstr = 'Komennot:\n';
-    for(var i in cmds){
-      cmdstr += cmds[i].help + '\n';
+  } else if {
+    const context = retrieveContext(userId, msg);
+    if(!context.isPrivateChat()){
+      // don't spam chats if not a command this bot recognizes
+      return;
     }
-    return msg.sendPrivateMsg(cmdstr);
+    return callCommandFunction(context, cmd, msg);
   }
 };
 
