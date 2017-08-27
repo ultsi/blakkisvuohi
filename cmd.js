@@ -93,7 +93,7 @@ Commands.call = function call(firstWord, msg, words) {
       console.log('Couldn\'t execute cmd "'+firstWord+'"! ' + err);
       return msg.sendChatMsg('Virhe! Komennon käyttö: ' + cmd.help);
     }
-  } else if {
+  } else {
     const context = retrieveContext(userId, msg);
     if(!context.isPrivateChat()){
       // don't spam chats if not a command this bot recognizes
