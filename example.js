@@ -45,4 +45,4 @@ let viinaPhase3 = function(context, msg, words) {
   return context.privateReply('Onnistui. Joit ' + centilites + 'cl ' + vol + '% viinaa.');
 };
 
-Commands.registerUserCommand('/viina', 'Kellota viinaa prosenttien ja määrän mukaan.', cmd.TYPE_PRIVATE, [viinaPhase1, viinaPhase2, viinaPhase3]);
+Commands.registerUserCommand('/viina', 'Kellota viinaa prosenttien ja määrän mukaan.', Commands.TYPE_PRIVATE, [viinaPhase1, viinaPhase2, viinaPhase3]);
