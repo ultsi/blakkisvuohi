@@ -8,7 +8,6 @@ const utils = require('./utils.js');
 
 // First phase, just tell what to do
 let viinaPhase1 = function(context, msg, words) {
-  context.forgetVariables();
   context.nextPhase();
   return context.privateReply('Ai viinaa vai? Syötä juoman tilavuusprosentti, esim: 12.5.');
 };

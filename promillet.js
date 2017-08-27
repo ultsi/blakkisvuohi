@@ -1,6 +1,6 @@
 'use strict';
 
-const cmd = require('./cmd.js');
+const Commands = require('./cmd.js');
 const utils = require('./utils.js');
 const users = require('./users.js');
 const when = require('when');
@@ -12,7 +12,55 @@ function getRandomResponse(){
   return DRINK_RESPONSES[Math.floor(Math.random()*DRINK_RESPONSES.length)];
 }
 
-cmd.register('/luotunnus', cmd.TYPE_PRIVATE, function(msg, words){
+/*
+  /luotunnus
+  3 phased command where the user can sign up for the bot's functionality
+  Asks for weight and gender for future calculations
+*/
+
+function signupPhase1(context, msg, words) {
+  let username = msg.from.username;
+  if(!username){
+    username = msg.from.first_name;
+    if(msg.from.last_name){
+      username = username + ' ' + msg.from.last_name;
+    }
+  }
+  context.storeVariable('username', username);
+  context.nextPhase();
+  context.privateReply('Tervetuloa uuden tunnuksen luontiin ' + username + '. Alkoholilaskuria varten tarvitsen tiedot painosta ja sukupuolesta.\n\nSyötä ensimmäiseksi paino kilogrammoissa ja kokonaislukuna:');
+}
+
+function signupPhase2(context, msg, words) {
+  if(!utils.isValidNumber(words[0])){
+    return context.privateReply('Paino ei ole kokonaisluku');
+  }
+
+  let weight = parseNumber(words[1], 10);
+  if(weight < 30 || weight > 200){
+    return context.privateReply('Painon ala- ja ylärajat ovat 30kg ja 200kg.')
+  }
+
+  context.storeVariable('weight', weight);
+  context.nextPhase();
+  context.privateReplyWithKeyboard('Paino tallennettu. Syötä seuraavaksi sukupuoli:', ['mies', 'nainen']);
+}
+
+function signupPhase3(context, msg, words) {
+  if(words[0] !== 'nainen' && words[0] !== 'mies'){
+    return context.privateReply('Syötä joko nainen tai mies');
+  }
+
+  const username = context.fetchVariable('username');
+  const weight = context.fetchVariable('weight');
+  const gender = words[0];
+  context.end();
+  context.privateReply('Tallennettu. Olet ' + username + ', painat ' + weight + 'kg ja olet ' + gender);
+}
+
+Commands.register('/luotunnus', 'Luo itsellesi tunnus laskureita varten.', Commands.TYPE_PRIVATE, [signupPhase1, signupPhase2, signupPhase3]);
+
+/*cmd.register('/luotunnus', cmd.TYPE_PRIVATE, function(msg, words){
   let deferred = when.defer();
   users.new(msg.from.id, msg.from.username || msg.from.first_name + ' ' + msg.from.last_name, words[1], words[2])
   .then(function(user){
@@ -268,3 +316,4 @@ cmd.registerUserCommand('/moro', cmd.TYPE_ALL, function(msg, words, user){
     });
   return deferred.promise;
 }, '/moro - Lisää sinut ryhmään mukaan.');
+*/
