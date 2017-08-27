@@ -46,7 +46,7 @@ function retrieveContext(userId, msg) {
   return earlierContext;
 }
 
-function callCommandFunction(context, cmd, msg) {
+function callCommandFunction(context, cmd, msg, words) {
   const phaseFunc = cmd.funcs[context.phase];
 
   return phaseFunc(context, msg, words)
@@ -88,7 +88,7 @@ Commands.call = function call(firstWord, msg, words) {
         return context.privateReply('Käytä komentoa vain minun kanssa!');
       }
 
-      callCommandFunction(context, cmd, msg);
+      callCommandFunction(context, cmd, msg, words);
     } catch (err) {
       console.log('Couldn\'t execute cmd "'+firstWord+'"! ' + err);
       return msg.sendChatMsg('Virhe! Komennon käyttö: ' + cmd.help);
@@ -99,7 +99,7 @@ Commands.call = function call(firstWord, msg, words) {
       // don't spam chats if not a command this bot recognizes
       return;
     }
-    return callCommandFunction(context, cmd, msg);
+    return callCommandFunction(context, cmd, msg, words);
   }
 };
 
