@@ -40,7 +40,7 @@ let viinaPhase3 = function(context, msg, words) {
 
   // Everything ok, use the variables
   let vol = context.fetchVariable('vol');
-  context.reset();
+  context.end();
   // Here you would calculate stuff and store in database as usual
   return context.privateReply('Onnistui. Joit ' + centiliters + 'cl ' + vol + '% viinaa.');
 };

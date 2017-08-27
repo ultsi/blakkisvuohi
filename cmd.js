@@ -47,6 +47,10 @@ function retrieveContext(userId, msg) {
 }
 
 function callCommandFunction(context, cmd, msg, words) {
+  if(context.phase === -1){
+    // Context has been ended, do nothing.
+    return;
+  }
   const phaseFunc = cmd.funcs[context.phase];
 
   return phaseFunc(context, msg, words)

@@ -61,8 +61,8 @@ contexts.Context.prototype.previousPhase = function() {
   this.phase -= 1;
 };
 
-contexts.Context.prototype.reset = function() {
-  this.phase = 0;
+contexts.Context.prototype.end = function() {
+  this.phase = -1;
   this.variables = 0;
 };
 
