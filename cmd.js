@@ -52,7 +52,7 @@ Commands.call = function call(cmdName, msg, words) {
     const cmd = cmds[cmdName];
 
     // get context for command
-    const context = getContext(msg.user.id, cmd, msg);
+    const context = getContext(msg.from.id, cmd, msg);
 
     try {
       console.log(cmd);
@@ -67,11 +67,11 @@ Commands.call = function call(cmdName, msg, words) {
           console.log('Phase ' + context.phase + ' of cmd ' + cmdName + ' executed perfectly.');
         }, function(err){
           console.error('Couldn\'t execute cmd "'+cmdName+'" phase ' + context.phase +'! ' + err);
-          return msg.sendPrivateMsg('Virhe: ' + err + ' Komennon käyttö: ' + cmds[cmdName].help);
+          return msg.sendPrivateMsg('Virhe: ' + err + ' Komennon käyttö: ' + cmd.help);
         });
     } catch (err) {
       console.log('Couldn\'t execute cmd "'+cmdName+'"! ' + err);
-      return msg.sendChatMsg('Virhe! Komennon käyttö: ' + cmds[cmdName].help);
+      return msg.sendChatMsg('Virhe! Komennon käyttö: ' + cmd.help);
     }
   } else if (cmdName === '/komennot'|| cmdName === '/start' || cmdName === '/help') {
     let cmdstr = 'Komennot:\n';
