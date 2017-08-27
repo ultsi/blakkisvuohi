@@ -1,16 +1,18 @@
-'use strict';
-
-let when = require('when');
-let contexts = {};
-
 /*
   Context.js
   this file contains the functions for the context object used with commands
 */
 
-contexts.Context = function(msg, variables){
+'use strict';
+
+let when = require('when');
+let contexts = {};
+
+contexts.Context = function(msg, cmd){
   this.msg = msg;
-  this.variables = variables ? variables : {};
+  this.cmd = cmd;
+  this.phase = 0;
+  this.variables = {};
 };
 
 contexts.Context.prototype.privateReply = function(text) {
@@ -49,4 +51,21 @@ contexts.Context.prototype.fetchVariable = function(key) {
 
 contexts.Context.prototype.forgetVariables = function() {
   return this.variables = {};
+};
+
+contexts.Context.prototype.nextPhase = function() {
+  this.phase += 1;
+};
+
+contexts.Context.prototype.previousPhase = function() {
+  this.phase -= 1;
+};
+
+contexts.Context.prototype.reset = function() {
+  this.phase = 0;
+  this.variables = 0;
+};
+
+contexts.Context.prototype.isPrivateChat = function() {
+  return this.msg.chat.type === 'private';
 };

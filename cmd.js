@@ -3,77 +3,70 @@
 const utils = require('./utils.js');
 const when = require('when');
 const users = require('./users.js');
+const contexts = require('./context.js');
 
-let cmd = {};
-
+let Command = {};
 let cmds = {};
+let userContexts = {};
 
-cmd.chatResponse = function(text){return ['chat', text];};
-cmd.privateResponse = function(text){return ['private', text];};
+Commands.TYPE_PRIVATE = 'private';
+Commands.TYPE_ALL = 'all';
 
-cmd.TYPE_PRIVATE = 'private';
-cmd.TYPE_ALL = 'all';
-
-cmd.register = function register(cmdName, cmdType, cmdFunc, cmdHelp) {
+Commands.register = function(cmdName, cmdHelp, cmdType, cmdFunctions) {
   cmds[cmdName] = {
+    name: cmdName,
     type: cmdType,
-    func: cmdFunc,
-    help: cmdHelp
-  };
-  console.log('Added command ' + cmdName + ' : (' + cmdType + ')');
-};
-
-cmd.registerUserCmd = function register(cmdName, cmdType, cmdFunc, cmdHelp) {
-  let func = function(msg, words){
-    let deferred = when.defer();
-    console.log('Running user cmd ' + cmdName);
-    users.find(msg.from.id)
-      .then(function(user){
-        if(!user){
-          console.log('Didn\'t find user ' + msg.userToString());
-          deferred.resolve(cmd.chatResponse('Moi! Juttele minulle ensiksi privassa ja luo tunnus käyttämällä komentoa /luotunnus'));
-          return deferred.promise;
-        }
-        console.log('Found user: ' + user.nick);
-        cmdFunc(msg, words, user)
-          .then(function(res){
-            deferred.resolve(res);
-          }, function(err){
-            console.log(err);
-            deferred.reject(err);
-          });
-      }, function(err){
-        console.log(err);
-        deferred.reject(err);
-      });
-    return deferred.promise;
-  };
-  cmds[cmdName] = {
-    type: cmdType,
-    func: func,
+    funcs: cmdFunctions,
     help: cmdHelp,
-    state: {}
+    userCommand: false
   };
-  console.log('Added user command ' + cmdName + ' : (' + cmdType + ')');
+  console.log('Added command ' + cmdName + ' : (' + cmdType + ') with ' + cmdFunctions.length + ' phases.');
 };
 
-cmd.call = function call(cmdName, msg, words) {
+Commands.registerUserCommand = function(cmdName, cmdHelp, cmdType, cmdFunctions) {
+  cmds[cmdName] = {
+    name: cmdName,
+    type: cmdType,
+    funcs: cmdFunctions,
+    help: cmdHelp,
+    userCommand: true
+  };
+  console.log('Added command ' + cmdName + ' : (' + cmdType + ') with ' + cmdFunctions.length + ' phases.');
+};
+
+function getContext(userId, cmd, msg) {
+  let earlierContext = userContexts[userId];
+  if(earlierContext && earlierContext.cmd.name === cmd.name){
+    earlierContext.msg = msg; // Update msg object to current one
+    return earlierContext;
+  } else {
+    let context = new contexts.Context(msg, cmd);
+    userContexts[userId] = context;
+    return context;
+  }
+}
+
+Commands.call = function call(cmdName, msg, words) {
   utils.attachMethods(msg);
   if(cmds[cmdName]){
+    const cmd = cmds[cmdName];
+
+    // get context for command
+    const context = getContext(msg.user.id, cmd, msg);
+
     try {
-      console.log(cmds[cmdName]);
-      if(cmds[cmdName].type === cmd.TYPE_PRIVATE && msg.chat.type !== 'private'){
-        return msg.sendPrivateMsg('Käytä komentoa vain minun kanssa! Komennon käyttö: ' + cmds[cmdName].help);
+      console.log(cmd);
+      if(cmd.type === Commands.TYPE_PRIVATE && !context.isPrivateChat()){
+        return context.privateReply('Käytä komentoa vain minun kanssa!');
       }
-      cmds[cmdName].func(msg, words)
+
+      const phaseFunc = cmd.funcs[context.phase];
+
+      phaseFunc(context, msg, words)
         .then(function(res){
-          if(res[0] === 'chat'){
-            msg.sendChatMsg(res[1]);
-          } else {
-            msg.sendPrivateMsg(res[1]);
-          }
+          console.log('Phase ' + context.phase + ' of cmd ' + cmdName + ' executed perfectly.');
         }, function(err){
-          console.error('Couldn\'t execute cmd "'+cmdName+'"! ' + err);
+          console.error('Couldn\'t execute cmd "'+cmdName+'" phase ' + context.phase +'! ' + err);
           return msg.sendPrivateMsg('Virhe: ' + err + ' Komennon käyttö: ' + cmds[cmdName].help);
         });
     } catch (err) {
@@ -89,4 +82,4 @@ cmd.call = function call(cmdName, msg, words) {
   }
 };
 
-module.exports = cmd;
+module.exports = Commands;
