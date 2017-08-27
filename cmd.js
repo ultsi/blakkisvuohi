@@ -87,7 +87,6 @@ Commands.call = function call(firstWord, msg, words) {
     const context = initContext(userId, cmd, msg);
 
     try {
-      console.log(cmd);
       if(cmd.type === Commands.TYPE_PRIVATE && !context.isPrivateChat()){
         return context.privateReply('Käytä komentoa vain minun kanssa!');
       }
@@ -107,7 +106,7 @@ Commands.call = function call(firstWord, msg, words) {
       const cmd = context.cmd;
       return callCommandFunction(context, cmd, msg, words);
     } catch (err) {
-      console.log('Couldn\'t execute cmd "'+firstWord+'"! ' + err);
+      console.log('Couldn\'t execute cmd "'+context.cmd.name+'"! ' + err);
       return msg.sendChatMsg('Virhe! Komennon käyttö: ' + cmd.help);
     }
   }
