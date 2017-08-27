@@ -43,7 +43,7 @@ function signupPhase2(context, msg, words) {
 
   context.storeVariable('weight', weight);
   context.nextPhase();
-  return context.privateReplyWithKeyboard('Paino tallennettu. Syötä seuraavaksi sukupuoli:', [['mies'], ['nainen']]);
+  return context.privateReplyWithKeyboard('Paino tallennettu. Syötä seuraavaksi sukupuoli:', [['mies', 'nainen']]);
 }
 
 function signupPhase3(context, msg, words) {
