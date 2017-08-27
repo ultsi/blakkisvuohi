@@ -5,7 +5,7 @@ const when = require('when');
 const users = require('./users.js');
 const contexts = require('./context.js');
 
-let Command = {};
+let Commands = {};
 let cmds = {};
 let userContexts = {};
 
