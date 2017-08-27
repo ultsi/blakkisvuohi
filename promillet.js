@@ -28,7 +28,7 @@ function signupPhase1(context, msg, words) {
   }
   context.storeVariable('username', username);
   context.nextPhase();
-  context.privateReply('Tervetuloa uuden tunnuksen luontiin ' + username + '. Alkoholilaskuria varten tarvitsen tiedot painosta ja sukupuolesta.\n\nSyötä ensimmäiseksi paino kilogrammoissa ja kokonaislukuna:');
+  return context.privateReply('Tervetuloa uuden tunnuksen luontiin ' + username + '. Alkoholilaskuria varten tarvitsen tiedot painosta ja sukupuolesta.\n\nSyötä ensimmäiseksi paino kilogrammoissa ja kokonaislukuna:');
 }
 
 function signupPhase2(context, msg, words) {
@@ -43,7 +43,7 @@ function signupPhase2(context, msg, words) {
 
   context.storeVariable('weight', weight);
   context.nextPhase();
-  context.privateReplyWithKeyboard('Paino tallennettu. Syötä seuraavaksi sukupuoli:', ['mies', 'nainen']);
+  return context.privateReplyWithKeyboard('Paino tallennettu. Syötä seuraavaksi sukupuoli:', ['mies', 'nainen']);
 }
 
 function signupPhase3(context, msg, words) {
@@ -55,7 +55,7 @@ function signupPhase3(context, msg, words) {
   const weight = context.fetchVariable('weight');
   const gender = words[0];
   context.end();
-  context.privateReply('Tallennettu. Olet ' + username + ', painat ' + weight + 'kg ja olet ' + gender);
+  return context.privateReply('Tallennettu. Olet ' + username + ', painat ' + weight + 'kg ja olet ' + gender);
 }
 
 Commands.register('/luotunnus', 'Luo itsellesi tunnus laskureita varten.', Commands.TYPE_PRIVATE, [signupPhase1, signupPhase2, signupPhase3]);
