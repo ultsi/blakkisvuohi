@@ -17,10 +17,10 @@ contexts.Context = function(cmd, msg){
 
 contexts.Context.prototype.privateReply = function(text) {
   let deferred = when.defer();
-  console.log(this);
-  global.bot.sendMessage(this.msg.from.id, text)
+  let self = this;
+  global.bot.sendMessage(self.msg.from.id, text)
   .then(function () {
-    console.log('Sent ' + text + ' to ' + this.msg.from.username);
+    console.log('Sent ' + text + ' to ' + self.msg.from.username);
     deferred.resolve();
   }, function(err) {
     console.error('couldn\'t send private msg! Err: ' + err);
@@ -31,10 +31,10 @@ contexts.Context.prototype.privateReply = function(text) {
 
 contexts.Context.prototype.chatReply = function(text) {
   let deferred = when.defer();
-
-  global.bot.sendMessage(this.msg.chat.id, text)
+  let self = this;
+  global.bot.sendMessage(self.msg.chat.id, text)
   .then(function () {
-    console.log('Sent ' + text + ' to chat ' + this.msg.chat.title);
+    console.log('Sent ' + text + ' to chat ' + self.msg.chat.title);
     deferred.resolve();
   }, function(err) {
     console.error('couldn\'t send chat msg! Err: ' + err);
