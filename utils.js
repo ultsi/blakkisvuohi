@@ -62,11 +62,11 @@ utils.attachMethods = function attachMethods(msg) {
 };
 
 utils.isValidNumber = function(num){
-  return parseInt(num, 10) !== 'NaN';
+  return !!parseInt(num, 10);
 };
 
 utils.isValidFloat = function(num){
-  return parseFloat(num) !== 'NaN';
+  return !!parseFloat(num);
 };
 
 module.exports = utils;
