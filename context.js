@@ -29,6 +29,24 @@ contexts.Context.prototype.privateReply = function(text) {
   return deferred.promise;
 };
 
+contexts.Context.prototype.privateReplyWithKeyboard = function(text, options) {
+  let deferred = when.defer();
+  let self = this;
+  var option = {
+    "parse_mode": "Markdown",
+    "reply_markup": { "keyboard": [options] }
+  };
+  global.bot.sendMessage(self.msg.from.id, text, options)
+  .then(function () {
+    console.log('Sent ' + text + ' to ' + self.msg.from.username);
+    deferred.resolve();
+  }, function(err) {
+    console.error('couldn\'t send private msg! Err: ' + err);
+    deferred.reject(err);
+  });
+  return deferred.promise;
+};
+
 contexts.Context.prototype.chatReply = function(text) {
   let deferred = when.defer();
   let self = this;
