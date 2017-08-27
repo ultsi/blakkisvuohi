@@ -24,7 +24,7 @@ cmd.register('/luotunnus', cmd.TYPE_PRIVATE, function(msg, words){
   return deferred.promise;
 }, '/luotunnus <paino> <mies/nainen>. Esim. /luotunnus 90 mies');
 
-cmd.registerUserCmd('/whoami', cmd.TYPE_PRIVATE, function(msg, words, user){
+cmd.registerUserCommand('/whoami', cmd.TYPE_PRIVATE, function(msg, words, user){
   let deferred = when.defer();
   deferred.resolve(cmd.privateResponse('Käyttäjä ' + user.nick + ', id: ' + user.userId + ', paino: ' + user.weight + ', sukupuoli: ' + user.gender));
   return deferred.promise;
@@ -99,7 +99,7 @@ function drinkBoozeReturnPermilles(user, amount, description, msg){
   return deferred.promise;
 }
 
-cmd.registerUserCmd('/kalja033', cmd.TYPE_PRIVATE, function(msg, words, user){
+cmd.registerUserCommand('/kalja033', cmd.TYPE_PRIVATE, function(msg, words, user){
   let deferred = when.defer();
   drinkBoozeReturnPermilles(user, alcomath.KALJA033, '/kalja033', msg)
     .then(function(permilles){
@@ -111,7 +111,7 @@ cmd.registerUserCmd('/kalja033', cmd.TYPE_PRIVATE, function(msg, words, user){
   return deferred.promise;
 }, '/kalja033 - juo yksi 0.33l');
 
-cmd.registerUserCmd('/kalja05', cmd.TYPE_PRIVATE, function(msg, words, user){
+cmd.registerUserCommand('/kalja05', cmd.TYPE_PRIVATE, function(msg, words, user){
   let deferred = when.defer();
   drinkBoozeReturnPermilles(user, alcomath.KALJA05, '/kalja05', msg)
     .then(function(permilles){
@@ -123,7 +123,7 @@ cmd.registerUserCmd('/kalja05', cmd.TYPE_PRIVATE, function(msg, words, user){
   return deferred.promise;
 }, '/kalja05 - juo yksi 0.5l');
 
-cmd.registerUserCmd('/shotti40', cmd.TYPE_PRIVATE, function(msg, words, user){
+cmd.registerUserCommand('/shotti40', cmd.TYPE_PRIVATE, function(msg, words, user){
   let deferred = when.defer();
   drinkBoozeReturnPermilles(user, alcomath.SHOTTI40, '/shotti40', msg)
     .then(function(permilles){
@@ -135,7 +135,7 @@ cmd.registerUserCmd('/shotti40', cmd.TYPE_PRIVATE, function(msg, words, user){
   return deferred.promise;
 }, '/shotti40 - juo yksi shotti 40% viinaa');
 
-cmd.registerUserCmd('/nelonen', cmd.TYPE_PRIVATE, function(msg, words, user){
+cmd.registerUserCommand('/nelonen', cmd.TYPE_PRIVATE, function(msg, words, user){
   let deferred = when.defer();
   drinkBoozeReturnPermilles(user, alcomath.NELONEN, '/nelonen', msg)
     .then(function(permilles){
@@ -147,7 +147,7 @@ cmd.registerUserCmd('/nelonen', cmd.TYPE_PRIVATE, function(msg, words, user){
   return deferred.promise;
 }, '/nelonen - juo yksi 0.33l tölkki nelosta (5.5% lonkero tai olut tai siideri tai joku prkl)');
 
-cmd.registerUserCmd('/viina', cmd.TYPE_PRIVATE, function(msg, words, user){
+cmd.registerUserCommand('/viina', cmd.TYPE_PRIVATE, function(msg, words, user){
   let deferred = when.defer();
   if(words.length < 3){
     deferred.reject('Puuttuu prosentit ja tai määrä!');
@@ -173,7 +173,7 @@ cmd.registerUserCmd('/viina', cmd.TYPE_PRIVATE, function(msg, words, user){
   return deferred.promise;
 }, '/viina (prosentti) (määrä litroissa). Esim. /viina 38 0.5. Käytä erottimena pistettä.');
 
-cmd.registerUserCmd('/annokset', cmd.TYPE_ALL, function(msg, words, user){
+cmd.registerUserCommand('/annokset', cmd.TYPE_ALL, function(msg, words, user){
   let deferred = when.defer();
   users.getBooze(user)
     .then(function(drinks){
@@ -186,7 +186,7 @@ cmd.registerUserCmd('/annokset', cmd.TYPE_ALL, function(msg, words, user){
   return deferred.promise;
 }, '/annokset - listaa kaikki annokset.');
 
-cmd.registerUserCmd('/promillet', cmd.TYPE_ALL, function(msg, words, user){
+cmd.registerUserCommand('/promillet', cmd.TYPE_ALL, function(msg, words, user){
   let deferred = when.defer();
   if(msg.chat.type === 'private'){
     users.getBooze(user)
@@ -235,7 +235,7 @@ function makeDrinksString(drinks) {
   return list.join('\n');
 }
 
-cmd.registerUserCmd('/otinko', cmd.TYPE_PRIVATE, function(msg, words, user){
+cmd.registerUserCommand('/otinko', cmd.TYPE_PRIVATE, function(msg, words, user){
   let deferred = when.defer();
   users.getBoozeForLast48h(user)
     .then(function(drinks){
@@ -253,7 +253,7 @@ cmd.registerUserCmd('/otinko', cmd.TYPE_PRIVATE, function(msg, words, user){
   return deferred.promise;
 }, '/otinko - näyttää otitko ja kuinka monta viime yönä.');
 
-cmd.registerUserCmd('/moro', cmd.TYPE_ALL, function(msg, words, user){
+cmd.registerUserCommand('/moro', cmd.TYPE_ALL, function(msg, words, user){
   let deferred = when.defer();
   if(msg.chat.type === 'private'){
     deferred.reject('Käytä tätä komentoa ryhmässä!');
