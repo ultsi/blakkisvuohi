@@ -93,20 +93,20 @@ Commands.call = function call(firstWord, msg, words) {
 
       callCommandFunction(context, cmd, msg, words);
     } catch (err) {
-      console.log('Couldn\'t execute cmd "'+firstWord+'"! ' + err);
+      console.log('Couldn\'t execute cmd "'+cmd.name+'"! ' + err);
       return msg.sendChatMsg('Virhe! Komennon käyttö: ' + cmd.help);
     }
   } else {
     const context = retrieveContext(userId, msg);
+    const cmd = context.cmd;
     try {
       if(!context.isPrivateChat()){
         // don't spam chats if not a command this bot recognizes
         return;
       }
-      const cmd = context.cmd;
       return callCommandFunction(context, cmd, msg, words);
     } catch (err) {
-      console.log('Couldn\'t execute cmd "'+context.cmd.name+'"! ' + err);
+      console.log('Couldn\'t execute cmd "' + cmd.name + '"! ' + err);
       return msg.sendChatMsg('Virhe! Komennon käyttö: ' + cmd.help);
     }
   }
