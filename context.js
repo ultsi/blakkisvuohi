@@ -8,15 +8,16 @@
 let when = require('when');
 let contexts = {};
 
-contexts.Context = function(msg, cmd){
-  this.msg = msg;
+contexts.Context = function(cmd, msg){
   this.cmd = cmd;
+  this.msg = msg;
   this.phase = 0;
   this.variables = {};
 };
 
 contexts.Context.prototype.privateReply = function(text) {
   let deferred = when.defer();
+  console.log(this);
   global.bot.sendMessage(this.msg.from.id, text)
   .then(function () {
     console.log('Sent ' + text + ' to ' + this.msg.from.username);
@@ -30,6 +31,7 @@ contexts.Context.prototype.privateReply = function(text) {
 
 contexts.Context.prototype.chatReply = function(text) {
   let deferred = when.defer();
+
   global.bot.sendMessage(this.msg.chat.id, text)
   .then(function () {
     console.log('Sent ' + text + ' to chat ' + this.msg.chat.title);

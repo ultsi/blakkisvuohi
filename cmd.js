@@ -35,7 +35,7 @@ Commands.registerUserCommand = function(cmdName, cmdHelp, cmdType, cmdFunctions)
 };
 
 function initContext(userId, cmd, msg) {
-  let context = new contexts.Context(msg, cmd);
+  let context = new contexts.Context(cmd, msg);
   userContexts[userId] = context;
   return context;
 }
