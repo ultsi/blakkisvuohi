@@ -42,7 +42,7 @@ let viinaPhase3 = function(context, msg, words) {
   let vol = context.fetchVariable('vol');
   context.reset();
   // Here you would calculate stuff and store in database as usual
-  return context.privateReply('Onnistui. Joit ' + centilites + 'cl ' + vol + '% viinaa.');
+  return context.privateReply('Onnistui. Joit ' + centiliters + 'cl ' + vol + '% viinaa.');
 };
 
 Commands.registerUserCommand('/viina', 'Kellota viinaa prosenttien ja määrän mukaan.', Commands.TYPE_PRIVATE, [viinaPhase1, viinaPhase2, viinaPhase3]);
