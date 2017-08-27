@@ -15,6 +15,25 @@ alcomath.NELONEN = alcomath.calcAlcoholMilliGrams(0.055, 0.33);
 alcomath.KALJA05 = alcomath.calcAlcoholMilliGrams(0.047, 0.50);
 alcomath.SHOTTI40 = alcomath.calcAlcoholMilliGrams(0.4, 0.04);
 
+alcomath.LIMITS = {
+  6.0: 'Hyvin todennäköinen kuolema (alkoholimyrkytys)',
+  5.0: 'Todennäköinen kuolema (alkoholimyrkytys)',
+  4.0: 'Keskimääräinen alkoholimyrkytys (18v)',
+  3.5: 'Sammuminen, mahdollinen alkoholimyrkytys',
+  3.25: 'Normaali ihminen ei kykene kävelemään',
+  3.0: 'Muisti menee',
+  2.5: 'Hoipertelua',
+  2.25: 'Tanssiminen ja liikkuminen vaikeaa',
+  2.0: 'Puhe sammaltaa, kivun tunne katoaa, tajunta heikkenee',
+  1.82: 'Omatoimikapteeniutta saattaa esiintyä',
+  1.5: 'Voimakasta estottomuutta, tunteellisuutta',
+  1.25: 'Törkeä rattijuopumus',
+  1.0: 'Aggressiot lisääntyvät, innostuneisuutta, kömpelyyttä',
+  0.75: 'Hyväntuulisuutta, estot poistuvat',
+  0.5: 'Rattijuopumus',
+  0.25: 'Impulsiivisuutta, hyvän olon tunne'
+};
+
 alcomath.getPermillesFromGrams = function(user, grams) {
   let standard_drinks = grams / 10.6;
   return (MEAN_BODY_WATER * (standard_drinks)) / (LIQUID_PERCENT[user.gender] * user.weight) * 10;
