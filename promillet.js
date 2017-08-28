@@ -5,6 +5,7 @@ const utils = require('./utils.js');
 const users = require('./users.js');
 const when = require('when');
 const alcomath = require('./alcomath.js');
+const alcoconstants = require('./alcoconstants.js');
 
 const DRINK_RESPONSES = ['Bäää.', 'Uuteen nousuun.', 'Aamu alkaa A:lla.', 'Juo viinaa, viina on hyvää.', 'Meno on meno.', 'Lörs lärä, viinaa!'];
 
@@ -71,25 +72,13 @@ function signupPhase3(context, msg, words) {
 
 Commands.register('/luotunnus', '/luotunnus - Luo itsellesi tunnus botin käyttöä varten.', Commands.TYPE_PRIVATE, [signupPhase1, signupPhase2, signupPhase3]);
 
-/*Commands.register('/luotunnus', Commands.TYPE_PRIVATE, function(msg, words){
-  let deferred = when.defer();
-  users.new(msg.from.id, msg.from.username || msg.from.first_name + ' ' + msg.from.last_name, words[1], words[2])
-  .then(function(user){
-    deferred.resolve(Commands.privateResponse('Moikka ' + user.nick + '! Tunnuksesi luotiin onnistuneesti. Muista, että antamani luvut alkoholista ovat vain arvioita, eikä niihin voi täysin luottaa. Ja eikun juomaan!'));
-  }, function(err){
-    console.log(err);
-    deferred.reject('Isompi ongelma, ota yhteyttä adminiin.');
-  });
-  return deferred.promise;
-}, '/luotunnus <paino> <mies/nainen>. Esim. /luotunnus 90 mies');*/
-
 function whoAmI(context, user, msg, words){
   return context.privateReply('Käyttäjä ' + user.username + ', id: ' + user.userId + ', paino: ' + user.weight + ', sukupuoli: ' + user.gender);
 }
 
 Commands.registerUserCommand('/whoami', '/whoami - tulosta omat tietosi.', Commands.TYPE_PRIVATE, [whoAmI]);
 
-/*
+
 function getPermillesTextForGroup(groupId){
   let deferred = when.defer();
   when.all([
@@ -101,12 +90,12 @@ function getPermillesTextForGroup(groupId){
         let permilles = [];
         for(var userId in drinksByUser){
           let details = drinksByUser[userId];
-          let user = users.create(details.userid, details.nick, details.weight, details.gender);
+          let user = new users.User(details.userid, details.nick, details.weight, details.gender);
           let userPermilles = alcomath.getPermillesFromDrinks(user, details.drinks);
           if(userPermilles > 0){
             let sum12h = drinkSumsByUser12h[details.userid] && drinkSumsByUser12h[details.userid].sum || 0;
             let sum24h = drinkSumsByUser24h[details.userid] && drinkSumsByUser24h[details.userid].sum || 0;
-            permilles.push([user.nick, userPermilles, sum12h / alcomath.KALJA033, sum24h / alcomath.KALJA033]);
+            permilles.push([user.username, userPermilles, sum12h / alcomath.KALJA033, sum24h / alcomath.KALJA033]);
           }
         }
         permilles = permilles.sort(function(a,b){return b[1]-a[1];});
@@ -126,10 +115,10 @@ function getPermillesTextForGroup(groupId){
 function drinkBoozeReturnPermilles(user, amount, description, msg){
   let deferred = when.defer();
   when.all([
-    users.drinkBooze(user, amount, description),
-    users.getDrinkCountsByGroupsForUser(user)
+    user.drinkBooze(amount, description),
+    user.getDrinkCountsByGroupsForUser()
   ]).spread(function(amount, drinkCountsByGroups){
-      users.getBooze(user)
+      user.getBooze()
       .then(function(drinks){
         let permilles = alcomath.getPermillesFromDrinks(user, drinks);
         deferred.resolve(permilles);
@@ -140,10 +129,10 @@ function drinkBoozeReturnPermilles(user, amount, description, msg){
       // do announcements based on drink counts
       for(var i in drinkCountsByGroups){
         let drinkCount = drinkCountsByGroups[i];
-        if(drinkCount.count % 100 === 0){
+        if(drinkCount.count % 1000 === 0){
           getPermillesTextForGroup(drinkCount.groupid)
             .then(function(text){
-              msg.sendMsgTo(drinkCount.groupid, user.nick + ' joi juuri ryhmän ' + drinkCount.count + '. juoman!\n\nRippiä:\n'+text)
+              msg.sendMsgTo(drinkCount.groupid, user.username + ' joi juuri ryhmän ' + drinkCount.count + '. juoman!\n\nRippiä:\n'+text)
                 .then(function(){}, function(err){
                   console.error(err);
                 });
@@ -159,54 +148,128 @@ function drinkBoozeReturnPermilles(user, amount, description, msg){
   return deferred.promise;
 }
 
-Commands.registerUserCommand('/kalja033', Commands.TYPE_PRIVATE, function(msg, words, user){
+/*
+  /juoma command. Multiple phase command with lots of options
+*/
+
+let drinkCommand = {};
+drinkCommand.miedotReply = {text: 'Valitse mieto', keyboard: [[alcoconstants.milds.beercan.print, alcoconstants.milds.beer4.print, alcoconstants.milds.beer05.print],
+                                                             [alcoconstants.milds.beerpint.print, alcoconstants.milds.lonkero.print, alcoconstants.milds.wine12.print],
+                                                             [alcoconstants.milds.wine16.print]] };
+
+drinkCommand.tiukatReply = {text: 'Valitse tiukka', keyboard: [[alcoconstants.booze.mild.print, alcoconstants.booze.medium.print, alcoconstants.booze.basic.print]]};
+
+drinkCommand[0] = function (context, user, msg, words) {
+  context.nextPhase();
+  return context.privateReplyWithKeyboard('Valitse juoman kategoria', [['Miedot', 'Tiukat', 'Oma']]);
+};
+
+drinkCommand[1] = function (context, user, msg, words) {
+  if(words[0].toLowerCase() === 'miedot') {
+    context.toPhase('miedot');
+    return context.privateReplyWithKeyboard(drinkCommand.miedotReply.text, drinkCommand.miedotReply.keyboard);
+  } else if(words[0].toLowerCase() === 'tiukat') {
+    context.toPhase('tiukat');
+    return context.privateReplyWithKeyboard(drinkCommand.tiukatReply.text, drinkCommand.tiukatReply.keyboard);
+  } else if(words[0].toLowerCase() === 'oma') {
+    context.toPhase('omajuoma');
+    return context.privateReplyWithKeyboard('Syötä juoman tilavuusprosentti, esim: 12.5.');
+  } else {
+    return context.privateReplyWithKeyboard('Väärä valinta, valitse juoman kategoria', [['Miedot', 'Tiukat', 'Oma']]);
+  }
+};
+
+drinkCommand.miedot = function (context, user, msg, words) {
+  const milds = alcoconstants.milds;
+  let found = null;
+  for(let key in milds) {
+    if(milds[key].print.toLowerCase() === msg.text.toLowerCase()){
+      found = milds[key];
+    }
+  }
+
+  if(!found){
+    return context.privateReplyWithKeyboard(drinkCommand.miedotReply.text, drinkCommand.miedotReply.keyboard);
+  }
   let deferred = when.defer();
-  drinkBoozeReturnPermilles(user, alcomath.KALJA033, '/kalja033', msg)
+  drinkBoozeReturnPermilles(user, found.mg, found.print, msg)
     .then(function(permilles){
-      deferred.resolve(Commands.privateResponse(getRandomResponse() + ' ' + permilles.toFixed(2) + '‰'));
+      deferred.resolve(context.privateReply(getRandomResponse() + ' ' + permilles.toFixed(2) + '‰'));
     }, function(err){
-      console.error(err);
+      console.error(err.stack);
       deferred.reject('Isompi ongelma, ota yhteyttä adminiin.');
     });
+  context.end();
   return deferred.promise;
-}, '/kalja033 - juo yksi 0.33l');
+};
 
-Commands.registerUserCommand('/kalja05', Commands.TYPE_PRIVATE, function(msg, words, user){
+drinkCommand.tiukat = function (context, user, msg, words) {
+  const booze = alcoconstants.booze;
+  let found = null;
+  for(let key in booze) {
+    if(booze[key].print.toLowerCase() === msg.text.toLowerCase()){
+      found = booze[key];
+    }
+  }
+
+  if(!found){
+    return context.privateReplyWithKeyboard(drinkCommand.tiukatReply.text, drinkCommand.tiukatReply.keyboard);
+  }
   let deferred = when.defer();
-  drinkBoozeReturnPermilles(user, alcomath.KALJA05, '/kalja05', msg)
+  drinkBoozeReturnPermilles(user, found.mg, found.print, msg)
     .then(function(permilles){
-      deferred.resolve(Commands.privateResponse(getRandomResponse() + ' ' + permilles.toFixed(2) + '‰'));
+      deferred.resolve(context.privateReply(getRandomResponse() + ' ' + permilles.toFixed(2) + '‰'));
     }, function(err){
-      console.error(err);
+      console.error(err.stack);
       deferred.reject('Isompi ongelma, ota yhteyttä adminiin.');
     });
+  context.end();
   return deferred.promise;
-}, '/kalja05 - juo yksi 0.5l');
+};
 
-Commands.registerUserCommand('/shotti40', Commands.TYPE_PRIVATE, function(msg, words, user){
+drinkCommand.omajuoma = function (context, user, msg, words) {
+  let vol = parseFloat(words[0]);
+  if(!utils.isValidFloat(vol)){
+    return context.privateReply('Prosentti on väärin kirjoitettu. Älä käytä pilkkua.');
+  } else if(vol <= 0) {
+    return context.privateReply('Alle 0-prosenttista viinaa ei kelloteta. Hölmö.');
+  } else if(vol > 100) {
+    return context.privateReply('Yli 100-prosenttista viinaa ei kelloteta. Hölmö.');
+  }
+
+  context.storeVariable('vol', vol);
+  context.toPhase('omajuomaEnd')
+  return context.privateReply('Hyvä, seuraavaksi syötä viinan määrä senttilitroissa.');
+};
+
+drinkCommand.omajuomaEnd = function(context, user, msg, words) {
+  let centiliters = parseInt(words[0]);
+  if(!utils.isValidInt(centiliters)){
+    return context.privateReply('Kirjoita määrä senttilitroissa numerona.');
+  } else if(centiliters < 1) {
+    return context.privateReply('Alle 1 senttilitraa on liian vähän.');
+  } else if(centiliters >= 250) {
+    return context.privateReply('Yli 2.5 litraa viinaa? Ei käy.');
+  }
+
+  // Everything ok, use the variables
+  let vol = context.fetchVariable('vol');
+  let mg = alcomath.calcAlcoholMilliGrams(vol / 100.0, centiliters / 100.0);
   let deferred = when.defer();
-  drinkBoozeReturnPermilles(user, alcomath.SHOTTI40, '/shotti40', msg)
+  drinkBoozeReturnPermilles(user, mg, 'Oma juoma - ' + centiliters + 'cl ' + vol + '%', msg)
     .then(function(permilles){
-      deferred.resolve(Commands.privateResponse(getRandomResponse() + ' ' + permilles.toFixed(2) + '‰'));
+      deferred.resolve(context.privateReply(getRandomResponse() + ' ' + permilles.toFixed(2) + '‰'));
     }, function(err){
-      console.error(err);
+      console.error(err.stack);
       deferred.reject('Isompi ongelma, ota yhteyttä adminiin.');
     });
+  context.end();
   return deferred.promise;
-}, '/shotti40 - juo yksi shotti 40% viinaa');
+};
 
-Commands.registerUserCommand('/nelonen', Commands.TYPE_PRIVATE, function(msg, words, user){
-  let deferred = when.defer();
-  drinkBoozeReturnPermilles(user, alcomath.NELONEN, '/nelonen', msg)
-    .then(function(permilles){
-      deferred.resolve(Commands.privateResponse(getRandomResponse() + ' ' + permilles.toFixed(2) + '‰'));
-    }, function(err){
-      console.error(err);
-      deferred.reject('Isompi ongelma, ota yhteyttä adminiin.');
-    });
-  return deferred.promise;
-}, '/nelonen - juo yksi 0.33l tölkki nelosta (5.5% lonkero tai olut tai siideri tai joku prkl)');
+Commands.registerUserCommand('/juoma', '/juoma - lisää yksi juoma tilastoihin', Commands.TYPE_PRIVATE, drinkCommand);
 
+/*
 Commands.registerUserCommand('/viina', Commands.TYPE_PRIVATE, function(msg, words, user){
   let deferred = when.defer();
   if(words.length < 3){

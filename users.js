@@ -18,7 +18,7 @@ function User(userId, username, weight, gender) {
   this.gender = gender;
 }
 
-users.create = User;
+users.User = User;
 
 users.new = function(userId, nick, weight, gender) {
   let deferred = when.defer();

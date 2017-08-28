@@ -89,6 +89,10 @@ contexts.Context.prototype.nextPhase = function() {
   this.phase += 1;
 };
 
+contexts.Context.prototype.toPhase = function(phase) {
+  this.phase = phase;
+}
+
 contexts.Context.prototype.previousPhase = function() {
   this.phase -= 1;
 };
