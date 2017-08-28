@@ -269,50 +269,26 @@ drinkCommand.omajuomaEnd = function(context, user, msg, words) {
 
 Commands.registerUserCommand('/juoma', '/juoma - lisää yksi juoma tilastoihin', Commands.TYPE_PRIVATE, drinkCommand);
 
-/*
-Commands.registerUserCommand('/viina', Commands.TYPE_PRIVATE, function(msg, words, user){
+function annokset(context, user, msg, words) {
   let deferred = when.defer();
-  if(words.length < 3){
-    deferred.reject('Puuttuu prosentit ja tai määrä!');
-    return deferred.promise;
-  }
-
-  let percent = parseFloat(words[1])/100;
-  let amount = parseFloat(words[2]);
-  if(percent === 'NaN' || amount === 'NaN' || percent > 1 || percent < 0 || amount > 10 || amount < 0){
-    deferred.reject('Prosentti tai määrä on virheellinen!');
-    return deferred.promise;
-  }
-
-  let alcoholInMG = alcomath.calcAlcoholMilliGrams(percent, amount);
-  drinkBoozeReturnPermilles(user, alcoholInMG, words.join(' '), msg)
-    .then(function(permilles){
-      deferred.resolve(Commands.privateResponse(getRandomResponse() + ' ' + permilles.toFixed(2) + '‰'));
-    }, function(err){
-      console.error(err);
-      deferred.reject('Isompi ongelma, ota yhteyttä adminiin.');
-    });
-
-  return deferred.promise;
-}, '/viina (prosentti) (määrä litroissa). Esim. /viina 38 0.5. Käytä erottimena pistettä.');
-
-Commands.registerUserCommand('/annokset', Commands.TYPE_ALL, function(msg, words, user){
-  let deferred = when.defer();
-  users.getBooze(user)
+  user.getBooze()
     .then(function(drinks){
       let grams = alcomath.sumGrams(drinks);
-      deferred.resolve(Commands.privateResponse('Olet aikojen saatossa tuhonnut ' + grams.toFixed(2) + ' grammaa alkoholia, joka vastaa ' + (grams / 12.2).toFixed(2) + ' annosta.'));
+      deferred.resolve(context.privateReply('Olet aikojen saatossa tuhonnut ' + grams.toFixed(2) + ' grammaa alkoholia, joka vastaa ' + (grams / 12.2).toFixed(2) + ' annosta.'));
     }, function(err){
       console.error(err);
       deferred.reject('Isompi ongelma, ota yhteyttä adminiin.');
     });
+  context.end();
   return deferred.promise;
-}, '/annokset - listaa kaikki annokset.');
+}
 
-Commands.registerUserCommand('/promillet', Commands.TYPE_ALL, function(msg, words, user){
+Commands.registerUserCommand('/annokset', '/annokset - listaa kaikki annokset.', Commands.TYPE_PRIVATE, [annokset]);
+
+function listPermilles(context, user, msg, words) {
   let deferred = when.defer();
   if(msg.chat.type === 'private'){
-    users.getBooze(user)
+    user.getBooze()
       .then(function(drinks){
         try {
           let permilles = alcomath.getPermillesFromDrinks(user, drinks);
@@ -321,7 +297,7 @@ Commands.registerUserCommand('/promillet', Commands.TYPE_ALL, function(msg, word
           let time = grams / burnRate;
           let hours = Math.floor(time);
           let minutes = ('0' + Math.ceil((time - hours) * 60)).slice(-2);
-          deferred.resolve(Commands.privateResponse('Olet '+ permilles.toFixed(2) + '‰ humalassa. Veressäsi on ' + grams.toFixed(2) + ' grammaa alkoholia, joka vastaa ' + (grams / 12.2).toFixed(2) + ' annosta. Olet selvinpäin ' + hours + 'h'+minutes+'min päästä.'));
+          deferred.resolve(context.privateReply('Olet '+ permilles.toFixed(2) + '‰ humalassa. Veressäsi on ' + grams.toFixed(2) + ' grammaa alkoholia, joka vastaa ' + (grams / 12.2).toFixed(2) + ' annosta. Olet selvinpäin ' + hours + 'h'+minutes+'min päästä.'));
         } catch (err) {
           console.error(err);
           deferred.reject('Isompi ongelma, ota yhteyttä adminiin.');
@@ -334,14 +310,17 @@ Commands.registerUserCommand('/promillet', Commands.TYPE_ALL, function(msg, word
     getPermillesTextForGroup(msg.chat.id)
       .then(function(text){
         text = msg.chat.title + ' -kavereiden rippitaso:\n' + text;
-        deferred.resolve(Commands.chatResponse(text));
+        deferred.resolve(context.chatReply(text));
       }, function(err){
         deferred.reject(err);
       });
   }
+  context.end();
   return deferred.promise;
-}, '/promillet - listaa kuinka paljon promilleja sinulla tai chatissa olevilla suunnilleen on.');
+}
 
+Commands.registerUserCommand('/promillet', '/promillet - listaa kuinka paljon promilleja sinulla tai chatissa olevilla suunnilleen on.', Commands.TYPE_ALL, [listPermilles]);
+/*
 function makeDrinksString(drinks) {
   let list = [];
   let day = null;
