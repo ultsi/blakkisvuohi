@@ -44,7 +44,7 @@ contexts.Context.prototype.privateReplyWithKeyboard = function(text, keyboardBut
     "reply_markup": {
       "keyboard": keyboardButtons,
       "resize_keyboard": true,
-      "one_time_keyboard": true
+      "one_time_keyboard": false
     },
     "reply_to_message_id": this.msg.message_id
   };
