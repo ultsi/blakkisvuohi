@@ -188,7 +188,6 @@ users.getDrinkSumFor12hForGroup = function(groupId) {
 
 users.getBoozeForGroup = function(groupId) {
   let deferred = when.defer();
-  let twoDaysAgo = getTwoDaysAgo();
   query('select users.userId, users.nick, users.weight, users.gender, coalesce(alcohol, 0) as alcohol, description, created from users_in_groups left outer join users_drinks on users_in_groups.userId=users_drinks.userId join users on users.userId=users_in_groups.userId where users_in_groups.groupId=$1 order by created asc',[groupId])
     .then(function(res){
       let drinksByUser = groupDrinksByUser(res[0]);
