@@ -81,7 +81,7 @@ User.prototype.drinkBooze = function(amount, description) {
     deferred.resolve(amount);
   }, function(err){
     console.error(err);
-    deferred.reject('Ota adminiin yhteyttä.');
+    deferred.reject(err);
   });
   return deferred.promise;
 };
@@ -93,8 +93,21 @@ User.prototype.getBooze = function() {
     deferred.resolve(res[0]);
   }, function(err){
     console.error(err);
-    deferred.reject('Ota adminiin yhteyttä.');
+    deferred.reject(err);
   });
+  return deferred.promise;
+};
+
+User.prototype.undoDrink = function() {
+  let deferred = when.defer();
+  query('delete from users_drinks where created=(select created from users_drinks where userid = $1 order by created desc limit 1)', [this.userId])
+    .then(function(res){
+      deferred.resolve(res[0]);
+    }, function(err){
+      console.error(err);
+      console.log(err.stack);
+      deferred.reject(err);
+    });
   return deferred.promise;
 };
 
@@ -106,7 +119,7 @@ User.prototype.getBoozeForLastHours = function(hours) {
     deferred.resolve(res[0]);
   }, function(err){
     console.error(err);
-    deferred.reject('Ota adminiin yhteyttä.');
+    deferred.reject(err);
   });
   return deferred.promise;
 };

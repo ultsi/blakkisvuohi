@@ -320,6 +320,29 @@ function listPermilles(context, user, msg, words) {
 }
 
 Commands.registerUserCommand('/promillet', '/promillet - listaa kuinka paljon promilleja sinulla tai chatissa olevilla suunnilleen on.', Commands.TYPE_ALL, [listPermilles]);
+
+function undoDrink(context, user, msg, words){
+  let deferred = when.defer();
+  user.undoDrink()
+    .then(function(){
+      user.getBooze()
+        .then(function(drinks){
+          let permilles = alcomath.getPermillesFromDrinks(user, drinks);
+          deferred.resolve(context.privateReply('Laatta onnistui. Olet enää ' + permilles.toFixed(2) + '‰ humalassa.'));
+        }, function(err){
+          console.log(err.stack);
+          deferred.reject(err);
+        })
+    }, function(err){
+      console.log(err.stack);
+      deferred.reject(err);
+    });
+  context.end();
+  return deferred.promise;
+}
+
+Commands.registerUserCommand('/laatta', '/laatta - kumoaa edellisen lisätyn juoman', Commands.TYPE_PRIVATE, [undoDrink]);
+
 /*
 function makeDrinksString(drinks) {
   let list = [];
