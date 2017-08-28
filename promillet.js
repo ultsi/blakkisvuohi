@@ -389,10 +389,10 @@ function moro(context, user, msg, words) {
   }
   user.joinGroup(msg)
     .then(function(){
-      deferred.resolve(Commands.chatResponse('Rippaa rauhassa kera ' + msg.chat.title + ' -kavereiden.'));
+      deferred.resolve(context.chatReply('Rippaa rauhassa kera ' + msg.chat.title + ' -kavereiden.'));
     }, function(err){
       console.error(err);
-      deferred.resolve(Commands.chatResponse('Rippaa rauhassa kera ' + msg.chat.title + ' -kavereiden.'));
+      deferred.resolve(context.chatReply('Rippaa rauhassa kera ' + msg.chat.title + ' -kavereiden.'));
     });
   context.end();
   return deferred.promise;
