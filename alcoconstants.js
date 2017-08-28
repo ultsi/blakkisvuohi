@@ -28,7 +28,7 @@ alcoconstants.milds = {
     mg: alcomath.calcAlcoholMilliGrams(0.047, 0.568)
   },
   lonkero: {
-    print: 'lonkero 33cl 5.3%',
+    print: 'Lonkero 33cl 5.3%',
     mg: alcomath.calcAlcoholMilliGrams(0.053, 0.33)
   },
   wine12: {
