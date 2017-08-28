@@ -7,7 +7,7 @@ const when = require('when');
 const alcomath = require('./alcomath.js');
 const alcoconstants = require('./alcoconstants.js');
 
-const DRINK_RESPONSES = ['Bäää.', 'Uuteen nousuun.', 'Aamu alkaa A:lla.', 'Juo viinaa, viina on hyvää.', 'Meno on meno.', 'Lörs lärä, viinaa!'];
+const DRINK_RESPONSES = ['Bäää.', 'Uuteen nousuun.', 'Muista juoda vettä!', 'Aamu alkaa A:lla.', 'Muista juoda vettä!', 'Juo viinaa, viina on hyvää.', 'Meno on meno.', 'Lörs lärä, viinaa!', 'Muista juoda vettä!'];
 
 function getRandomResponse(){
   return DRINK_RESPONSES[Math.floor(Math.random()*DRINK_RESPONSES.length)];
