@@ -20,7 +20,10 @@ contexts.Context.prototype.privateReply = function(text) {
   let self = this;
   let options = {
     "parse_mode": "Markdown",
-    "reply_to_message_id": this.msg.message_id
+    "reply_to_message_id": this.msg.message_id,
+    "reply_markup": {
+      "remove_keyboard": true
+    }
   };
   global.bot.sendMessage(self.msg.from.id, text, options)
   .then(function () {

@@ -49,7 +49,7 @@ function signupPhase2(context, msg, words) {
 
 function signupPhase3(context, msg, words) {
   if(words[0] !== 'nainen' && words[0] !== 'mies'){
-    return context.privateReply('Syötä joko nainen tai mies');
+    return context.privateReplyWithKeyboard('Syötä joko nainen tai mies', [['mies', 'nainen']]);
   }
 
   const userId = context.fetchVariable('userId');
