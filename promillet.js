@@ -343,7 +343,7 @@ function undoDrink(context, user, msg, words){
 
 Commands.registerUserCommand('/laatta', '/laatta - kumoaa edellisen lisätyn juoman', Commands.TYPE_PRIVATE, [undoDrink]);
 
-/*
+
 function makeDrinksString(drinks) {
   let list = [];
   let day = null;
@@ -360,13 +360,13 @@ function makeDrinksString(drinks) {
   return list.join('\n');
 }
 
-Commands.registerUserCommand('/otinko', Commands.TYPE_PRIVATE, function(msg, words, user){
+function otinko(context, user, msg, words) {
   let deferred = when.defer();
-  users.getBoozeForLast48h(user)
+  user.getBoozeForLastHours(48)
     .then(function(drinks){
       try {
         let drinkList = makeDrinksString(drinks);
-        deferred.resolve(Commands.privateResponse(drinkList));
+        deferred.resolve(context.privateReply(drinkList));
       } catch (err) {
         console.error(err);
         deferred.reject('Isompi ongelma, ota yhteyttä adminiin.');
@@ -375,22 +375,27 @@ Commands.registerUserCommand('/otinko', Commands.TYPE_PRIVATE, function(msg, wor
       console.error(err);
       deferred.reject('Isompi ongelma, ota yhteyttä adminiin.');
     });
+  context.end();
   return deferred.promise;
-}, '/otinko - näyttää otitko ja kuinka monta viime yönä.');
+}
 
-Commands.registerUserCommand('/moro', Commands.TYPE_ALL, function(msg, words, user){
+Commands.registerUserCommand('/otinko', '/otinko - näyttää otitko ja kuinka monta viime yönä.', Commands.TYPE_PRIVATE, [otinko]);
+
+function moro(context, user, msg, words) {
   let deferred = when.defer();
   if(msg.chat.type === 'private'){
     deferred.reject('Käytä tätä komentoa ryhmässä!');
     return deferred.promise;
   }
-  users.joinGroup(user, msg)
+  user.joinGroup(msg)
     .then(function(){
       deferred.resolve(Commands.chatResponse('Rippaa rauhassa kera ' + msg.chat.title + ' -kavereiden.'));
     }, function(err){
       console.error(err);
       deferred.resolve(Commands.chatResponse('Rippaa rauhassa kera ' + msg.chat.title + ' -kavereiden.'));
     });
+  context.end();
   return deferred.promise;
-}, '/moro - Lisää sinut ryhmään mukaan.');
-*/
+}
+
+Commands.registerUserCommand('/moro', '/moro - Lisää sinut ryhmään mukaan.', Commands.TYPE_ALL, [moro]);
