@@ -3,6 +3,12 @@
 let utils = {};
 let when = require('when');
 
+utils.getDateMinusHours = function(hours) {
+  const hourInMillis = 3600*1000;
+  const hoursAgo = new Date(Date.now()-hours*hourInMillis);
+  return hoursAgo;
+}
+
 function createSendPrivateMsgFunction(msg) {
   return function(text) {
     let deferred = when.defer();
@@ -26,7 +32,7 @@ function createSendChatMsgFunction(msg) {
       console.log('sent ' + text + ' to chat ' + msg.chat.title);
       deferred.resolve();
     }, function(err) {
-      console.error('couldn\'t send chat msg! Err: ' + err);
+      console.error('couldn\'t send chat msg! Err: ' + err + ' trace: ' + err.stack);
       deferred.reject(err);
     });
     return deferred.promise;

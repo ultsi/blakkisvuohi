@@ -30,7 +30,7 @@ contexts.Context.prototype.privateReply = function(text) {
     console.log('Sent ' + text + ' to ' + self.msg.from.username);
     deferred.resolve();
   }, function(err) {
-    console.error('couldn\'t send private msg! Err: ' + err);
+    console.error('couldn\'t send private msg! Err: ' + err + ' trace: ' + err.stack);
     deferred.reject(err);
   });
   return deferred.promise;

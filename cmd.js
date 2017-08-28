@@ -42,8 +42,11 @@ function initContext(userId, cmd, msg) {
 
 function retrieveContext(userId, msg) {
   let earlierContext = userContexts[userId];
-  earlierContext.msg = msg; // Update msg object to current one
-  return earlierContext;
+  if(earlierContext){
+    earlierContext.msg = msg; // Update msg object to current one
+    return earlierContext;
+  }
+  return false;
 }
 
 function callCommandFunction(context, cmd, msg, words) {
@@ -51,15 +54,32 @@ function callCommandFunction(context, cmd, msg, words) {
     // Context has been ended, do nothing.
     return;
   }
+
   const phaseFunc = cmd.funcs[context.phase];
 
-  return phaseFunc(context, msg, words)
-    .then(function(res){
-      console.log('Phase ' + context.phase + ' of cmd ' + firstWord + ' executed perfectly.');
-    }, function(err){
-      console.error('Couldn\'t execute cmd "'+firstWord+'" phase ' + context.phase +'! ' + err);
-      return msg.sendPrivateMsg('Virhe: ' + err + ' Komennon käyttö: ' + cmd.help);
-    });
+  if(cmd.userCommand) {
+    return users.find(msg.from.id)
+      .then(function(user){
+        phaseFunc(context, user, msg, words)
+          .then(function(res){
+            console.log('Phase ' + context.phase + ' of cmd ' + cmd.name + ' executed perfectly.');
+          }, function(err){
+            console.error('Couldn\'t execute cmd "'+cmd.name+'" phase ' + context.phase +'! ' + err + ' trace: ' + err.stack);
+            msg.sendPrivateMsg('Virhe: ' + err + ' Komennon käyttö: ' + cmd.help);
+          });
+      }, function(err){
+        console.error('Couldn\'t execute cmd "'+cmd.name+'" phase ' + context.phase +'! '+ err + ' trace: ' + err.stack);
+        msg.sendPrivateMsg('Virhe: Komennon käyttö: ' + cmd.help);
+      });
+  } else {
+    return phaseFunc(context, msg, words)
+      .then(function(res){
+        console.log('Phase ' + context.phase + ' of cmd ' + cmd.name + ' executed perfectly.');
+      }, function(err){
+        console.error('Couldn\'t execute cmd "'+cmd.name+'" phase ' + context.phase +'! ' + err + ' trace: ' + err.stack);
+        msg.sendPrivateMsg('Virhe: ' + err + ' Komennon käyttö: ' + cmd.help);
+      });
+  }
 }
 
 function printHelp(msg) {
@@ -93,11 +113,15 @@ Commands.call = function call(firstWord, msg, words) {
 
       callCommandFunction(context, cmd, msg, words);
     } catch (err) {
-      console.log('Couldn\'t execute cmd "'+cmd.name+'"! ' + err);
+      console.log('Couldn\'t execute cmd "'+cmd.name+'"! '+ err + ' trace: ' + err.stack);
       return msg.sendChatMsg('Virhe! Komennon käyttö: ' + cmd.help);
     }
   } else {
     const context = retrieveContext(userId, msg);
+    if(!context){
+      return msg.sendChatMsg('Aloita käyttö kirjoittamalla /help');
+    }
+
     const cmd = context.cmd;
     try {
       if(!context.isPrivateChat()){
@@ -106,7 +130,7 @@ Commands.call = function call(firstWord, msg, words) {
       }
       return callCommandFunction(context, cmd, msg, words);
     } catch (err) {
-      console.log('Couldn\'t execute cmd "' + cmd.name + '"! ' + err);
+      console.log('Couldn\'t execute cmd "' + cmd.name + '"! ' + err + ' trace: ' + err.stack);
       return msg.sendChatMsg('Virhe! Komennon käyttö: ' + cmd.help);
     }
   }

@@ -11,16 +11,14 @@ function isValidGender(gender){
   return gender === 'mies' || gender === 'nainen';
 }
 
-function user(userId, nick, weight, gender) {
-  return {
-    userId: userId,
-    nick: nick,
-    weight: weight,
-    gender: gender
-  };
+function User(userId, username, weight, gender) {
+  this.userId = userId;
+  this.username = username;
+  this.weight = weight;
+  this.gender = gender;
 }
 
-users.create = user;
+users.create = User;
 
 users.new = function(userId, nick, weight, gender) {
   let deferred = when.defer();
@@ -45,7 +43,7 @@ users.new = function(userId, nick, weight, gender) {
 
   query('insert into users (userId, nick, weight, gender) values ($1, $2, $3, $4)', params)
   .then(function(){
-    deferred.resolve(user(params[0], nick, params[2], gender));
+    deferred.resolve(new User(params[0], nick, params[2], gender));
   }, function(err) {
     console.error(err);
     deferred.reject(err);
@@ -62,12 +60,12 @@ users.find = function find(userId) {
     if(rows.length > 0 && info.rowCount > 0){
       try {
         let found = rows[0];
-        deferred.resolve(user(found.userid, found.nick, found.weight, found.gender));
+        deferred.resolve(new User(found.userid, found.nick, found.weight, found.gender));
       } catch (err) {
         deferred.reject(err);
       }
     } else {
-      deferred.resolve();
+      deferred.reject('user not found');
     }
   }, function(err){
     console.error(err);
@@ -76,9 +74,9 @@ users.find = function find(userId) {
   return deferred.promise;
 };
 
-users.drinkBooze = function(user, amount, description) {
+User.prototype.drinkBooze = function(amount, description) {
   let deferred = when.defer();
-  query('insert into users_drinks (userId, alcohol, description) values($1, $2, $3)', [user.userId, amount, description])
+  query('insert into users_drinks (userId, alcohol, description) values($1, $2, $3)', [this.userId, amount, description])
   .then(function(){
     deferred.resolve(amount);
   }, function(err){
@@ -88,28 +86,9 @@ users.drinkBooze = function(user, amount, description) {
   return deferred.promise;
 };
 
-function getHalfDayAgo() {
-  let hourInMillis = 3600*1000;
-  let oneDayAgo = new Date(Date.now()-12*hourInMillis);
-  return oneDayAgo;
-}
-
-function getOneDayAgo() {
-  let hourInMillis = 3600*1000;
-  let oneDayAgo = new Date(Date.now()-24*hourInMillis);
-  return oneDayAgo;
-}
-
-function getTwoDaysAgo() {
-  let hourInMillis = 3600*1000;
-  let twoDaysAgo = new Date(Date.now()-48*hourInMillis);
-  return twoDaysAgo;
-}
-
-users.getBooze = function(user) {
+User.prototype.getBooze = function() {
   let deferred = when.defer();
-  let twoDaysAgo = getTwoDaysAgo();
-  query('select alcohol, description, created from users_drinks where userId = $1 order by created asc',[user.userId])
+  query('select alcohol, description, created from users_drinks where userId = $1 order by created asc',[this.userId])
   .then(function(res){
     deferred.resolve(res[0]);
   }, function(err){
@@ -119,10 +98,10 @@ users.getBooze = function(user) {
   return deferred.promise;
 };
 
-users.getBoozeForLast48h = function(user) {
+User.prototype.getBoozeForLastHours = function(hours) {
   let deferred = when.defer();
-  let twoDaysAgo = getTwoDaysAgo();
-  query('select alcohol, description, created from users_drinks where userId = $1 and created > $2 order by created desc',[user.userId, twoDaysAgo.toISOString()])
+  let hoursAgo = utils.getDateMinusHours(hours);
+  query('select alcohol, description, created from users_drinks where userId = $1 and created > $2 order by created desc',[this.userId, hoursAgo.toISOString()])
   .then(function(res){
     deferred.resolve(res[0]);
   }, function(err){
@@ -132,9 +111,9 @@ users.getBoozeForLast48h = function(user) {
   return deferred.promise;
 };
 
-users.joinGroup = function(user, msg) {
+User.prototype.joinGroup = function(msg) {
   let deferred = when.defer();
-  query('insert into users_in_groups (userId, groupId) values ($1, $2)', [user.userId, msg.chat.id])
+  query('insert into users_in_groups (userId, groupId) values ($1, $2)', [this.userId, msg.chat.id])
   .then(function(res){
     deferred.resolve(res[0]);
   }, function(err){
@@ -158,7 +137,7 @@ function groupDrinksByUser(drinks) {
 
 users.getDrinkSumFor24hForGroup = function(groupId) {
   let deferred = when.defer();
-  let oneDayAgo = getOneDayAgo();
+  let oneDayAgo = utils.getDateMinusHours(24);
   query('select users.userId, users.nick, sum(alcohol) as sum from users_in_groups left outer join users_drinks on users_drinks.userid=users_in_groups.userid join users on users.userId=users_in_groups.userId where users_in_groups.groupId=$1 and users_drinks.created >= $2 group by users.userId', [groupId, oneDayAgo])
     .then(function(res){
       let drinkSums = res[0];
@@ -177,7 +156,7 @@ users.getDrinkSumFor24hForGroup = function(groupId) {
 
 users.getDrinkSumFor12hForGroup = function(groupId) {
   let deferred = when.defer();
-  let halfDayAgo = getHalfDayAgo();
+  let halfDayAgo = utils.getDateMinusHours(12);
   query('select users.userId, users.nick, sum(alcohol) as sum from users_in_groups left outer join users_drinks on users_drinks.userid=users_in_groups.userid join users on users.userId=users_in_groups.userId where users_in_groups.groupId=$1 and users_drinks.created >= $2 group by users.userId', [groupId, halfDayAgo])
     .then(function(res){
       let drinkSums = res[0];
@@ -208,9 +187,9 @@ users.getBoozeForGroup = function(groupId) {
   return deferred.promise;
 };
 
-users.getDrinkCountsByGroupsForUser = function(user) {
+User.prototype.getDrinkCountsByGroupsForUser = function() {
   let deferred = when.defer();
-  query('select count(*) as count, groupid from users_drinks join users_in_groups on users_drinks.userid=users_in_groups.userid where groupId IN (select groupId from users_in_groups where userid=$1) group by groupId', [user.userId])
+  query('select count(*) as count, groupid from users_drinks join users_in_groups on users_drinks.userid=users_in_groups.userid where groupId IN (select groupId from users_in_groups where userid=$1) group by groupId', [this.userId])
     .then(function(res){
       let rows = res[0];
       deferred.resolve(rows);
