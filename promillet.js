@@ -355,11 +355,15 @@ function makeDrinksString(drinks) {
       day = drinkShortDate;
       list.push(day);
     }
+    let drinkHours = drinkTime.getHours() + '';
+    if(drinkHours.length === 1){
+      drinkHours = "0" + drinkHours;
+    }
     let drinkMinutes = drinkTime.getMinutes() + '';
     if(drinkMinutes.length === 1){
       drinkMinutes = "0" + drinkMinutes;
     }
-    list.push(drinkTime.getHours() + ':' + drinkMinutes + ' ' + drink.description);
+    list.push(drinkHours + ':' + drinkMinutes + ' ' + drink.description);
   }
   return list.join('\n');
 }
