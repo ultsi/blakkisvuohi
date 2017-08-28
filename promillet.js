@@ -27,6 +27,7 @@ function signupPhase1(context, msg, words) {
     }
   }
   context.storeVariable('username', username);
+  context.storeVariable('userId', msg.from.id);
   context.nextPhase();
   return context.privateReply('Tervetuloa uuden tunnuksen luontiin ' + username + '. Alkoholilaskuria varten tarvitsen tiedot painosta ja sukupuolesta.\n\nSyötä ensimmäiseksi paino kilogrammoissa ja kokonaislukuna:');
 }
@@ -51,11 +52,21 @@ function signupPhase3(context, msg, words) {
     return context.privateReply('Syötä joko nainen tai mies');
   }
 
+  const userId = context.fetchVariable('userId');
   const username = context.fetchVariable('username');
   const weight = context.fetchVariable('weight');
   const gender = words[0];
   context.end();
-  return context.privateReply('Tallennettu. Olet ' + username + ', painat ' + weight + 'kg ja olet ' + gender);
+
+  let deferred = when.defer();
+  users.new(userId, username, weight, gender)
+  .then(function(user){
+    deferred.resolve(context.privateReply('Moikka ' + username + '! Tunnuksesi luotiin onnistuneesti. Muista, että antamani luvut alkoholista ovat vain arvioita, eikä niihin voi täysin luottaa. Ja eikun juomaan!'));
+  }, function(err){
+    console.log(err);
+    deferred.reject('Isompi ongelma, ota yhteyttä adminiin.');
+  })
+  return deferred.promise;
 }
 
 Commands.register('/luotunnus', 'Luo itsellesi tunnus laskureita varten.', Commands.TYPE_PRIVATE, [signupPhase1, signupPhase2, signupPhase3]);
