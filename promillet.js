@@ -182,6 +182,10 @@ drinkCommand[1] = function (context, user, msg, words) {
 };
 
 drinkCommand.miedot = function (context, user, msg, words) {
+  if(msg.text.toLowerCase() === drinkCommand.toStartText.toLowerCase()){
+    context.toPhase(1);
+    return context.privateReplyWithKeyboard('Valitse juoman kategoria', drinkCommand.startKeyboard);
+  }
   const milds = alcoconstants.milds;
   let found = null;
   for(let key in milds) {
