@@ -292,7 +292,7 @@ function kaljaCommand(context, user, msg, words) {
   return deferred.promise;
 }
 
-Commands.registerUserCommand('/kalja033', '/kalja033 - pikanäppäin yhdelle kappaleelle olutta. Ammattilaiskäyttöön.', Commands.TYPE_PRIVATE, kaljaCommand);
+Commands.registerUserCommand('/kalja033', '/kalja033 - pikanäppäin yhdelle kappaleelle olutta. Ammattilaiskäyttöön.', Commands.TYPE_PRIVATE, [kaljaCommand]);
 
 function kalja05Command(context, user, msg, words) {
   let deferred = when.defer();
@@ -307,7 +307,7 @@ function kalja05Command(context, user, msg, words) {
   return deferred.promise;
 }
 
-Commands.registerUserCommand('/kalja05', '/kalja05 - pikanäppäin yhdelle kappaleelle 0.5l olutta. Ammattilaiskäyttöön.', Commands.TYPE_PRIVATE, kalja05Command);
+Commands.registerUserCommand('/kalja05', '/kalja05 - pikanäppäin yhdelle kappaleelle 0.5l olutta. Ammattilaiskäyttöön.', Commands.TYPE_PRIVATE, [kalja05Command]);
 
 function annokset(context, user, msg, words) {
   let deferred = when.defer();
