@@ -15,6 +15,10 @@ alcoconstants.milds = {
     print: alcoconstants.emoji.beer + ' 33cl 4.7%',
     mg: alcomath.calcAlcoholMilliGrams(0.047, 0.33)
   },
+  beer04 {
+    print: alcoconstants.emoji.beer + ' 40cl 4.7%',
+    mg: alcomath.calcAlcoholMilliGrams(0.047, 0.40)
+  },
   beer4: {
     print: alcoconstants.emoji.beer + ' 33cl 5.5%',
     mg: alcomath.calcAlcoholMilliGrams(0.055, 0.33)

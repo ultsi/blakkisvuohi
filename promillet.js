@@ -156,8 +156,8 @@ let drinkCommand = {};
 drinkCommand.toStartText = "Alkuun";
 drinkCommand.startKeyboard = [['Miedot', 'Tiukat', 'Oma']];
 drinkCommand.miedotReply = {text: 'Valitse mieto', keyboard: [[alcoconstants.milds.beercan.print, alcoconstants.milds.beer4.print, alcoconstants.milds.beer05.print],
-                                                             [alcoconstants.milds.beerpint.print, alcoconstants.milds.lonkero.print, alcoconstants.milds.wine12.print],
-                                                             [alcoconstants.milds.wine16.print, drinkCommand.toStartText]] };
+                                                             [alcoconstants.milds.beer04.print, .milds.beerpint.print, alcoconstants.milds.lonkero.print],
+                                                             [ alcoconstants.milds.wine12.print, alcoconstants.milds.wine16.print, drinkCommand.toStartText]] };
 
 drinkCommand.tiukatReply = {text: 'Valitse tiukka', keyboard: [[alcoconstants.booze.mild.print, alcoconstants.booze.medium.print, alcoconstants.booze.basic.print, drinkCommand.toStartText]]};
 
