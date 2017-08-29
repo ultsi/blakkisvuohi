@@ -153,15 +153,17 @@ function drinkBoozeReturnPermilles(user, amount, description, msg){
 */
 
 let drinkCommand = {};
+drinkCommand.toStartText = "Alkuun";
+drinkCommand.startKeyboard = [['Miedot', 'Tiukat', 'Oma']];
 drinkCommand.miedotReply = {text: 'Valitse mieto', keyboard: [[alcoconstants.milds.beercan.print, alcoconstants.milds.beer4.print, alcoconstants.milds.beer05.print],
                                                              [alcoconstants.milds.beerpint.print, alcoconstants.milds.lonkero.print, alcoconstants.milds.wine12.print],
-                                                             [alcoconstants.milds.wine16.print]] };
+                                                             [alcoconstants.milds.wine16.print, drinkCommand.toStartText]] };
 
-drinkCommand.tiukatReply = {text: 'Valitse tiukka', keyboard: [[alcoconstants.booze.mild.print, alcoconstants.booze.medium.print, alcoconstants.booze.basic.print]]};
+drinkCommand.tiukatReply = {text: 'Valitse tiukka', keyboard: [[alcoconstants.booze.mild.print, alcoconstants.booze.medium.print, alcoconstants.booze.basic.print, drinkCommand.toStartText]]};
 
 drinkCommand[0] = function (context, user, msg, words) {
   context.nextPhase();
-  return context.privateReplyWithKeyboard('Valitse juoman kategoria', [['Miedot', 'Tiukat', 'Oma']]);
+  return context.privateReplyWithKeyboard('Valitse juoman kategoria', drinkCommand.startKeyboard);
 };
 
 drinkCommand[1] = function (context, user, msg, words) {
@@ -175,7 +177,7 @@ drinkCommand[1] = function (context, user, msg, words) {
     context.toPhase('omajuoma');
     return context.privateReplyWithKeyboard('Syötä juoman tilavuusprosentti, esim: 12.5.');
   } else {
-    return context.privateReplyWithKeyboard('Väärä valinta, valitse juoman kategoria', [['Miedot', 'Tiukat', 'Oma']]);
+    return context.privateReplyWithKeyboard('Väärä valinta, valitse juoman kategoria', drinkCommand.startKeyboard);
   }
 };
 
@@ -204,6 +206,10 @@ drinkCommand.miedot = function (context, user, msg, words) {
 };
 
 drinkCommand.tiukat = function (context, user, msg, words) {
+  if(msg.text.toLowerCase() === drinkCommand.toStartText.toLowerCase()){
+    context.toPhase(1);
+    return context.privateReplyWithKeyboard('Valitse juoman kategoria', drinkCommand.startKeyboard);
+  }
   const booze = alcoconstants.booze;
   let found = null;
   for(let key in booze) {
