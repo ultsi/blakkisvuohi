@@ -279,6 +279,36 @@ drinkCommand.omajuomaEnd = function(context, user, msg, words) {
 
 Commands.registerUserCommand('/juoma', '/juoma - lisää yksi juoma tilastoihin', Commands.TYPE_PRIVATE, drinkCommand);
 
+function kaljaCommand(context, user, msg, words) {
+  let deferred = when.defer();
+  drinkBoozeReturnPermilles(user, alcomath.KALJA033, '/kalja033', msg)
+    .then(function(permilles){
+      deferred.resolve(context.privateReply(getRandomResponse() + ' ' + permilles.toFixed(2) + '‰'));
+    }, function(err){
+      console.error(err.stack);
+      deferred.reject('Isompi ongelma, ota yhteyttä adminiin.');
+    });
+  context.end();
+  return deferred.promise;
+}
+
+Commands.registerUserCommand('/kalja033', '/kalja033 - pikanäppäin yhdelle kappaleelle olutta. Ammattilaiskäyttöön.', Commands.TYPE_PRIVATE, kaljaCommand);
+
+function kalja05Command(context, user, msg, words) {
+  let deferred = when.defer();
+  drinkBoozeReturnPermilles(user, alcomath.KALJA05, '/kalja05', msg)
+    .then(function(permilles){
+      deferred.resolve(context.privateReply(getRandomResponse() + ' ' + permilles.toFixed(2) + '‰'));
+    }, function(err){
+      console.error(err.stack);
+      deferred.reject('Isompi ongelma, ota yhteyttä adminiin.');
+    });
+  context.end();
+  return deferred.promise;
+}
+
+Commands.registerUserCommand('/kalja05', '/kalja05 - pikanäppäin yhdelle kappaleelle 0.5l olutta. Ammattilaiskäyttöön.', Commands.TYPE_PRIVATE, kalja05Command);
+
 function annokset(context, user, msg, words) {
   let deferred = when.defer();
   user.getBooze()
