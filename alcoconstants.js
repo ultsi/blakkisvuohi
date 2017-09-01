@@ -7,8 +7,6 @@ alcoconstants.emoji = {
   beer: '🍺',
   wine: '🍷'
 };
-[['🍺 33cl 4.5%', '🍺 33cl 4.7%', '🍺 33cl 5.3%', '🍺 50cl 4.7%'],
-                                                          ['🍺 56.8cl 4.7%', 'Lonkero 33cl 5.3%', '🍷 12cl 12%', '🍷 16cl 12%']]
 
 alcoconstants.milds = {
   beercan: {
