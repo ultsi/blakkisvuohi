@@ -312,25 +312,33 @@ Commands.registerUserCommand('/kalja05', '/kalja05 - pikanäppäin yhdelle kappa
 function annokset(context, user, msg, words) {
   let deferred = when.defer();
   if(context.isPrivateChat()){
-    user.getBooze()
-      .then(function(drinks){
-        let grams = alcomath.sumGrams(drinks);
-        deferred.resolve(context.privateReply('Olet aikojen saatossa tuhonnut ' + grams.toFixed(2) + ' grammaa alkoholia, joka vastaa ' + (grams / 12.2).toFixed(2) + ' annosta.'));
+    user.getDrinkSum()
+      .then(function(res){
+        let sum = res.sum;
+        let created = new Date(res.created);
+        let oneDay = 24*60*60*1000; // hours*minutes*seconds*milliseconds
+        let daysBetween = Math.round((new Date().getTime() - created.getTime())/oneDay);
+        let grams = sum / 1000.0;
+        deferred.resolve(context.privateReply('Olet ' + daysBetween + ' päivän aikana tuhonnut ' + Math.round(grams) + ' grammaa alkoholia, joka vastaa ' + Math.round(grams /12.2) + ' annosta. Keskimäärin olet juonut ' + Math.round((grams / daysBetween / 12.2)) + ' annosta per päivä. Hienosti.'));
       }, function(err){
         console.error(err);
         deferred.reject('Isompi ongelma, ota yhteyttä adminiin.');
       });
-    context.end();
   } else {
-    users.getBoozeForGroup(msg.chat.id)
-      .then(function(sum){
+    users.getDrinkSumForGroup(msg.chat.id)
+      .then(function(res){
+        let sum = res.sum;
+        let created = new Date(res.created);
+        let oneDay = 24*60*60*1000; // hours*minutes*seconds*milliseconds
+        let daysBetween = Math.round((new Date().getTime() - created.getTime())/oneDay);
         let grams = sum / 1000.0;
-        deferred.resolve(context.chatReply('Ryhmän jäsenet ovat aikojen saatossa tuhonneet ' + grams.toFixed(2) + ' grammaa alkoholia, joka vastaa ' + (grams /12.2).toFixed(2) + ' annosta. Hienosti.'));
+        deferred.resolve(context.chatReply('Ryhmän jäsenet ovat ' + daysBetween + ' päivän aikana tuhonneet ' + Math.round(grams) + ' grammaa alkoholia, joka vastaa ' + Math.round(grams /12.2) + ' annosta. Keskimäärin on juotu ' + Math.round((grams / daysBetween / 12.2)) + ' annosta per päivä. Hienosti.'));
       }, function(err){
         console.error(err);
         deferred.reject(err);
       });
   }
+context.end();
   return deferred.promise;
 }
 
@@ -425,7 +433,7 @@ function otinko(context, user, msg, words) {
     .then(function(drinks){
       try {
         let drinkList = makeDrinksString(drinks);
-        deferred.resolve(context.privateReply(drinkList));
+        deferred.resolve(context.privateReply('Viimeisen kahden päivän häppeningit:\n' + drinkList));
       } catch (err) {
         console.error(err);
         deferred.reject('Isompi ongelma, ota yhteyttä adminiin.');

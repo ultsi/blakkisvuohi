@@ -98,6 +98,18 @@ User.prototype.getBooze = function() {
   return deferred.promise;
 };
 
+User.prototype.getDrinkSum = function() {
+  let deferred = when.defer();
+  query('select sum(alcohol) as sum, min(created) as created from users_drinks where userId = $1',[this.userId])
+  .then(function(res){
+    deferred.resolve(res[0][0]);
+  }, function(err){
+    console.error(err);
+    deferred.reject(err);
+  });
+  return deferred.promise;
+};
+
 User.prototype.undoDrink = function() {
   let deferred = when.defer();
   query('delete from users_drinks where created=(select created from users_drinks where userid = $1 order by created desc limit 1)', [this.userId])
@@ -150,10 +162,9 @@ function groupDrinksByUser(drinks) {
 
 users.getDrinkSumForGroup = function(groupId) {
   let deferred = when.defer();
-  query('select sum(alcohol) as sum from users_in_groups left outer join users_drinks on users_drinks.userid=users_in_groups.userid')
+  query('select sum(alcohol) as sum, min(created) as created from users_in_groups left outer join users_drinks on users_drinks.userid=users_in_groups.userid and users_in_groups.groupid=$1', [groupId])
     .then(function(res){
-      let sum = res[0][0];
-      deferred.resolve(sum);
+      deferred.resolve(res[0][0]);
     }, function(err){
       console.error(err.stack);
       deferred.reject(err);
