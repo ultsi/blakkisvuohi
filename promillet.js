@@ -325,7 +325,7 @@ function annokset(context, user, msg, words) {
     users.getBoozeForGroup(msg.chat.id)
       .then(function(sum){
         let grams = sum / 1000.0;
-        deferred.resolve(context.privateReply('Ryhmän jäsenet ovat aikojen saatossa tuhonneet ' + grams.toFixed(2) + ' grammaa alkoholia, joka vastaa ' + (grams /12.2).toFixed(2) + ' annosta. Hienosti.'));
+        deferred.resolve(context.chatReply('Ryhmän jäsenet ovat aikojen saatossa tuhonneet ' + grams.toFixed(2) + ' grammaa alkoholia, joka vastaa ' + (grams /12.2).toFixed(2) + ' annosta. Hienosti.'));
       }, function(err){
         console.error(err);
         deferred.reject(err);
