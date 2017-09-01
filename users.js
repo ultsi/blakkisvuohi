@@ -148,6 +148,19 @@ function groupDrinksByUser(drinks) {
   return drinksByUser;
 }
 
+users.getDrinkSumForGroup = function(groupId) {
+  let deferred = when.defer();
+  query('select sum(alcohol) as sum from users_in_groups left outer join users_drinks on users_drinks.userid=users_in_groups.userid')
+    .then(function(res){
+      let sum = res[0][0];
+      deferred.resolve(sum);
+    }, function(err){
+      console.error(err.stack);
+      deferred.reject(err);
+    });
+  return deferred.promise;
+}
+
 users.getDrinkSumFor24hForGroup = function(groupId) {
   let deferred = when.defer();
   let oneDayAgo = utils.getDateMinusHours(24);

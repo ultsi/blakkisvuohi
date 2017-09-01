@@ -311,19 +311,30 @@ Commands.registerUserCommand('/kalja05', '/kalja05 - pikanäppäin yhdelle kappa
 
 function annokset(context, user, msg, words) {
   let deferred = when.defer();
-  user.getBooze()
-    .then(function(drinks){
-      let grams = alcomath.sumGrams(drinks);
-      deferred.resolve(context.privateReply('Olet aikojen saatossa tuhonnut ' + grams.toFixed(2) + ' grammaa alkoholia, joka vastaa ' + (grams / 12.2).toFixed(2) + ' annosta.'));
-    }, function(err){
-      console.error(err);
-      deferred.reject('Isompi ongelma, ota yhteyttä adminiin.');
-    });
-  context.end();
+  if(context.isPrivateChat()){
+    user.getBooze()
+      .then(function(drinks){
+        let grams = alcomath.sumGrams(drinks);
+        deferred.resolve(context.privateReply('Olet aikojen saatossa tuhonnut ' + grams.toFixed(2) + ' grammaa alkoholia, joka vastaa ' + (grams / 12.2).toFixed(2) + ' annosta.'));
+      }, function(err){
+        console.error(err);
+        deferred.reject('Isompi ongelma, ota yhteyttä adminiin.');
+      });
+    context.end();
+  } else {
+    users.getBoozeForGroup(msg.chat.id)
+      .then(function(sum){
+        let grams = sum / 1000.0;
+        deferred.resolve(context.privateReply('Ryhmän jäsenet ovat aikojen saatossa tuhonneet ' + grams.toFixed(2) ' grammaa alkoholia, joka vastaa ' + (grams /12.2).toFixed(2) + ' annosta. Hienosti.'));
+      }, function(err){
+        console.error(err);
+        deferred.reject(err);
+      });
+  }
   return deferred.promise;
 }
 
-Commands.registerUserCommand('/annokset', '/annokset - listaa kaikki annokset.', Commands.TYPE_PRIVATE, [annokset]);
+Commands.registerUserCommand('/annokset', '/annokset - listaa kaikki annokset.', Commands.TYPE_ALL, [annokset]);
 
 function listPermilles(context, user, msg, words) {
   let deferred = when.defer();
