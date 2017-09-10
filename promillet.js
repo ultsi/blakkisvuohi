@@ -318,7 +318,7 @@ function annokset(context, user, msg, words) {
         let sum = res.sum;
         let created = new Date(res.created);
         let oneDay = 24*60*60*1000; // hours*minutes*seconds*milliseconds
-        let daysBetween = Math.round((new Date().getTime() - created.getTime())/oneDay);
+        let daysBetween = (words[1] && parseInt(words[1])) ? parseInt(words[1]) :  Math.round((new Date().getTime() - created.getTime())/oneDay);
         let grams = sum / 1000.0;
         deferred.resolve(context.privateReply('Olet ' + daysBetween + ' päivän aikana tuhonnut ' + Math.round(grams) + ' grammaa alkoholia, joka vastaa ' + Math.round(grams /12.2) + ' annosta. Keskimäärin olet juonut ' + Math.round((grams / daysBetween / 12.2)) + ' annosta per päivä. Hienosti.'));
       }, function(err){
@@ -331,7 +331,7 @@ function annokset(context, user, msg, words) {
         let sum = res.sum;
         let created = new Date(res.created);
         let oneDay = 24*60*60*1000; // hours*minutes*seconds*milliseconds
-        let daysBetween = Math.round((new Date().getTime() - created.getTime())/oneDay);
+        let daysBetween = (words[1] && parseInt(words[1])) ? parseInt(words[1]) :  Math.round((new Date().getTime() - created.getTime())/oneDay);
         let grams = sum / 1000.0;
         deferred.resolve(context.chatReply('Ryhmän jäsenet ovat ' + daysBetween + ' päivän aikana tuhonneet ' + Math.round(grams) + ' grammaa alkoholia, joka vastaa ' + Math.round(grams /12.2) + ' annosta. Keskimäärin on juotu ' + Math.round((grams / daysBetween / 12.2)) + ' annosta per päivä. Hienosti.'));
       }, function(err){
@@ -343,7 +343,7 @@ function annokset(context, user, msg, words) {
   return deferred.promise;
 }
 
-Commands.registerUserCommand('/annokset', '/annokset <päivissä> - listaa kaikki annokset. Voit myös antaa päivät parametrina', Commands.TYPE_ALL, [annokset]);
+Commands.registerUserCommand('/annokset', '/annokset <päivissä> - listaa kaikki annokset. Voit myös antaa päivät parametrina, jolloin näet kulutuksen viime päiviltä.', Commands.TYPE_ALL, [annokset]);
 
 function listPermilles(context, user, msg, words) {
   let deferred = when.defer();
