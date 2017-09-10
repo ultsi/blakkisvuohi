@@ -98,9 +98,10 @@ User.prototype.getBooze = function() {
   return deferred.promise;
 };
 
-User.prototype.getDrinkSum = function() {
+User.prototype.getDrinkSumForXHours = function(hours) {
   let deferred = when.defer();
-  query('select sum(alcohol) as sum, min(created) as created from users_drinks where userId = $1',[this.userId])
+  let hoursAgo = utils.getDateMinusHours(hours);
+  query('select sum(alcohol) as sum, min(created) as created from users_drinks where userId = $1 and created > $2 ',[this.userId, hoursAgo])
   .then(function(res){
     deferred.resolve(res[0][0]);
   }, function(err){
@@ -163,6 +164,19 @@ function groupDrinksByUser(drinks) {
 users.getDrinkSumForGroup = function(groupId) {
   let deferred = when.defer();
   query('select sum(alcohol) as sum, min(created) as created from users_in_groups left outer join users_drinks on users_drinks.userid=users_in_groups.userid and users_in_groups.groupid=$1', [groupId])
+    .then(function(res){
+      deferred.resolve(res[0][0]);
+    }, function(err){
+      console.error(err.stack);
+      deferred.reject(err);
+    });
+  return deferred.promise;
+}
+
+users.getDrinkSumForGroupForXHours = function(groupId, hours) {
+  let deferred = when.defer();
+  let hoursAgo = utils.getDateMinusHours(hours);
+  query('select sum(alcohol) as sum, min(created) as created from users_in_groups left outer join users_drinks on users_drinks.userid=users_in_groups.userid and users_in_groups.groupid=$1 and users_drinks.created >= $2', [groupId, hoursAgo])
     .then(function(res){
       deferred.resolve(res[0][0]);
     }, function(err){

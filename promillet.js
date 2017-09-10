@@ -311,8 +311,9 @@ Commands.registerUserCommand('/kalja05', '/kalja05 - pikanäppäin yhdelle kappa
 
 function annokset(context, user, msg, words) {
   let deferred = when.defer();
+  let hours = (words[1] && parseInt(words[1])) ? parseInt(words[1])*24 : 4*365*24;
   if(context.isPrivateChat()){
-    user.getDrinkSum()
+    user.getDrinkSumForXHours(hours)
       .then(function(res){
         let sum = res.sum;
         let created = new Date(res.created);
@@ -325,7 +326,7 @@ function annokset(context, user, msg, words) {
         deferred.reject('Isompi ongelma, ota yhteyttä adminiin.');
       });
   } else {
-    users.getDrinkSumForGroup(msg.chat.id)
+    users.getDrinkSumForGroupForXHours(msg.chat.id, hours)
       .then(function(res){
         let sum = res.sum;
         let created = new Date(res.created);
@@ -338,11 +339,11 @@ function annokset(context, user, msg, words) {
         deferred.reject(err);
       });
   }
-context.end();
+  context.end();
   return deferred.promise;
 }
 
-Commands.registerUserCommand('/annokset', '/annokset - listaa kaikki annokset.', Commands.TYPE_ALL, [annokset]);
+Commands.registerUserCommand('/annokset', '/annokset <päivissä> - listaa kaikki annokset. Voit myös antaa päivät parametrina', Commands.TYPE_ALL, [annokset]);
 
 function listPermilles(context, user, msg, words) {
   let deferred = when.defer();
