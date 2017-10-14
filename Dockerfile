@@ -1,4 +1,4 @@
-FROM node:8.7.0
+FROM node:8.7.0-alpine
 
 WORKDIR /app/blakkisvuohi
 
