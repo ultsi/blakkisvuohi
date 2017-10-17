@@ -17,6 +17,7 @@ docker pull postgres:9.6.5-alpine
 
 docker run --name postgres \
   -v /srv/lxc/postgresql/data:/var/lib/postgresql/data \
+  --restart always \
   -d postgres:9.6.5-alpine
 
 ```
@@ -29,5 +30,6 @@ docker run --name blakkisvuohi \
   -e TOKEN="***REMOVED***" \
   -e NODE_ENV="production" \
   -e DATABASE_URL="***REMOVED***" \
+  --restart always \
   -d blakkisvuohi:latest
 ```
