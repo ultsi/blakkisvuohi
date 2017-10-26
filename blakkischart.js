@@ -16,7 +16,7 @@ blakkisChart.getLineGraphStream = function(data) {
 
     // create a new view instance for a given Vega JSON spec
     var view = new vega
-      .View(vega.parse(lineChartTemplate))
+      .View(vega.parse(lineChart))
       .renderer('none')
       .initialize();
 

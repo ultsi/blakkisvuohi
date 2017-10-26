@@ -479,11 +479,16 @@ Commands.registerUserCommand('/moro', '/moro - Lisää sinut ryhmään mukaan.',
 
 function formatDataForPlotting(data) {
   // only use nick, alcohol and hr
-  var formatted = [];
-  for(var i in data) {
-    formatted[i] = {"x": data[i].hr, "y": data[i].sum, "symbol": data[i].nick};
+  try{
+    var formatted = [];
+    for(var i in data) {
+      formatted[i] = {"x": data[i].hr, "y": data[i].sum, "symbol": data[i].nick};
+    }
+    return formatted;
+  } catch (err){
+    console.log("format data for plotting error: " + err);
+    return {};
   }
-  return formatted;
 };
 
 function annoskuvaaja(context, user, msg, words) {
