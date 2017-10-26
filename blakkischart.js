@@ -6,7 +6,7 @@ const lineChartTemplate = require('./linechart.json');
 
 const blakkisChart = {};
 
-blakkisChart.getLineGraphBuffer = function(data) {
+blakkisChart.getLineGraphStream = function(data) {
   let deferred = when.defer();
   console.log("Trying to make a line graph from data");
   console.log(data);
@@ -25,8 +25,8 @@ blakkisChart.getLineGraphBuffer = function(data) {
       .toCanvas()
       .then(function (canvas) {
         // process node-canvas instance for example, generate a PNG stream to write var
-        console.log('Generating PNG buffer...');
-        deferred.resolve(canvas.toBuffer());
+        console.log('Generating PNG stream...');
+        deferred.resolve(canvas.createPNGStream());
       })
       .catch(function (err) {
         console.log("Error writing PNG to file:")
@@ -38,7 +38,7 @@ blakkisChart.getLineGraphBuffer = function(data) {
     deferred.reject();
   }
 
-
+  return deferred.promise;
 };
 
 module.exports = blakkisChart;
