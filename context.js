@@ -73,6 +73,20 @@ contexts.Context.prototype.chatReply = function(text) {
   return deferred.promise;
 };
 
+contexts.Context.prototype.imageReply = function(stream, caption) {
+  let deferred = when.defer();
+  let self = this;
+  global.bot.sendPhoto(self.msg.chat.id, stream, {caption: caption})
+  .then(function () {
+    console.log('Sent a photo to chat ' + self.msg.chat.title);
+    deferred.resolve();
+  }, function(err) {
+    console.error('couldn\'t send chat msg! Err: ' + err);
+    deferred.reject(err);
+  });
+  return deferred.promise;
+}
+
 contexts.Context.prototype.storeVariable = function(key, value) {
   this.variables[key] = value;
 };
