@@ -502,11 +502,11 @@ function annoskuvaaja(context, user, msg, words) {
       console.log(data);
       var formatted = formatDataForPlotting(data);
       console.log('formatted data');
-      blakkisChart.getLineGraphBuffer(data)
-        .then(function(buffer){
-          console.log('got the line graph buffer');
-          console.log(buffer);
-          deferred.resolve(context.photoReply(buffer, 'Annoskuvaaja feat. ' + msg.chat.title));
+      blakkisChart.getLineGraphStream(data)
+        .then(function(stream){
+          console.log('got the line graph stream');
+          console.log(stream);
+          deferred.resolve(context.photoReply(stream, 'Annoskuvaaja feat. ' + msg.chat.title));
         }, function(err){
           console.log(err);
           deferred.resolve(context.chatReply('Kuvan muodostus epäonnistui!'));
