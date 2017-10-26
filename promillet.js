@@ -485,7 +485,7 @@ function formatDataForPlotting(data) {
   try{
     var formatted = [];
     for(var i in data) {
-      formatted[i] = {"x": data[i].hr, "y": data[i].sum, "symbol": data[i].nick};
+      formatted[i] = {"x": data[i].hr, "y": Math.round(Number(data[i].sum)/10600.0), "symbol": data[i].nick};
     }
     console.log(formatted);
     return formatted;
