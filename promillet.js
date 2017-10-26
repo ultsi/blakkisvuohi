@@ -468,7 +468,7 @@ function moro(context, user, msg, words) {
     .then(function(){
       deferred.resolve(context.chatReply('Rippaa rauhassa kera ' + msg.chat.title + ' -kavereiden.'));
     }, function(err){
-      console.error(err);
+      console.log(err);
       deferred.resolve(context.chatReply('Rippaa rauhassa kera ' + msg.chat.title + ' -kavereiden.'));
     });
   context.end();
@@ -488,17 +488,19 @@ function formatDataForPlotting(data) {
 
 function annoskuvaaja(context, user, msg, words) {
   let deferred = when.defer();
-
+  console.log('trying to form graph');
   users.getBoozeByHourForGroup(msg.chat.id)
     .then(function(data){
+      console.log('got data');
       blakkisChart.getLineGraphStream(formatDataForPlotting(data))
         .then(function(stream){
           deferred.resolve(context.photoReply(stream, 'Annoskuvaaja feat. ' + msg.chat.title));
         }, function(err){
+          console.log(err);
           deferred.resolve(context.chatReply('Kuvan muodostus epäonnistui!'));
         });
     }, function(err){
-      console.error(err);
+      console.log(err);
     });
   context.end();
   return deferred.promise;
