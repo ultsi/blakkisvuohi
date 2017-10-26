@@ -504,4 +504,4 @@ function annoskuvaaja(context, user, msg, words) {
   return deferred.promise;
 }
 
-Commands.registerUserCommand('/Annoskuvaaja', '/annoskuvaaja - Näyttää ryhmän annokset kuvaajana.', Commands.TYPE_ALL, [annoskuvaaja]);
+Commands.registerUserCommand('/annoskuvaaja', '/annoskuvaaja - Näyttää ryhmän annokset kuvaajana.', Commands.TYPE_ALL, [annoskuvaaja]);
