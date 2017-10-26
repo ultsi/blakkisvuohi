@@ -476,3 +476,31 @@ function moro(context, user, msg, words) {
 }
 
 Commands.registerUserCommand('/moro', '/moro - Lisää sinut ryhmään mukaan.', Commands.TYPE_ALL, [moro]);
+
+function formatDataForPlotting(data) {
+  // only use nick, alcohol and hr
+  var formatted = [];
+  for(var i in data) {
+    formatted[i] = {"x": data[i].hr, "y": data[i].sum, "symbol": data[i].nick};
+  }
+  return formatted;
+};
+
+
+function annoskuvaaja(context, user, msg, words) {
+  let deferred = when.defer();
+
+  users.getBoozeByHourForGroup(msg.chat.id)
+    .then(function(data){
+      blakkisChart.getLineGraphStream(formatDataForPlotting(data))
+        .then(function(stream){
+          deferred.resolve(context.photoReply(stream, 'Annoskuvaaja feat. ' + msg.chat.title));
+        }, function(err){
+          deferred.resolve(context.chatReply('Kuvan muodostus epäonnistui!'));
+        });
+    }, function(err){
+      console.error(err);
+    });
+  context.end();
+  return deferred.promise;
+}
