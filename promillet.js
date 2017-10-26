@@ -481,11 +481,13 @@ Commands.registerUserCommand('/moro', '/moro - Lisää sinut ryhmään mukaan.',
 function formatDataForPlotting(data) {
   // only use nick, alcohol and hr
   console.log("Formatting data for plotting");
+  console.log(data);
   try{
     var formatted = [];
     for(var i in data) {
       formatted[i] = {"x": data[i].hr, "y": data[i].sum, "symbol": data[i].nick};
     }
+    console.log(formatted);
     return formatted;
   } catch (err){
     console.log("format data for plotting error: " + err);
@@ -502,7 +504,7 @@ function annoskuvaaja(context, user, msg, words) {
       console.log(data);
       var formatted = formatDataForPlotting(data);
       console.log('formatted data');
-      blakkisChart.getLineGraphBuffer(data)
+      blakkisChart.getLineGraphBuffer(formatted)
         .then(function(buffer){
           console.log('got the line graph buffer');
           console.log(buffer);
