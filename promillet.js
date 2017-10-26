@@ -486,7 +486,6 @@ function formatDataForPlotting(data) {
   return formatted;
 };
 
-
 function annoskuvaaja(context, user, msg, words) {
   let deferred = when.defer();
 
@@ -504,3 +503,5 @@ function annoskuvaaja(context, user, msg, words) {
   context.end();
   return deferred.promise;
 }
+
+Commands.registerUserCommand('/Annoskuvaaja', '/annoskuvaaja - Näyttää ryhmän annokset kuvaajana.', Commands.TYPE_ALL, [annoskuvaaja]);
