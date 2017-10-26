@@ -6,6 +6,7 @@ const users = require('./users.js');
 const when = require('when');
 const alcomath = require('./alcomath.js');
 const alcoconstants = require('./alcoconstants.js');
+const blakkisChart = require('./blakkischart.js');
 
 const DRINK_RESPONSES = ['Bäää.', 'Uuteen nousuun.', 'Muista juoda vettä!', 'Aamu alkaa A:lla.', 'Muista juoda vettä!', 'Juo viinaa, viina on hyvää.', 'Meno on meno.', 'Lörs lärä, viinaa!', 'Muista juoda vettä!'];
 
