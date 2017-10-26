@@ -13,6 +13,7 @@ blakkisChart.getLineGraphBuffer = function(data) {
   try {
     var lineChart = lineChartTemplate;
     lineChart.data.values = data;
+    console.log(lineChart);
 
     // create a new view instance for a given Vega JSON spec
     var view = new vega
