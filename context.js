@@ -73,7 +73,7 @@ contexts.Context.prototype.chatReply = function(text) {
   return deferred.promise;
 };
 
-contexts.Context.prototype.imageReply = function(stream, caption) {
+contexts.Context.prototype.photoReply = function(stream, caption) {
   let deferred = when.defer();
   let self = this;
   global.bot.sendPhoto(self.msg.chat.id, stream, {caption: caption})
