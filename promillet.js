@@ -492,8 +492,10 @@ function annoskuvaaja(context, user, msg, words) {
   users.getBoozeByHourForGroup(msg.chat.id)
     .then(function(data){
       console.log('got data');
+      console.log(data);
       blakkisChart.getLineGraphStream(formatDataForPlotting(data))
         .then(function(stream){
+          console.log(stream);
           deferred.resolve(context.photoReply(stream, 'Annoskuvaaja feat. ' + msg.chat.title));
         }, function(err){
           console.log(err);
