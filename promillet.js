@@ -479,6 +479,7 @@ Commands.registerUserCommand('/moro', '/moro - Lisää sinut ryhmään mukaan.',
 
 function formatDataForPlotting(data) {
   // only use nick, alcohol and hr
+  console.log("Formatting data for plotting");
   try{
     var formatted = [];
     for(var i in data) {
@@ -487,7 +488,7 @@ function formatDataForPlotting(data) {
     return formatted;
   } catch (err){
     console.log("format data for plotting error: " + err);
-    return {};
+    return [];
   }
 };
 
@@ -498,8 +499,11 @@ function annoskuvaaja(context, user, msg, words) {
     .then(function(data){
       console.log('got data');
       console.log(data);
-      blakkisChart.getLineGraphStream(formatDataForPlotting(data))
+      var formatted = formatDataForPlotting(data);
+      console.log('formatted data');
+      blakkisChart.getLineGraphStream(data)
         .then(function(stream){
+          console.log('got the line graph stream');
           console.log(stream);
           deferred.resolve(context.photoReply(stream, 'Annoskuvaaja feat. ' + msg.chat.title));
         }, function(err){
