@@ -483,12 +483,37 @@ function formatDataForPlotting(data) {
   console.log("Formatting data for plotting");
   console.log(data);
   try{
-    var formatted = [];
+    var labels = [];
+    var datasets = {};
+    /*
+      {
+        userid: 62461364,
+        nick: 'ultsi',
+        weight: 82,
+        gender: 'mies',
+        sum: '85659',
+        hr: 20
+      }
+    */
     for(var i in data) {
-      formatted[i] = {"x": data[i].hr, "y": Math.round(Number(data[i].sum)/10600.0), "symbol": data[i].nick};
+      var point = data[i];
+      // hours are labels
+      if(!labels.find((x) => x == point.hr)){
+        labels.push(point.hr);
+      }
+
+      if(!datasets[point.nick]) {
+        datasets[point.nick] = {label: point.nick, data: []};
+      }
+
+      datasets[point.nick].data.push(point.sum);
     }
-    console.log(formatted);
-    return formatted;
+    var datasetsArray = [];
+    for(var i in datasets){
+      datasetsArray.push(datasets[i]);
+    }
+
+    return {labels: labels, datasets: datasetsArray};
   } catch (err){
     console.log("format data for plotting error: " + err);
     return [];
@@ -498,17 +523,20 @@ function formatDataForPlotting(data) {
 function annoskuvaaja(context, user, msg, words) {
   let deferred = when.defer();
   console.log('trying to form graph');
+
+  let graphTitle = 'Annoskuvaaja feat. ' + msg.chat.title;
+
   users.getBoozeByHourForGroup(msg.chat.id)
     .then(function(data){
       console.log('got data');
       console.log(data);
       var formatted = formatDataForPlotting(data);
       console.log('formatted data');
-      blakkisChart.getLineGraphBuffer(formatted)
+      blakkisChart.getLineGraphBuffer(formatted, graphTitle)
         .then(function(buffer){
           console.log('got the line graph buffer');
           console.log(buffer);
-          deferred.resolve(context.photoReply(buffer, 'Annoskuvaaja feat. ' + msg.chat.title));
+          deferred.resolve(context.photoReply(buffer, graphTitle));
         }, function(err){
           console.log(err);
           deferred.resolve(context.chatReply('Kuvan muodostus epäonnistui!'));

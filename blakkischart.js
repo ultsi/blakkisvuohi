@@ -39,7 +39,7 @@ const lineChartTemplate = {
   }
 };
 
-blakkisChart.getLineGraphBuffer = function(data) {
+blakkisChart.getLineGraphBuffer = function(data, title) {
   let deferred = when.defer();
   console.log("Trying to make a line graph from data");
   console.log(data);
@@ -48,6 +48,7 @@ blakkisChart.getLineGraphBuffer = function(data) {
     var lineChartConfig = lineChartTemplate;
 
     lineChartConfig.data.datasets[0] = {data: data};
+    lineChartConfig.options.title.text = title;
     console.log(lineChartConfig);
 
     chartNode.drawChart(lineChartConfig)
