@@ -1,9 +1,6 @@
-FROM node:8.7.0
+FROM node:8.7.0-alpine
 
 WORKDIR /app/blakkisvuohi
-
-RUN apt-get install git
-RUN apt-get install libgif-dev
 
 COPY package.json .
 
