@@ -538,7 +538,7 @@ function annoskuvaaja(context, user, msg, words) {
           let dataByHour = alcomath.getPermillesAndGramsFromDrinksByHour(user, details.drinks);
           console.log(dataByHour);
           console.log(dataByHour.gramsByHour);
-          datasets.push({label: details.nick, data: dataByHour.gramsByHour, fill: false});
+          datasets.push({label: details.nick, data: dataByHour.gramsByHour.grams, fill: false});
 
           for(var i in dataByHour.gramsByHour){
             if(!labels.find((x) => x == dataByHour.gramsByHour[i].hour)){
