@@ -88,13 +88,21 @@ alcomath.sumGramsUnBurned = function(user, drinks) {
 
 alcomath.sumGramsUnBurnedByHour = function(user, drinks) {
   let milligrams = 0;
+  let hourInMillis = 3600 * 1000;
   let now = Date.now();
   let nowDate = new Date(now);
+  let yesterday = now - hourInMillis * 24;
+  let yesterdayDate = new Date(yesterday);
   let lastTime = null;
-  let hourInMillis = 3600 * 1000;
   let userBurnRateMilligrams = alcomath.getUserBurnRate(user) * 1000;
-  let lastHour = null;
   let gramsByHour = [];
+  for(var i=0; i<24; i+=1){
+    var time = new Date(yesterday + hourInMillis * i);
+    gramsByHour = {grams: 0, hour: time.getHours(), time: time};
+  }
+
+  let lastFilledHour = 0;
+
   for(var i in drinks) {
     let drink = drinks[i];
     let drinkTime = Date.parse(drink.created);
@@ -105,20 +113,37 @@ alcomath.sumGramsUnBurnedByHour = function(user, drinks) {
       milligrams = milligrams > 0 ? milligrams : 0;
     }
     milligrams += drink.alcohol;
-    let drinkHour = new Date(drinkTime).getHours();
-    if(lastHour !== drinkHour){
-      lastHour = drinkHour;
-      gramsByHour.push({grams: milligrams / 1000.0, hour: lastHour});
-    }
     lastTime = drinkTime;
+
+    for(var i=lastFilledHour; i < 24; i+=1){
+      var hourDetails = gramsByHour[i];
+      if(drinkTime < hourDetails.time.now()){
+        lastFilledHour = i;
+        break;
+      }
+      var diffInHours = (drinkTime - hourDetails.time.now()) / hourInMillis;
+      var _milligrams = milligrams - (userBurnRateMilligrams * diffInHours);
+      _milligrams = _milligrams > 0 ? _milligrams : 0;
+      gramsByHour[i].grams = _milligrams / 1000.0;
+      console.log(i, lastFilledHour);
+      console.log(hourDetails);
+    }
+
   }
   let diff = now - lastTime;
   let diffInHours = diff / hourInMillis;
   milligrams -= userBurnRateMilligrams * diffInHours;
   milligrams = milligrams > 0 ? milligrams : 0;
 
-  if(lastHour !== nowDate.getHours()){
-    gramsByHour.push({grams: milligrams / 1000.0, hour: nowDate.getHours()});
+  for(var i=lastFilledHour; i < 24; i+=1){
+    var hourDetails = gramsByHour[i];
+    if(drinkTime < hourDetails.time.now()){
+      lastFilledHour = i;
+      break;
+
+    gramsByHour[i].grams = _milligrams / 1000.0;
+    console.log(i, lastFilledHour);
+    console.log(hourDetails);
   }
   console.log(gramsByHour);
   return gramsByHour;
