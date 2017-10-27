@@ -44,13 +44,13 @@ blakkisChart.getLineGraphBuffer = function(data) {
   console.log("Trying to make a line graph from data");
   console.log(data);
   try {
-    var chart = new ChartjsNode(800, 600);
+    var chartNode = new ChartjsNode(800, 600);
     var lineChartConfig = lineChartTemplate;
 
     lineChartConfig.data.datasets[0] = {data: data};
     console.log(lineChartConfig);
 
-    chartNode.drawChart(lineChart)
+    chartNode.drawChart(lineChartConfig)
       .then(() => {
         console.log('Generated PNG buffer...');
         deferred.resolve(chartNode.getImageBuffer('image/png'));
