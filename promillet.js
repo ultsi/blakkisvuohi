@@ -504,7 +504,7 @@ function kuvaaja(context, user, msg, words) {
           let permilles = [];
           for(var i in dataByHour.permillesByHour){
             if(labels.length < dataByHour.permillesByHour.length){
-              labels.push(dataByHour.permillesByHour.hour);
+              labels.push(dataByHour.permillesByHour[i].hour);
             }
             permilles.push(dataByHour.permillesByHour[i].permilles);
           }
