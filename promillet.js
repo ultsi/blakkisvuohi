@@ -541,7 +541,7 @@ function annoskuvaaja(context, user, msg, words) {
             if(!labels.find((x) => x == dataByHour.gramsByHour[i].hour)){
               labels.push(dataByHour.gramsByHour[i].hour);
             }
-            grams.push(dataByHour.gramsByHour.grams);
+            grams.push(dataByHour.gramsByHour[i].grams);
           }
           console.log(dataByHour);
           console.log(dataByHour.gramsByHour);
