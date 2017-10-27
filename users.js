@@ -252,7 +252,7 @@ User.prototype.getDrinkCountsByGroupsForUser = function() {
 
 users.getBoozeByHourForGroup = function(groupId) {
   let deferred = when.defer();
-  query('select users.userId, users.nick, users.weight, users.gender, (sum(sum(alcohol)) OVER (ORDER BY to_char(created, \'HH24:00\'))) as sum, to_char(created, \'HH24:00\') as time, to_char(created, \'YYYY-MM-DD HH24:00:00.000000+00\') as created_hour from users_drinks join users_in_groups on users_drinks.userid=users_in_groups.userid join users on users.userid=users_drinks.userid where groupid=$1 and created >= NOW() - \'1 day\'::INTERVAL group by time, users.userid, users.nick, users.weight, users.gender, users_drinks.alcohol, created_hour',[groupId])
+  query('select users.userId, users.nick, users.weight, users.gender, (sum(sum(alcohol)) OVER (ORDER BY to_char(created, \'HH24:00\'))) as sum, to_char(created, \'HH24:00\') as time, to_char(created, \'YYYY-MM-DD HH24:00:00.000000+00\') as created_hour from users_drinks join users_in_groups on users_drinks.userid=users_in_groups.userid join users on users.userid=users_drinks.userid where groupid=$1 and created >= NOW() - \'1 day\'::INTERVAL group by time, users.userid, users.nick, users.weight, users.gender, users_drinks.alcohol, created_hour order by created_hour',[groupId])
     .then(function(res){
       deferred.resolve(res[0]);
     }, function(err){
