@@ -47,7 +47,7 @@ blakkisChart.getLineGraphBuffer = function(data, title) {
     var chartNode = new ChartjsNode(800, 600);
     var lineChartConfig = lineChartTemplate;
 
-    lineChartConfig.data.datasets[0] = {data: data};
+    lineChartConfig.data = data;
     lineChartConfig.options.title.text = title;
     console.log(lineChartConfig);
 
