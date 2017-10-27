@@ -498,12 +498,12 @@ function formatDataForPlotting(data) {
     for(var i in data) {
       var point = data[i];
       // hours are labels
-      if(!labels.find((x) => x == point.hr)){
-        labels.push(point.hr);
+      if(!labels.find((x) => x == point.time)){
+        labels.push(point.time);
       }
 
       if(!datasets[point.nick]) {
-        datasets[point.nick] = {label: point.nick, data: []};
+        datasets[point.nick] = {label: point.nick, data: [], fill: false};
       }
 
       datasets[point.nick].data.push(point.sum);
