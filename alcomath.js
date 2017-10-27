@@ -43,7 +43,7 @@ alcomath.getPermillesFromGramsByHour = function(user, gramsByHour) {
   var permillesByHour = [];
   for(var i in gramsByHour){
     let standard_drinks = gramsByHour[i].grams / 10.6;
-    permillesByHour[i] = (MEAN_BODY_WATER * (standard_drinks)) / (LIQUID_PERCENT[user.gender] * user.weight) * 10;
+    permillesByHour[i] = {permilles: (MEAN_BODY_WATER * (standard_drinks)) / (LIQUID_PERCENT[user.gender] * user.weight) * 10, gramsByHour[i].hour};
   }
   return permillesByHour;
 };
@@ -130,7 +130,7 @@ alcomath.getPermillesFromDrinks = function(user, drinks) {
 
 alcomath.getPermillesAndGramsFromDrinksByHour = function(user, drinks) {
   var gramsByHour = alcomath.sumGramsUnBurnedByHour(user, drinks);
-  return {permilles: alcomath.getPermillesFromGramsByHour(user,gramsByHour), gramsByHour: gramsByHour};
+  return {permillesNyHour: alcomath.getPermillesFromGramsByHour(user,gramsByHour), gramsByHour: gramsByHour};
 };
 
 module.exports = alcomath;

@@ -536,16 +536,16 @@ function annoskuvaaja(context, user, msg, words) {
           let details = drinksByUser[userId];
           let user = new users.User(details.userid, details.nick, details.weight, details.gender);
           let dataByHour = alcomath.getPermillesAndGramsFromDrinksByHour(user, details.drinks);
-          let grams = [];
-          for(var i in dataByHour.gramsByHour){
-            if(!labels.find((x) => x == dataByHour.gramsByHour[i].hour)){
-              labels.push(dataByHour.gramsByHour[i].hour);
+          let permilles = [];
+          for(var i in dataByHour.permillesByHour){
+            if(!labels.find((x) => x == dataByHour.permillesByHour[i].hour)){
+              labels.push(dataByHour.permillesByHour[i].hour);
             }
-            grams.push(dataByHour.gramsByHour[i].grams);
+            permilles.push(dataByHour.permillesByHour[i].permilles);
           }
           console.log(dataByHour);
-          console.log(dataByHour.gramsByHour);
-          datasets.push({label: details.nick, data: grams, fill: false});
+          console.log(dataByHour.permillesByHour);
+          datasets.push({label: details.nick, data: permilles, fill: false});
 
         }
         blakkisChart.getLineGraphBuffer({labels: labels, datasets: datasets}, graphTitle)
