@@ -1,41 +1,66 @@
-const vega = require('vega');
+const ChartjsNode = require('chartjs-node');
 const fs = require('fs');
 const when = require('when');
 
-const lineChartTemplate = require('./linechart.json');
-
 const blakkisChart = {};
+
+const lineChartTemplate = {
+  type: 'line',
+  data: {
+    labels: [],
+    datasets: []
+  },
+  options: {
+    elements: {
+      line: {
+        tension: 0, // disables bezier curves
+      }
+    },
+    title:{
+      display:true,
+      text:'Chart.js Line Chart'
+    },
+    scales: {
+      xAxes: [{
+        display: true,
+        scaleLabel: {
+          display: true,
+          labelString: 'Month'
+        }
+      }],
+      yAxes: [{
+        display: true,
+        scaleLabel: {
+          display: true,
+          labelString: 'Value'
+        }
+      }]
+    }
+  }
+};
 
 blakkisChart.getLineGraphBuffer = function(data) {
   let deferred = when.defer();
   console.log("Trying to make a line graph from data");
   console.log(data);
   try {
-    var lineChart = lineChartTemplate;
-    lineChart.data[0].values = data;
-    console.log(lineChart);
+    var chart = new ChartjsNode(800, 600);
+    var lineChartConfig = lineChartTemplate;
 
-    // create a new view instance for a given Vega JSON spec
-    var view = new vega
-      .View(vega.parse(lineChart))
-      .renderer('none')
-      .initialize();
+    lineChartConfig.data.datasets[0] = {data: data};
+    console.log(lineChartConfig);
 
-    // generate static PNG file from chart
-    view
-      .toCanvas()
-      .then(function (canvas) {
-        // process node-canvas instance for example, generate a PNG stream to write var
-        console.log('Generating PNG buffer...');
-        deferred.resolve(canvas.toBuffer());
-      })
-      .catch(function (err) {
+    chartNode.drawChart(lineChart)
+      .then(() => {
+        console.log('Generated PNG buffer...');
+        deferred.resolve(chartNode.getImageBuffer('image/png'));
+      }, (err) => {
         console.log("Error writing PNG to buffer:")
         console.error(err)
-        deferred.reject();
+        deferred.reject()
       });
   } catch(err){
-    console.log("Vega err: " + err);
+    console.log("ChartJS err: " + err);
     deferred.reject();
   }
 
