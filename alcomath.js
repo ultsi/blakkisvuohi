@@ -98,7 +98,7 @@ alcomath.sumGramsUnBurnedByHour = function(user, drinks) {
   let gramsByHour = [];
   for(var i=0; i<24; i+=1){
     var time = new Date(yesterday + hourInMillis * i);
-    gramsByHour[i] = {grams: 0, hour: time.getHours(), time: time)};
+    gramsByHour[i] = {grams: 0, hour: time.getHours(), time: time};
   }
 
   let lastFilledHour = 0;
