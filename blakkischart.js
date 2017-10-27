@@ -25,14 +25,14 @@ const lineChartTemplate = {
         display: true,
         scaleLabel: {
           display: true,
-          labelString: 'Month'
+          labelString: 'Aika'
         }
       }],
       yAxes: [{
         display: true,
         scaleLabel: {
           display: true,
-          labelString: 'Value'
+          labelString: 'Annokset'
         }
       }]
     }
@@ -44,7 +44,7 @@ blakkisChart.getLineGraphBuffer = function(data, title) {
   console.log("Trying to make a line graph from data");
   console.log(data);
   try {
-    var chartNode = new ChartjsNode(800, 600);
+    var chartNode = new ChartjsNode(1024, 728);
     var lineChartConfig = lineChartTemplate;
 
     lineChartConfig.data = data;

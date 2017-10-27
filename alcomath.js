@@ -77,6 +77,31 @@ alcomath.sumGramsUnBurned = function(user, drinks) {
   return milligrams / 1000.0;
 };
 
+alcomath.sumGramsUnBurnedForGraph = function(datasets) {
+  let milligrams = 0;
+  let now = Date.now();
+  let lastTime = null;
+  let hourInMillis = 3600 * 1000;
+  let userBurnRateMilligrams = alcomath.getUserBurnRate(user) * 1000;
+  for(var i in drinks) {
+    let drink = drinks[i];
+    let drinkTime = Date.parse(drink.created);
+    if(lastTime) {
+      let diff = drinkTime - lastTime;
+      let diffInHours = diff / hourInMillis;
+      milligrams -= (userBurnRateMilligrams * diffInHours);
+      milligrams = milligrams > 0 ? milligrams : 0;
+    }
+    milligrams += drink.alcohol;
+    lastTime = drinkTime;
+  }
+  let diff = now - lastTime;
+  let diffInHours = diff / hourInMillis;
+  milligrams -= userBurnRateMilligrams * diffInHours;
+  milligrams = milligrams > 0 ? milligrams : 0;
+  return milligrams / 1000.0;
+};
+
 alcomath.getPermillesFromDrinks = function(user, drinks) {
   return alcomath.getPermillesFromGrams(user,(alcomath.sumGramsUnBurned(user, drinks)));
 };
