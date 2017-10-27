@@ -495,8 +495,9 @@ function formatDataForPlotting(data) {
         hr: 20
       }
     */
-    for(var i in data) {
-      var point = data[i];
+    var unburnedGramsData = alcomath.sumGramsUnBurnedForDataByHour(data);
+    for(var i in unburnedGramsData) {
+      var point = unburnedGramsData[i];
       // hours are labels
       if(!labels.find((x) => x == point.time)){
         labels.push(point.time);
@@ -526,8 +527,43 @@ function annoskuvaaja(context, user, msg, words) {
 
   let graphTitle = 'Annoskuvaaja feat. ' + msg.chat.title;
 
-  users.getBoozeByHourForGroup(msg.chat.id)
-    .then(function(data){
+  users.getBoozeForGroup(msg.chat.id)
+    .then(function(drinksByUser){
+      try {
+        let labels = [];
+        let datasets = [];
+        for(var userId in drinksByUser){
+          let details = drinksByUser[userId];
+          let user = new users.User(details.userid, details.nick, details.weight, details.gender);
+          let dataByHour = alcomath.getPermillesAndGramsFromDrinksByHour(user, details.drinks);
+          datasets.push({label: details.nick, data: dataByHour.gramsByHour, fill: false});
+
+          for(var hour in dataByHour.gramsByHour){
+            if(!labels.find((x) => x == hour)){
+              labels.push(hour);
+            }
+          }
+        }
+        blakkisChart.getLineGraphBuffer({labels: labels, datasets: datasets}, graphTitle)
+          .then(function(buffer){
+            console.log('got the line graph buffer');
+            console.log(buffer);
+            deferred.resolve(context.photoReply(buffer, graphTitle));
+          }, function(err){
+            console.log(err);
+            deferred.resolve(context.chatReply('Kuvan muodostus epäonnistui!'));
+          });
+      } catch (err) {
+        console.error(err);
+        deferred.reject('Isompi ongelma, ota yhteyttä adminiin.');
+      }
+    }, function(err) {
+      console.error(err);
+      deferred.reject('Isompi ongelma, ota yhteyttä adminiin.');
+    });
+
+  /*users.getBoozeForGroup(msg.chat.id)
+    .then(function(drinksByUser){
       console.log('got data');
       console.log(data);
       var formatted = formatDataForPlotting(data);
@@ -543,7 +579,7 @@ function annoskuvaaja(context, user, msg, words) {
         });
     }, function(err){
       console.log(err);
-    });
+    });*/
   context.end();
   return deferred.promise;
 }

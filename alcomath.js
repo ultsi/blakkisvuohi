@@ -39,6 +39,14 @@ alcomath.getPermillesFromGrams = function(user, grams) {
   return (MEAN_BODY_WATER * (standard_drinks)) / (LIQUID_PERCENT[user.gender] * user.weight) * 10;
 };
 
+alcomath.getPermillesFromGramsByHour = function(user, gramsByHour) {
+  for(var i in gramsByHour){
+    let standard_drinks = gramsByHour[i] / 10.6;
+    gramsByHour[i] = (MEAN_BODY_WATER * (standard_drinks)) / (LIQUID_PERCENT[user.gender] * user.weight) * 10;
+  }
+  return gramsByHour;
+};
+
 alcomath.sumGrams = function(drinks) {
   let milligrams = 0;
   for(var i in drinks) {
@@ -77,12 +85,14 @@ alcomath.sumGramsUnBurned = function(user, drinks) {
   return milligrams / 1000.0;
 };
 
-alcomath.sumGramsUnBurnedForGraph = function(datasets) {
+alcomath.sumGramsUnBurnedByHour = function(user, drinks) {
   let milligrams = 0;
   let now = Date.now();
   let lastTime = null;
   let hourInMillis = 3600 * 1000;
   let userBurnRateMilligrams = alcomath.getUserBurnRate(user) * 1000;
+  let lastHour = null;
+  let gramsByHour = [];
   for(var i in drinks) {
     let drink = drinks[i];
     let drinkTime = Date.parse(drink.created);
@@ -94,16 +104,30 @@ alcomath.sumGramsUnBurnedForGraph = function(datasets) {
     }
     milligrams += drink.alcohol;
     lastTime = drinkTime;
+    let drinkHour = drinkTime.getHours();
+    if(lastHour != drinkHour){
+      lastHour = drinkHour;
+      gramsByHour[drinkHour] = milligrams / 1000.0;
+    }
   }
   let diff = now - lastTime;
   let diffInHours = diff / hourInMillis;
   milligrams -= userBurnRateMilligrams * diffInHours;
   milligrams = milligrams > 0 ? milligrams : 0;
-  return milligrams / 1000.0;
+  if(lastHour != now.getHours()){
+    lastHour = now.getHours();;
+    gramsByHour[lastHour] = milligrams / 1000.0;
+  }
+  return gramsByHour;
 };
 
 alcomath.getPermillesFromDrinks = function(user, drinks) {
-  return alcomath.getPermillesFromGrams(user,(alcomath.sumGramsUnBurned(user, drinks)));
+  return alcomath.getPermillesFromGrams(user, alcomath.sumGramsUnBurned(user, drinks));
+};
+
+alcomath.getPermillesAndGramsFromDrinksByHour = function(user, drinks) {
+  var gramsByHour = (alcomath.sumGramsUnBurnedByHour(user, drinks);
+  return {permilles: alcomath.getPermillesFromGramsByHour(user,gramsByHour), gramsByHour: gramsByHour};
 };
 
 module.exports = alcomath;
