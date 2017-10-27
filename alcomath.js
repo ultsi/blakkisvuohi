@@ -89,16 +89,14 @@ alcomath.sumGramsUnBurned = function(user, drinks) {
 alcomath.sumGramsUnBurnedByHour = function(user, drinks) {
   let milligrams = 0;
   let now = Date.now();
-  let nowDate = new Date(now);
   let lastTime = null;
   let hourInMillis = 3600 * 1000;
   let userBurnRateMilligrams = alcomath.getUserBurnRate(user) * 1000;
-  let lastHalfHour = null;
+  let lastHour = null;
   let gramsByHour = [];
   for(var i in drinks) {
     let drink = drinks[i];
     let drinkTime = Date.parse(drink.created);
-    let drinkDate = new Date(drinkTime);
     if(lastTime) {
       let diff = drinkTime - lastTime;
       let diffInHours = diff / hourInMillis;
@@ -106,10 +104,10 @@ alcomath.sumGramsUnBurnedByHour = function(user, drinks) {
       milligrams = milligrams > 0 ? milligrams : 0;
     }
     milligrams += drink.alcohol;
-    let drinkHalfHour = Math.floor(drinkDate.getMinutes()/30.0) % 2;
-    if(lastHalfHour !== drinkHalfHour){
-      lastHalfHour = drinkHalfHour;
-      gramsByHour.push({grams: milligrams / 1000.0, hour: drinkDate.getHours() + (drinkHalfHour == 1 ? ':00' : ':30')});
+    let drinkHour = new Date(drinkTime).getHours();
+    if(lastHour !== drinkHour){
+      lastHour = drinkHour;
+      gramsByHour.push({grams: milligrams / 1000.0, hour: lastHour});
     }
     lastTime = drinkTime;
   }
@@ -117,7 +115,7 @@ alcomath.sumGramsUnBurnedByHour = function(user, drinks) {
   let diffInHours = diff / hourInMillis;
   milligrams -= userBurnRateMilligrams * diffInHours;
   milligrams = milligrams > 0 ? milligrams : 0;
-  gramsByHour.push({grams: milligrams / 1000.0, hour: nowDate.getHours() + (lastHalfHour == 1 ? ':00' : ':30')});
+  gramsByHour.push({grams: milligrams / 1000.0, hour: new Date(now).getHours()});
   console.log(gramsByHour);
   return gramsByHour;
 };
