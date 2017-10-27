@@ -1,6 +1,8 @@
-FROM node:8.7.0-alpine
+FROM node:8.7.0
 
 WORKDIR /app/blakkisvuohi
+
+RUN npm install canvas@1.6.7
 
 COPY package.json .
 
