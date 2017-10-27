@@ -126,7 +126,7 @@ alcomath.getPermillesFromDrinks = function(user, drinks) {
 };
 
 alcomath.getPermillesAndGramsFromDrinksByHour = function(user, drinks) {
-  var gramsByHour = (alcomath.sumGramsUnBurnedByHour(user, drinks);
+  var gramsByHour = alcomath.sumGramsUnBurnedByHour(user, drinks);
   return {permilles: alcomath.getPermillesFromGramsByHour(user,gramsByHour), gramsByHour: gramsByHour};
 };
 
