@@ -32,7 +32,7 @@ const lineChartTemplate = {
         display: true,
         scaleLabel: {
           display: true,
-          labelString: 'Annokset'
+          labelString: 'Promillet'
         }
       }]
     }
@@ -42,15 +42,12 @@ const lineChartTemplate = {
 blakkisChart.getLineGraphBuffer = function(data, title) {
   let deferred = when.defer();
   console.log("Trying to make a line graph from data");
-  console.log(data);
-  console.log(data.datasets);
   try {
     var chartNode = new ChartjsNode(1024, 728);
     var lineChartConfig = lineChartTemplate;
 
     lineChartConfig.data = data;
     lineChartConfig.options.title.text = title;
-    console.log(lineChartConfig);
 
     chartNode.drawChart(lineChartConfig)
       .then(() => {

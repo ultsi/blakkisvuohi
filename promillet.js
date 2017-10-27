@@ -478,54 +478,19 @@ function moro(context, user, msg, words) {
 
 Commands.registerUserCommand('/moro', '/moro - Lisää sinut ryhmään mukaan.', Commands.TYPE_ALL, [moro]);
 
-function formatDataForPlotting(data) {
-  // only use nick, alcohol and hr
-  console.log("Formatting data for plotting");
-  console.log(data);
-  try{
-    var labels = [];
-    var datasets = {};
-    /*
-      {
-        userid: 62461364,
-        nick: 'ultsi',
-        weight: 82,
-        gender: 'mies',
-        sum: '85659',
-        hr: 20
-      }
-    */
-    var unburnedGramsData = alcomath.sumGramsUnBurnedForDataByHour(data);
-    for(var i in unburnedGramsData) {
-      var point = unburnedGramsData[i];
-      // hours are labels
-      if(!labels.find((x) => x == point.time)){
-        labels.push(point.time);
-      }
 
-      if(!datasets[point.nick]) {
-        datasets[point.nick] = {label: point.nick, data: [], fill: false};
-      }
+function randomColor() {
+  var r = Math.round(Math.random()*255);
+  var g = Math.round(Math.random()*255);
+  var b = Math.round(Math.random()*255);
+  return 'rgb('+r+','+g+','+b+')';
+}
 
-      datasets[point.nick].data.push(point.sum);
-    }
-    var datasetsArray = [];
-    for(var i in datasets){
-      datasetsArray.push(datasets[i]);
-    }
-
-    return {labels: labels, datasets: datasetsArray};
-  } catch (err){
-    console.log("format data for plotting error: " + err);
-    return [];
-  }
-};
-
-function annoskuvaaja(context, user, msg, words) {
+function kuvaaja(context, user, msg, words) {
   let deferred = when.defer();
   console.log('trying to form graph');
 
-  let graphTitle = 'Annoskuvaaja feat. ' + msg.chat.title;
+  let graphTitle = 'Promillekuvaaja feat. ' + msg.chat.title;
 
   users.getBoozeForGroup(msg.chat.id)
     .then(function(drinksByUser){
@@ -544,8 +509,8 @@ function annoskuvaaja(context, user, msg, words) {
             permilles.push(dataByHour.permillesByHour[i].permilles);
           }
           console.log(dataByHour);
-          console.log(dataByHour.permillesByHour);
-          datasets.push({label: details.nick, data: permilles, fill: false});
+          let color = randomColor();
+          datasets.push({label: details.nick, data: permilles, fill: false, backgroundColor: color, borderColor: color});
 
         }
         blakkisChart.getLineGraphBuffer({labels: labels, datasets: datasets}, graphTitle)
@@ -588,4 +553,4 @@ function annoskuvaaja(context, user, msg, words) {
   return deferred.promise;
 }
 
-Commands.registerUserCommand('/annoskuvaaja', '/annoskuvaaja - Näyttää ryhmän annokset kuvaajana.', Commands.TYPE_ALL, [annoskuvaaja]);
+Commands.registerUserCommand('/kuvaaja', '/kuvaaja - Näyttää ryhmän 24h tapahtumat kuvaajana.', Commands.TYPE_ALL, [kuvaaja]);
