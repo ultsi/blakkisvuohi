@@ -41,8 +41,8 @@ alcomath.getPermillesFromGrams = function(user, grams) {
 
 alcomath.getPermillesFromGramsByHour = function(user, gramsByHour) {
   for(var i in gramsByHour){
-    let standard_drinks = gramsByHour[i] / 10.6;
-    gramsByHour[i] = (MEAN_BODY_WATER * (standard_drinks)) / (LIQUID_PERCENT[user.gender] * user.weight) * 10;
+    let standard_drinks = gramsByHour[i].grams / 10.6;
+    gramsByHour[i].grams = (MEAN_BODY_WATER * (standard_drinks)) / (LIQUID_PERCENT[user.gender] * user.weight) * 10;
   }
   return gramsByHour;
 };
@@ -105,18 +105,18 @@ alcomath.sumGramsUnBurnedByHour = function(user, drinks) {
     milligrams += drink.alcohol;
     lastTime = drinkTime;
     let drinkHour = new Date(drinkTime).getHours();
-    if(lastHour != drinkHour){
+    if(lastHour !== drinkHour){
       lastHour = drinkHour;
-      gramsByHour[drinkHour] = milligrams / 1000.0;
+      gramsByHour.push({grams: milligrams / 1000.0, hour: lastHour});
     }
   }
   let diff = now - lastTime;
   let diffInHours = diff / hourInMillis;
   milligrams -= userBurnRateMilligrams * diffInHours;
   milligrams = milligrams > 0 ? milligrams : 0;
-  if(lastHour != new Date(now).getHours()){
+  if(lastHour !== new Date(now).getHours()){
     lastHour = new Date(now).getHours();;
-    gramsByHour[lastHour] = milligrams / 1000.0;
+    gramsByHour.push({grams: milligrams / 1000.0, hour: lastHour});
   }
   return gramsByHour;
 };

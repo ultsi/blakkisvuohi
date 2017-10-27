@@ -540,9 +540,9 @@ function annoskuvaaja(context, user, msg, words) {
           console.log(dataByHour.gramsByHour);
           datasets.push({label: details.nick, data: dataByHour.gramsByHour, fill: false});
 
-          for(var hour in dataByHour.gramsByHour){
-            if(!labels.find((x) => x == hour)){
-              labels.push(hour);
+          for(var i in dataByHour.gramsByHour){
+            if(!labels.find((x) => x == dataByHour.gramsByHour[i].hour)){
+              labels.push(dataByHour.gramsByHour[i].hour);
             }
           }
         }
