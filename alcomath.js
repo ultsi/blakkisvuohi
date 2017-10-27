@@ -40,11 +40,12 @@ alcomath.getPermillesFromGrams = function(user, grams) {
 };
 
 alcomath.getPermillesFromGramsByHour = function(user, gramsByHour) {
+  var permillesByHour = [];
   for(var i in gramsByHour){
     let standard_drinks = gramsByHour[i].grams / 10.6;
-    gramsByHour[i].grams = (MEAN_BODY_WATER * (standard_drinks)) / (LIQUID_PERCENT[user.gender] * user.weight) * 10;
+    permillesByHour[i] = (MEAN_BODY_WATER * (standard_drinks)) / (LIQUID_PERCENT[user.gender] * user.weight) * 10;
   }
-  return gramsByHour;
+  return permillesByHour;
 };
 
 alcomath.sumGrams = function(drinks) {
