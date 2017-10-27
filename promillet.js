@@ -503,15 +503,14 @@ function kuvaaja(context, user, msg, words) {
           let dataByHour = alcomath.getPermillesAndGramsFromDrinksByHour(user, details.drinks);
           let permilles = [];
           for(var i in dataByHour.permillesByHour){
-            if(!labels.find((x) => x == dataByHour.permillesByHour[i].hour)){
-              labels.push(dataByHour.permillesByHour[i].hour);
+            if(labels.length < dataByHour.permillesByHour.length){
+              labels.push(dataByHour.permillesByHour.hour);
             }
             permilles.push(dataByHour.permillesByHour[i].permilles);
           }
           console.log(dataByHour);
           let color = randomColor();
           datasets.push({label: details.nick, data: permilles, fill: false, backgroundColor: color, borderColor: color});
-
         }
         blakkisChart.getLineGraphBuffer({labels: labels, datasets: datasets}, graphTitle)
           .then(function(buffer){
