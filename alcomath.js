@@ -130,7 +130,7 @@ alcomath.getPermillesFromDrinks = function(user, drinks) {
 
 alcomath.getPermillesAndGramsFromDrinksByHour = function(user, drinks) {
   var gramsByHour = alcomath.sumGramsUnBurnedByHour(user, drinks);
-  return {permillesNyHour: alcomath.getPermillesFromGramsByHour(user,gramsByHour), gramsByHour: gramsByHour};
+  return {permillesByHour: alcomath.getPermillesFromGramsByHour(user,gramsByHour), gramsByHour: gramsByHour};
 };
 
 module.exports = alcomath;
