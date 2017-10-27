@@ -117,7 +117,7 @@ alcomath.sumGramsUnBurnedByHour = function(user, drinks) {
   let diffInHours = diff / hourInMillis;
   milligrams -= userBurnRateMilligrams * diffInHours;
   milligrams = milligrams > 0 ? milligrams : 0;
-  gramsByHour.push({grams: milligrams / 1000.0, hour: hour: nowDate.getHours() + (drinkHalfHour == 1 ? ':00' : ':30')});
+  gramsByHour.push({grams: milligrams / 1000.0, hour: nowDate.getHours() + (lastHalfHour == 1 ? ':00' : ':30')});
   console.log(gramsByHour);
   return gramsByHour;
 };
