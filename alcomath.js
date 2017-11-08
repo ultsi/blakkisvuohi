@@ -14,6 +14,7 @@ alcomath.KALJA033 = alcomath.calcAlcoholMilliGrams(0.047, 0.33);
 alcomath.NELONEN = alcomath.calcAlcoholMilliGrams(0.055, 0.33);
 alcomath.KALJA05 = alcomath.calcAlcoholMilliGrams(0.047, 0.50);
 alcomath.SHOTTI40 = alcomath.calcAlcoholMilliGrams(0.4, 0.04);
+alcomath.STANDARD_DRINK_GRAMS = 10.6;
 
 alcomath.LIMITS = {
   6.0: 'Hyvin todennäköinen kuolema (alkoholimyrkytys)',
@@ -35,14 +36,14 @@ alcomath.LIMITS = {
 };
 
 alcomath.getPermillesFromGrams = function(user, grams) {
-  let standard_drinks = grams / 10.6;
+  let standard_drinks = grams / alcomath.STANDARD_DRINK_GRAMS;
   return (MEAN_BODY_WATER * (standard_drinks)) / (LIQUID_PERCENT[user.gender] * user.weight) * 10;
 };
 
 alcomath.getPermillesFromGramsByHour = function(user, gramsByHour) {
   var permillesByHour = [];
   for(var i in gramsByHour){
-    let standard_drinks = gramsByHour[i].grams / 10.6;
+    let standard_drinks = gramsByHour[i].grams / alcomath.STANDARD_DRINK_GRAMS;
     permillesByHour[i] = {permilles: (MEAN_BODY_WATER * (standard_drinks)) / (LIQUID_PERCENT[user.gender] * user.weight) * 10, hour: gramsByHour[i].hour};
   }
   return permillesByHour;

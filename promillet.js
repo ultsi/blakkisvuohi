@@ -113,6 +113,39 @@ function getPermillesTextForGroup(groupId){
   return deferred.promise;
 }
 
+function getDrinksTextForGroup(groupId){
+  let deferred = when.defer();
+  when.all([
+    users.getBoozeForGroup(groupId),
+    users.getDrinkSumFor12hForGroup(groupId),
+    users.getDrinkSumFor24hForGroup(groupId)
+  ]).spread(function(drinksByUser, drinkSumsByUser12h, drinkSumsByUser24h){
+      try {
+        let drinks = [];
+        for(var userId in drinksByUser){
+          let details = drinksByUser[userId];
+          let user = new users.User(details.userid, details.nick, details.weight, details.gender);
+          let userDrinks = alcomath.sumGramsUnBurned(user, details.drinks);
+          if(userDrinks > 0){
+            let sum12h = drinkSumsByUser12h[details.userid] && drinkSumsByUser12h[details.userid].sum || 0;
+            let sum24h = drinkSumsByUser24h[details.userid] && drinkSumsByUser24h[details.userid].sum || 0;
+            drinks.push([user.username, userDrinks / alcomath.alcomath.STANDARD_DRINK_GRAMS, sum12h / alcomath.KALJA033, sum24h / alcomath.KALJA033]);
+          }
+        }
+        drinks = drinks.sort(function(a,b){return b[1]-a[1];});
+        drinks = drinks.map(user => user[0] + '... ' + user[1].toFixed(2) + '‰ ('+user[2].toFixed(1)+'/'+user[3].toFixed(1)+')');
+        deferred.resolve('Käyttäjä... annoksia kpl (12h/24h)\n\n' + permilles.join('\n'));
+      } catch (err) {
+        console.error(err);
+        deferred.reject('Isompi ongelma, ota yhteyttä adminiin.');
+      }
+  }, function(err) {
+    console.error(err);
+    deferred.reject('Isompi ongelma, ota yhteyttä adminiin.');
+  });
+  return deferred.promise;
+}
+
 function drinkBoozeReturnPermilles(user, amount, description, msg){
   let deferred = when.defer();
   when.all([
@@ -310,7 +343,7 @@ function kalja05Command(context, user, msg, words) {
 
 Commands.registerUserCommand('/kalja05', '/kalja05 - pikanäppäin yhdelle kappaleelle 0.5l olutta. Ammattilaiskäyttöön.', Commands.TYPE_PRIVATE, [kalja05Command]);
 
-function annokset(context, user, msg, words) {
+function kulutus(context, user, msg, words) {
   let deferred = when.defer();
   let hours = (words[1] && parseInt(words[1])) ? parseInt(words[1])*24 : 4*365*24;
   if(context.isPrivateChat()){
@@ -344,7 +377,48 @@ function annokset(context, user, msg, words) {
   return deferred.promise;
 }
 
-Commands.registerUserCommand('/annokset', '/annokset <päivissä> - listaa kaikki annokset. Voit myös antaa päivät parametrina, jolloin näet kulutuksen viime päiviltä.', Commands.TYPE_ALL, [annokset]);
+Commands.registerUserCommand('/kulutus', '/kulutus <päivissä> - listaa kulutus. Voit myös antaa päivät parametrina, jolloin näet kulutuksen viime päiviltä.', Commands.TYPE_ALL, [kulutus]);
+
+function annokset(context, user, msg, words) {
+  let deferred = when.defer();
+  if(msg.chat.type === 'private'){
+    user.getBooze()
+      .then(function(drinks){
+        try {
+          let permilles = alcomath.getPermillesFromDrinks(user, drinks);
+          let grams = alcomath.sumGramsUnBurned(user, drinks);
+          let burnRate = alcomath.getUserBurnRate(user);
+          let time = grams / burnRate;
+          let hours = Math.floor(time);
+          let minutes = ('0' + Math.ceil((time - hours) * 60)).slice(-2);
+          deferred.resolve(context.privateReply('Olet '+ permilles.toFixed(2) + '‰ humalassa. Veressäsi on ' + grams.toFixed(2) + ' grammaa alkoholia, joka vastaa ' + (grams / 12.2).toFixed(2) + ' annosta. Olet selvinpäin ' + hours + 'h'+minutes+'min päästä.'));
+        } catch (err) {
+          console.error(err);
+          deferred.reject('Isompi ongelma, ota yhteyttä adminiin.');
+        }
+      }, function(err){
+        console.error(err);
+        deferred.reject('Isompi ongelma, ota yhteyttä adminiin.');
+      });
+  } else {
+    getDrinksTextForGroup(msg.chat.id)
+      .then(function(text){
+        text = msg.chat.title + ' -kavereiden rippitaso:\n' + text;
+        deferred.resolve(context.chatReply(text));
+      }, function(err){
+        deferred.reject(err);
+      });
+  }
+  context.end();
+  return deferred.promise;
+}
+
+Commands.registerUserCommand(
+  '/annokset', 
+  '/annokset - kertoo ryhmän kulutetut annokset viimeisen 48h ajalta', 
+  Commands.TYPE_ALL, 
+  [annokset]
+);
 
 function listPermilles(context, user, msg, words) {
   let deferred = when.defer();
@@ -381,6 +455,8 @@ function listPermilles(context, user, msg, words) {
 }
 
 Commands.registerUserCommand('/promillet', '/promillet - listaa kuinka paljon promilleja sinulla tai chatissa olevilla suunnilleen on.', Commands.TYPE_ALL, [listPermilles]);
+
+
 
 function undoDrinkConfirmation(context, user, msg, words){
   context.nextPhase();
