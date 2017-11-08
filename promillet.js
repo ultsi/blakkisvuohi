@@ -133,8 +133,8 @@ function getDrinksTextForGroup(groupId){
           }
         }
         drinks = drinks.sort(function(a,b){return b[1]-a[1];});
-        drinks = drinks.map(user => user[0] + '... ' + user[1].toFixed(2) + '‰ ('+user[2].toFixed(1)+'/'+user[3].toFixed(1)+')');
-        deferred.resolve('Käyttäjä... annoksia kpl (12h/24h)\n\n' + drinks.join('\n'));
+        drinks = drinks.map(user => user[0] + '... ' + user[1].toFixed(2) + 'kpl ('+user[2].toFixed(1)+'/'+user[3].toFixed(1)+')');
+        deferred.resolve('Käyttäjä... annoksia (yht 12h/24h)\n\n' + drinks.join('\n'));
       } catch (err) {
         console.error(err);
         deferred.reject('Isompi ongelma, ota yhteyttä adminiin.');
