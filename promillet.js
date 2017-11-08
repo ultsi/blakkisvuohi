@@ -129,7 +129,7 @@ function getDrinksTextForGroup(groupId){
           if(userDrinks > 0){
             let sum12h = drinkSumsByUser12h[details.userid] && drinkSumsByUser12h[details.userid].sum || 0;
             let sum24h = drinkSumsByUser24h[details.userid] && drinkSumsByUser24h[details.userid].sum || 0;
-            drinks.push([user.username, userDrinks / alcomath.alcomath.STANDARD_DRINK_GRAMS, sum12h / alcomath.KALJA033, sum24h / alcomath.KALJA033]);
+            drinks.push([user.username, userDrinks / alcomath.STANDARD_DRINK_GRAMS, sum12h / alcomath.KALJA033, sum24h / alcomath.KALJA033]);
           }
         }
         drinks = drinks.sort(function(a,b){return b[1]-a[1];});
