@@ -54,12 +54,12 @@ blakkisChart.getLineGraphBuffer = function(data, title) {
         console.log('Generated PNG buffer...');
         deferred.resolve(chartNode.getImageBuffer('image/png'));
       }, (err) => {
-        console.log("Error writing PNG to buffer:")
-        console.error(err)
-        deferred.reject()
+        console.log('Error writing PNG to buffer:');
+        console.error(err);
+        deferred.reject();
       });
   } catch(err){
-    console.log("ChartJS err: " + err);
+    console.log('ChartJS err: ' + err);
     deferred.reject();
   }
 

@@ -1,6 +1,6 @@
 /*
-  Context.js
-  this file contains the functions for the context object used with commands
+  context.js
+  Simple way to 'remember' command context with users
 */
 
 'use strict';
@@ -19,10 +19,10 @@ contexts.Context.prototype.privateReply = function(text) {
   let deferred = when.defer();
   let self = this;
   let options = {
-    "parse_mode": "Markdown",
-    "reply_to_message_id": this.msg.message_id,
-    "reply_markup": {
-      "remove_keyboard": true
+    'parse_mode': 'Markdown',
+    'reply_to_message_id': this.msg.message_id,
+    'reply_markup': {
+      'remove_keyboard': true
     }
   };
   global.bot.sendMessage(self.msg.from.id, text, options)
@@ -40,13 +40,13 @@ contexts.Context.prototype.privateReplyWithKeyboard = function(text, keyboardBut
   let deferred = when.defer();
   let self = this;
   let options = {
-    "parse_mode": "Markdown",
-    "reply_markup": {
-      "keyboard": keyboardButtons,
-      "resize_keyboard": true,
-      "one_time_keyboard": false
+    'parse_mode': 'Markdown',
+    'reply_markup': {
+      'keyboard': keyboardButtons,
+      'resize_keyboard': true,
+      'one_time_keyboard': false
     },
-    "reply_to_message_id": this.msg.message_id
+    'reply_to_message_id': this.msg.message_id
   };
   global.bot.sendMessage(self.msg.from.id, text, options)
   .then(function () {
@@ -85,7 +85,7 @@ contexts.Context.prototype.photoReply = function(stream, caption) {
     deferred.reject(err);
   });
   return deferred.promise;
-}
+};
 
 contexts.Context.prototype.storeVariable = function(key, value) {
   this.variables[key] = value;
@@ -96,7 +96,7 @@ contexts.Context.prototype.fetchVariable = function(key) {
 };
 
 contexts.Context.prototype.forgetVariables = function() {
-  return this.variables = {};
+  this.variables = {};
 };
 
 contexts.Context.prototype.nextPhase = function() {
@@ -105,7 +105,7 @@ contexts.Context.prototype.nextPhase = function() {
 
 contexts.Context.prototype.toPhase = function(phase) {
   this.phase = phase;
-}
+};
 
 contexts.Context.prototype.previousPhase = function() {
   this.phase -= 1;

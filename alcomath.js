@@ -102,13 +102,10 @@ alcomath.sumGramsUnBurnedByHour = function(user, drinks) {
     gramsByHour[i] = {grams: 0, hour: (time.getHours()+3)%24, time: time};
   }
 
-  console.log(1);
-  console.log(gramsByHour);
-
   let lastFilledHour = 0;
 
-  for(var i in drinks) {
-    let drink = drinks[i];
+  for(var d in drinks) {
+    let drink = drinks[d];
     let drinkTime = Date.parse(drink.created);
     if(lastTime) {
       let diff = drinkTime - lastTime;
@@ -133,22 +130,18 @@ alcomath.sumGramsUnBurnedByHour = function(user, drinks) {
 
   }
 
-  console.log(2);
-  console.log(gramsByHour);
 
-  for(var i=lastFilledHour; i < 25; i+=1){
-    var hourDetails = gramsByHour[i];
-    if(now < hourDetails.time.getTime()){
-      lastFilledHour = i;
+  for(var ho=lastFilledHour; ho < 25; ho+=1){
+    var hourDetailsLast = gramsByHour[ho];
+    if(now < hourDetailsLast.time.getTime()){
+      lastFilledHour = ho;
       break;
     }
     milligrams = milligrams - (userBurnRateMilligrams);
     milligrams = milligrams > 0 ? milligrams : 0;
-    gramsByHour[i].grams = milligrams / 1000.0;
+    gramsByHour[ho].grams = milligrams / 1000.0;
   }
 
-  console.log(3);
-  console.log(gramsByHour);
   return gramsByHour;
 };
 

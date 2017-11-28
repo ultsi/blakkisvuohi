@@ -45,15 +45,15 @@ alcoconstants.milds = {
 
 alcoconstants.booze = {
   mild: {
-    print: "20% 4cl",
+    print: '20% 4cl',
     mg: alcomath.calcAlcoholMilliGrams(0.2, 0.04)
   },
   medium: {
-    print: "32% 4cl",
+    print: '32% 4cl',
     mg: alcomath.calcAlcoholMilliGrams(0.32, 0.04)
   },
   basic: {
-    print: "40% 4cl",
+    print: '40% 4cl',
     mg: alcomath.calcAlcoholMilliGrams(0.4, 0.04)
   }
 }
