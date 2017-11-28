@@ -41,7 +41,7 @@ function signupPhase2(context, msg, words) {
 
   let weight = parseInt(words[0], 10);
   if(weight < 30 || weight > 200){
-    return context.privateReply('Painon ala- ja ylärajat ovat 30kg ja 200kg.')
+    return context.privateReply('Painon ala- ja ylärajat ovat 30kg ja 200kg.');
   }
 
   context.storeVariable('weight', weight);
@@ -67,7 +67,7 @@ function signupPhase3(context, msg, words) {
   }, function(err){
     console.log(err);
     deferred.reject('Isompi ongelma, ota yhteyttä adminiin.');
-  })
+  });
   return deferred.promise;
 }
 
@@ -84,8 +84,8 @@ function getPermillesTextForGroup(groupId){
   let deferred = when.defer();
   when.all([
     users.getBoozeForGroup(groupId),
-    users.getDrinkSumFor12hForGroup(groupId),
-    users.getDrinkSumFor24hForGroup(groupId)
+    users.getDrinkSumForXHoursForGroup(groupId, 12),
+    users.getDrinkSumForXHoursForGroup(groupId, 24)
   ]).spread(function(drinksByUser, drinkSumsByUser12h, drinkSumsByUser24h){
       try {
         let permilles = [];
@@ -187,7 +187,7 @@ function drinkBoozeReturnPermilles(user, amount, description, msg){
 */
 
 let drinkCommand = {};
-drinkCommand.toStartText = "Alkuun";
+drinkCommand.toStartText = 'Alkuun';
 drinkCommand.startKeyboard = [['Miedot', 'Tiukat', 'Oma']];
 drinkCommand.miedotReply = {text: 'Valitse mieto', keyboard: [[alcoconstants.milds.beercan.print, alcoconstants.milds.beer4.print, alcoconstants.milds.beer05.print],
                                                              [alcoconstants.milds.beer04.print, alcoconstants.milds.beerpint.print, alcoconstants.milds.lonkero.print],
@@ -282,7 +282,7 @@ drinkCommand.omajuoma = function (context, user, msg, words) {
   }
 
   context.storeVariable('vol', vol);
-  context.toPhase('omajuomaEnd')
+  context.toPhase('omajuomaEnd');
   return context.privateReply('Hyvä, seuraavaksi syötä viinan määrä senttilitroissa.');
 };
 
@@ -475,7 +475,7 @@ function undoDrink(context, user, msg, words){
           }, function(err){
             console.log(err.stack);
             deferred.reject(err);
-          })
+          });
       }, function(err){
         console.log(err.stack);
         deferred.reject(err);
@@ -503,11 +503,11 @@ function makeDrinksString(drinks) {
     }
     let drinkHours = drinkTime.getHours() + '';
     if(drinkHours.length === 1){
-      drinkHours = "0" + drinkHours;
+      drinkHours = '0' + drinkHours;
     }
     let drinkMinutes = drinkTime.getMinutes() + '';
     if(drinkMinutes.length === 1){
-      drinkMinutes = "0" + drinkMinutes;
+      drinkMinutes = '0' + drinkMinutes;
     }
     list.push(drinkHours + ':' + drinkMinutes + ' ' + drink.description);
   }

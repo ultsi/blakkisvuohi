@@ -7,7 +7,7 @@ utils.getDateMinusHours = function(hours) {
   const hourInMillis = 3600*1000;
   const hoursAgo = new Date(Date.now()-hours*hourInMillis);
   return hoursAgo;
-}
+};
 
 function createSendPrivateMsgFunction(msg) {
   return function(text) {

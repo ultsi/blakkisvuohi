@@ -1,9 +1,15 @@
+/*
+ cmd.js
+ Simple command library to register different commands and call them via callbacks.
+ Dependent on context and the user framework that Bläkkisvuohi uses.
+*/
+
 'use strict';
 
-const utils = require('./utils.js');
+const utils = require('./lib/utils.js');
 const when = require('when');
-const users = require('./users.js');
-const contexts = require('./context.js');
+const users = require('./lib/users.js');
+const contexts = require('./lib/context.js');
 
 let Commands = {};
 let cmds = {};
