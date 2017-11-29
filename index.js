@@ -25,7 +25,7 @@ const users = require('./users.js');
 const promillet = require('./promillet.js');
 
 const botOptions = {
-  polling: true // used when no HTTPS:// connection available
+    polling: true // used when no HTTPS:// connection available
 };
 
 const bot = new Bot(TOKEN, botOptions);
@@ -38,11 +38,11 @@ global.bot = bot;
 console.log('BläkkisVuohi started in the ' + process.env.NODE_ENV + ' mode');
 
 bot.on('message', function(msg) {
-  console.log(msg);
-  if(!msg.text){ return; }
-  const words = msg.text.split(' ');
-  const cmd_only = words[0].replace(/@.+/, '').toLowerCase();
-  cmd.call(cmd_only, msg, words);
+    console.log(msg);
+    if(!msg.text){ return; }
+    const words = msg.text.split(' ');
+    const cmd_only = words[0].replace(/@.+/, '').toLowerCase();
+    cmd.call(cmd_only, msg, words);
 });
 
 module.exports = bot;
