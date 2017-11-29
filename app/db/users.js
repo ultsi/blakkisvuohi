@@ -24,7 +24,7 @@
 'use strict';
 const query = require('pg-query');
 const when = require('when');
-const utils = require('./lib/utils.js');
+const utils = require('../lib/utils.js');
 query.connectionParameters = process.env.DATABASE_URL;
 
 let users = module.exports = {};
