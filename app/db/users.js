@@ -25,7 +25,6 @@
 const query = require('pg-query');
 const when = require('when');
 const utils = require('./lib/utils.js');
-const cmd = require('./lib/cmd.js');
 query.connectionParameters = process.env.DATABASE_URL;
 
 let users = module.exports = {};
