@@ -28,7 +28,7 @@ const utils = require('./lib/utils.js');
 const cmd = require('./lib/cmd.js');
 query.connectionParameters = process.env.DATABASE_URL;
 
-let users = {};
+let users = module.exports = {};
 
 function isValidGender(gender){
     return gender === 'mies' || gender === 'nainen';
@@ -185,5 +185,3 @@ User.prototype.getDrinkCountsByGroup = function() {
     return deferred.promise;
 };
 
-
-module.exports = users;

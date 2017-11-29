@@ -29,7 +29,7 @@ const when = require('when');
 const users = require('./lib/users.js');
 const contexts = require('./lib/context.js');
 
-let Commands = {};
+let Commands = module.exports = {};
 let cmds = {};
 let userContexts = {};
 
@@ -164,5 +164,3 @@ Commands.call = function call(firstWord, msg, words) {
         }
     }
 };
-
-module.exports = Commands;

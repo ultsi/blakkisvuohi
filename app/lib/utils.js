@@ -23,7 +23,7 @@
 
 'use strict';
 
-let utils = {};
+let utils = module.exports = {};
 let when = require('when');
 
 utils.getDateMinusHours = function(hours) {
@@ -97,5 +97,3 @@ utils.isValidInt = function(num){
 utils.isValidFloat = function(num){
     return !!parseFloat(num);
 };
-
-module.exports = utils;

@@ -20,7 +20,7 @@ const ChartjsNode = require('chartjs-node');
 const fs = require('fs');
 const when = require('when');
 
-const blakkisChart = {};
+const blakkisChart = module.exports = {};
 
 const lineChartTemplate = {
     type: 'line',
@@ -83,5 +83,3 @@ blakkisChart.getLineGraphBuffer = function(data, title) {
 
     return deferred.promise;
 };
-
-module.exports = blakkisChart;
