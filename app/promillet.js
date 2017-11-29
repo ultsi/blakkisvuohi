@@ -18,7 +18,7 @@
 
 'use strict';
 
-const Commands = require('./cmd.js');
+const Commands = require('./commands.js');
 const utils = require('./utils.js');
 const users = require('./users.js');
 const when = require('when');

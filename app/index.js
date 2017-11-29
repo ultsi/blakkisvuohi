@@ -20,7 +20,7 @@
 const TOKEN = process.env.TOKEN;
 
 const Bot = require('node-telegram-bot-api');
-const cmd = require('./lib/cmd.js');
+const Commands = require('./lib/commands.js');
 
 const botOptions = {
     polling: true // used when no HTTPS:// connection available
@@ -40,7 +40,7 @@ bot.on('message', function(msg) {
     if(!msg.text){ return; }
     const words = msg.text.split(' ');
     const cmd_only = words[0].replace(/@.+/, '').toLowerCase();
-    cmd.call(cmd_only, msg, words);
+    Commands.call(cmd_only, msg, words);
 });
 
 module.exports = bot;

@@ -17,7 +17,7 @@
 */
 
 /*
-    cmd.js
+    commands.js
     Simple command library to register different commands and call them via callbacks.
     Dependent on the context and the user framework that Bläkkisvuohi uses.
 */
