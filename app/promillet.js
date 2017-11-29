@@ -177,21 +177,21 @@ function getDrinksTextForGroup(groupId) {
 
 function drinkBoozeReturnPermilles(user, amount, description, msg) {
     let deferred = when.defer();
-    
+
     user.drinkBooze(amount, description)
-    .then(function(amount) {
-        user.getBooze()
-            .then(function(drinks) {
-                let permilles = alcomath.getPermillesFromDrinks(user, drinks);
-                deferred.resolve(permilles);
-            }, function(err) {
-                console.log(err);
-                deferred.reject(err);
-            });
-    }, function(err) {
-        console.error(err);
-        deferred.reject('Isompi ongelma, ota yhteyttä adminiin.');
-    });
+        .then(function(amount) {
+            user.getBooze()
+                .then(function(drinks) {
+                    let permilles = alcomath.getPermillesFromDrinks(user, drinks);
+                    deferred.resolve(permilles);
+                }, function(err) {
+                    console.log(err);
+                    deferred.reject(err);
+                });
+        }, function(err) {
+            console.error(err);
+            deferred.reject('Isompi ongelma, ota yhteyttä adminiin.');
+        });
     return deferred.promise;
 }
 
@@ -323,7 +323,7 @@ drinkCommand.omajuomaEnd = function(context, user, msg, words) {
 
     // Everything ok, use the variables
     let vol = context.fetchVariable('vol');
-    let mg = alcomath.calcAlcoholMilliGrams(vol / 100.0, centiliters / 100.0);
+    let mg = constants.calcAlcoholMilligrams(vol / 100.0, centiliters / 100.0);
     let deferred = when.defer();
     drinkBoozeReturnPermilles(user, mg, 'Oma juoma - ' + centiliters + 'cl ' + vol + '%', msg)
         .then(function(permilles) {
