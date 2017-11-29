@@ -121,7 +121,7 @@ function getPermillesTextForGroup(groupId) {
                 if (userPermilles > 0) {
                     let sum12h = drinkSumsByUser12h[details.userid] && drinkSumsByUser12h[details.userid].sum || 0;
                     let sum24h = drinkSumsByUser24h[details.userid] && drinkSumsByUser24h[details.userid].sum || 0;
-                    permilles.push([user.username, userPermilles, sum12h / alcomath.KALJA033, sum24h / alcomath.KALJA033]);
+                    permilles.push([user.username, userPermilles, sum12h / constants.KALJA033, sum24h / constants.KALJA033]);
                 }
             }
             permilles = permilles.sort(function(a, b) {
@@ -156,7 +156,7 @@ function getDrinksTextForGroup(groupId) {
                 if (userDrinks > 0) {
                     let sum12h = drinkSumsByUser12h[details.userid] && drinkSumsByUser12h[details.userid].sum || 0;
                     let sum24h = drinkSumsByUser24h[details.userid] && drinkSumsByUser24h[details.userid].sum || 0;
-                    drinks.push([user.username, userDrinks / alcomath.STANDARD_DRINK_GRAMS, sum12h / alcomath.KALJA033, sum24h / alcomath.KALJA033]);
+                    drinks.push([user.username, userDrinks / constants.STANDARD_DRINK_GRAMS, sum12h / constants.KALJA033, sum24h / constants.KALJA033]);
                 }
             }
             drinks = drinks.sort(function(a, b) {
@@ -340,7 +340,7 @@ Commands.registerUserCommand('/juoma', '/juoma - lisää yksi juoma tilastoihin'
 
 function kaljaCommand(context, user, msg, words) {
     let deferred = when.defer();
-    drinkBoozeReturnPermilles(user, alcomath.KALJA033, '/kalja033', msg)
+    drinkBoozeReturnPermilles(user, constants.KALJA033, '/kalja033', msg)
         .then(function(permilles) {
             deferred.resolve(context.privateReply(getRandomResponse() + ' ' + permilles.toFixed(2) + '‰'));
         }, function(err) {
@@ -355,7 +355,7 @@ Commands.registerUserCommand('/kalja033', '/kalja033 - pikanäppäin yhdelle kap
 
 function kalja05Command(context, user, msg, words) {
     let deferred = when.defer();
-    drinkBoozeReturnPermilles(user, alcomath.KALJA05, '/kalja05', msg)
+    drinkBoozeReturnPermilles(user, constants.KALJA05, '/kalja05', msg)
         .then(function(permilles) {
             deferred.resolve(context.privateReply(getRandomResponse() + ' ' + permilles.toFixed(2) + '‰'));
         }, function(err) {

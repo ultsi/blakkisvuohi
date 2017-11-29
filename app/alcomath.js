@@ -22,14 +22,14 @@ const constants = require('./constants.js');
 let alcomath = module.exports = {};
 
 alcomath.getPermillesFromGrams = function(user, grams) {
-    let standard_drinks = grams / alcomath.STANDARD_DRINK_GRAMS;
+    let standard_drinks = grams / constants.STANDARD_DRINK_GRAMS;
     return (constants.MEAN_BODY_WATER * (standard_drinks)) / (constants.LIQUID_PERCENT[user.gender] * user.weight) * 10;
 };
 
 alcomath.getPermillesFromGramsByHour = function(user, gramsByHour) {
     var permillesByHour = [];
     for (var i in gramsByHour) {
-        let standard_drinks = gramsByHour[i].grams / alcomath.STANDARD_DRINK_GRAMS;
+        let standard_drinks = gramsByHour[i].grams / constants.STANDARD_DRINK_GRAMS;
         permillesByHour[i] = {
             permilles: (constants.MEAN_BODY_WATER * (standard_drinks)) / (constants.LIQUID_PERCENT[user.gender] * user.weight) * 10,
             hour: gramsByHour[i].hour

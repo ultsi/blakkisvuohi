@@ -27,14 +27,14 @@ constants.LIQUID_PERCENT = {
 };
 constants.MEAN_BODY_WATER = 0.806;
 
-constants.calcAlcoholMilliGrams = function(vol_perc, amount) {
+constants.calcAlcoholMilligrams = function(vol_perc, amount) {
     return Math.round(vol_perc * constants.ETANOL_GRAMS_PER_LITRE * amount * 1000);
 };
 
-constants.KALJA033 = constants.calcAlcoholMilliGrams(0.047, 0.33);
-constants.NELONEN = constants.calcAlcoholMilliGrams(0.055, 0.33);
-constants.KALJA05 = constants.calcAlcoholMilliGrams(0.047, 0.50);
-constants.SHOTTI40 = constants.calcAlcoholMilliGrams(0.4, 0.04);
+constants.KALJA033 = constants.calcAlcoholMilligrams(0.047, 0.33);
+constants.NELONEN = constants.calcAlcoholMilligrams(0.055, 0.33);
+constants.KALJA05 = constants.calcAlcoholMilligrams(0.047, 0.50);
+constants.SHOTTI40 = constants.calcAlcoholMilligrams(0.4, 0.04);
 constants.STANDARD_DRINK_GRAMS = 10.6;
 
 constants.emoji = {
@@ -45,50 +45,50 @@ constants.emoji = {
 constants.milds = {
     beercan: {
         print: constants.emoji.beer + ' 33cl 4.7%',
-        mg: constants.calcAlcoholMilliGrams(0.047, 0.33)
+        mg: constants.calcAlcoholMilligrams(0.047, 0.33)
     },
     beer04: {
         print: constants.emoji.beer + ' 40cl 4.7%',
-        mg: constants.calcAlcoholMilliGrams(0.047, 0.40)
+        mg: constants.calcAlcoholMilligrams(0.047, 0.40)
     },
     beer4: {
         print: constants.emoji.beer + ' 33cl 5.5%',
-        mg: constants.calcAlcoholMilliGrams(0.055, 0.33)
+        mg: constants.calcAlcoholMilligrams(0.055, 0.33)
     },
     beer05: {
         print: constants.emoji.beer + ' 50cl 4.7%',
-        mg: constants.calcAlcoholMilliGrams(0.047, 0.5)
+        mg: constants.calcAlcoholMilligrams(0.047, 0.5)
     },
     beerpint: {
         print: constants.emoji.beer + ' 56.8cl 4.7%',
-        mg: constants.calcAlcoholMilliGrams(0.047, 0.568)
+        mg: constants.calcAlcoholMilligrams(0.047, 0.568)
     },
     lonkero: {
         print: 'Lonkero 33cl 5.3%',
-        mg: constants.calcAlcoholMilliGrams(0.053, 0.33)
+        mg: constants.calcAlcoholMilligrams(0.053, 0.33)
     },
     wine12: {
         print: constants.emoji.wine + ' 12cl 12%',
-        mg: constants.calcAlcoholMilliGrams(0.12, 0.12)
+        mg: constants.calcAlcoholMilligrams(0.12, 0.12)
     },
     wine16: {
         print: constants.emoji.wine + ' 16cl 12%',
-        mg: constants.calcAlcoholMilliGrams(0.12, 0.16)
+        mg: constants.calcAlcoholMilligrams(0.12, 0.16)
     }
 };
 
 constants.booze = {
     mild: {
         print: '20% 4cl',
-        mg: constants.calcAlcoholMilliGrams(0.2, 0.04)
+        mg: constants.calcAlcoholMilligrams(0.2, 0.04)
     },
     medium: {
         print: '32% 4cl',
-        mg: constants.calcAlcoholMilliGrams(0.32, 0.04)
+        mg: constants.calcAlcoholMilligrams(0.32, 0.04)
     },
     basic: {
         print: '40% 4cl',
-        mg: constants.calcAlcoholMilliGrams(0.4, 0.04)
+        mg: constants.calcAlcoholMilligrams(0.4, 0.04)
     }
 };
 
