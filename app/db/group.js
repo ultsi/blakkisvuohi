@@ -28,7 +28,7 @@ const utils = require('./lib/utils.js');
 const cmd = require('./lib/cmd.js');
 query.connectionParameters = process.env.DATABASE_URL;
 
-let group = {};
+let group = module.exports = {};
 
 function groupDrinksByUser(drinks) {
     let drinksByUser = {};
@@ -113,5 +113,3 @@ group.getBoozeByHour = function(groupId) {
         });
     return deferred.promise;
 };
-
-module.exports = group;

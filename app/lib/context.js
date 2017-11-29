@@ -24,7 +24,7 @@
 'use strict';
 
 let when = require('when');
-let contexts = {};
+let contexts = module.exports = {};
 
 contexts.Context = function(cmd, msg){
     this.cmd = cmd;
@@ -137,5 +137,3 @@ contexts.Context.prototype.end = function() {
 contexts.Context.prototype.isPrivateChat = function() {
     return this.msg.chat.type === 'private';
 };
-
-module.exports = contexts;
