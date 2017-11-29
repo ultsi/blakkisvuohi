@@ -20,7 +20,9 @@
 const TOKEN = process.env.TOKEN;
 
 const Bot = require('node-telegram-bot-api');
-const Commands = require('./lib/commands.js');
+const Commands = require('./app/lib/commands.js');
+
+require('./app/loader.js');
 
 const botOptions = {
     polling: true // used when no HTTPS:// connection available
@@ -37,7 +39,9 @@ console.log('BläkkisVuohi started in the ' + process.env.NODE_ENV + ' mode');
 
 bot.on('message', function(msg) {
     console.log(msg);
-    if(!msg.text){ return; }
+    if (!msg.text) {
+        return;
+    }
     const words = msg.text.split(' ');
     const cmd_only = words[0].replace(/@.+/, '').toLowerCase();
     Commands.call(cmd_only, msg, words);
