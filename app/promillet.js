@@ -23,7 +23,7 @@ const utils = require('./utils.js');
 const users = require('./users.js');
 const when = require('when');
 const alcomath = require('./alcomath.js');
-const alcoconstants = require('./alcoconstants.js');
+const constants = require('./constants.js');
 const blakkisChart = require('./blakkischart.js');
 
 const DRINK_RESPONSES = ['Bäää.', 'Uuteen nousuun.', 'Muista juoda vettä!', 'Aamu alkaa A:lla.', 
@@ -209,11 +209,11 @@ function drinkBoozeReturnPermilles(user, amount, description, msg){
 let drinkCommand = {};
 drinkCommand.toStartText = 'Alkuun';
 drinkCommand.startKeyboard = [['Miedot', 'Tiukat', 'Oma']];
-drinkCommand.miedotReply = {text: 'Valitse mieto', keyboard: [[alcoconstants.milds.beercan.print, alcoconstants.milds.beer4.print, alcoconstants.milds.beer05.print],
-                                                                                                                         [alcoconstants.milds.beer04.print, alcoconstants.milds.beerpint.print, alcoconstants.milds.lonkero.print],
-                                                                                                                         [alcoconstants.milds.wine12.print, alcoconstants.milds.wine16.print, drinkCommand.toStartText]] };
+drinkCommand.miedotReply = {text: 'Valitse mieto', keyboard: [[constants.milds.beercan.print, constants.milds.beer4.print, constants.milds.beer05.print],
+                                                                                                                         [constants.milds.beer04.print, constants.milds.beerpint.print, constants.milds.lonkero.print],
+                                                                                                                         [constants.milds.wine12.print, constants.milds.wine16.print, drinkCommand.toStartText]] };
 
-drinkCommand.tiukatReply = {text: 'Valitse tiukka', keyboard: [[alcoconstants.booze.mild.print, alcoconstants.booze.medium.print, alcoconstants.booze.basic.print, drinkCommand.toStartText]]};
+drinkCommand.tiukatReply = {text: 'Valitse tiukka', keyboard: [[constants.booze.mild.print, constants.booze.medium.print, constants.booze.basic.print, drinkCommand.toStartText]]};
 
 drinkCommand[0] = function (context, user, msg, words) {
     context.nextPhase();
@@ -240,7 +240,7 @@ drinkCommand.miedot = function (context, user, msg, words) {
         context.toPhase(1);
         return context.privateReplyWithKeyboard('Valitse juoman kategoria', drinkCommand.startKeyboard);
     }
-    const milds = alcoconstants.milds;
+    const milds = constants.milds;
     let found = null;
     for(let key in milds) {
         if(milds[key].print.toLowerCase() === msg.text.toLowerCase()){
@@ -268,7 +268,7 @@ drinkCommand.tiukat = function (context, user, msg, words) {
         context.toPhase(1);
         return context.privateReplyWithKeyboard('Valitse juoman kategoria', drinkCommand.startKeyboard);
     }
-    const booze = alcoconstants.booze;
+    const booze = constants.booze;
     let found = null;
     for(let key in booze) {
         if(booze[key].print.toLowerCase() === msg.text.toLowerCase()){

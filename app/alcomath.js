@@ -18,51 +18,19 @@
 
 'use strict';
 
-let alcomath = {};
-
-const ETANOL_GRAMS_PER_LITRE = 789;
-const LIQUID_PERCENT = {mies: 0.58, nainen: 0.53};
-const MEAN_BODY_WATER = 0.806;
-
-alcomath.calcAlcoholMilliGrams = function(vol_perc, amount) {
-    return Math.round(vol_perc * ETANOL_GRAMS_PER_LITRE * amount * 1000);
-};
-
-alcomath.KALJA033 = alcomath.calcAlcoholMilliGrams(0.047, 0.33);
-alcomath.NELONEN = alcomath.calcAlcoholMilliGrams(0.055, 0.33);
-alcomath.KALJA05 = alcomath.calcAlcoholMilliGrams(0.047, 0.50);
-alcomath.SHOTTI40 = alcomath.calcAlcoholMilliGrams(0.4, 0.04);
-alcomath.STANDARD_DRINK_GRAMS = 10.6;
-
-alcomath.LIMITS = {
-    6.0: 'Hyvin todennäköinen kuolema (alkoholimyrkytys)',
-    5.0: 'Todennäköinen kuolema (alkoholimyrkytys)',
-    4.0: 'Keskimääräinen alkoholimyrkytys (18v)',
-    3.5: 'Sammuminen, mahdollinen alkoholimyrkytys',
-    3.25: 'Normaali ihminen ei kykene kävelemään',
-    3.0: 'Muisti menee',
-    2.5: 'Hoipertelua',
-    2.25: 'Tanssiminen ja liikkuminen vaikeaa',
-    2.0: 'Puhe sammaltaa, kivun tunne katoaa, tajunta heikkenee',
-    1.82: 'Omatoimikapteeniutta saattaa esiintyä',
-    1.5: 'Voimakasta estottomuutta, tunteellisuutta',
-    1.25: 'Törkeä rattijuopumus',
-    1.0: 'Aggressiot lisääntyvät, innostuneisuutta, kömpelyyttä',
-    0.75: 'Hyväntuulisuutta, estot poistuvat',
-    0.5: 'Rattijuopumus',
-    0.25: 'Impulsiivisuutta, hyvän olon tunne'
-};
+const constants = require('constants.js');
+let alcomath = module.exports = {};
 
 alcomath.getPermillesFromGrams = function(user, grams) {
     let standard_drinks = grams / alcomath.STANDARD_DRINK_GRAMS;
-    return (MEAN_BODY_WATER * (standard_drinks)) / (LIQUID_PERCENT[user.gender] * user.weight) * 10;
+    return (constants.MEAN_BODY_WATER * (standard_drinks)) / (constants.LIQUID_PERCENT[user.gender] * user.weight) * 10;
 };
 
 alcomath.getPermillesFromGramsByHour = function(user, gramsByHour) {
     var permillesByHour = [];
     for(var i in gramsByHour){
         let standard_drinks = gramsByHour[i].grams / alcomath.STANDARD_DRINK_GRAMS;
-        permillesByHour[i] = {permilles: (MEAN_BODY_WATER * (standard_drinks)) / (LIQUID_PERCENT[user.gender] * user.weight) * 10, hour: gramsByHour[i].hour};
+        permillesByHour[i] = {permilles: (constants.MEAN_BODY_WATER * (standard_drinks)) / (constants.LIQUID_PERCENT[user.gender] * user.weight) * 10, hour: gramsByHour[i].hour};
     }
     return permillesByHour;
 };
@@ -171,5 +139,3 @@ alcomath.getPermillesAndGramsFromDrinksByHour = function(user, drinks) {
     var gramsByHour = alcomath.sumGramsUnBurnedByHour(user, drinks);
     return {permillesByHour: alcomath.getPermillesFromGramsByHour(user,gramsByHour), gramsByHour: gramsByHour};
 };
-
-module.exports = alcomath;

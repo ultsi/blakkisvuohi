@@ -18,62 +18,94 @@
 
 'use strict';
 
-const alcomath = require('./alcomath.js');
+let constants = module.exports = {};
 
-let alcoconstants = {};
-alcoconstants.emoji = {
+constants.ETANOL_GRAMS_PER_LITRE = 789;
+constants.LIQUID_PERCENT = {mies: 0.58, nainen: 0.53};
+constants.MEAN_BODY_WATER = 0.806;
+
+constants.calcAlcoholMilliGrams = function(vol_perc, amount) {
+    return Math.round(vol_perc * constants.ETANOL_GRAMS_PER_LITRE * amount * 1000);
+};
+
+constants.KALJA033 = constants.calcAlcoholMilliGrams(0.047, 0.33);
+constants.NELONEN = constants.calcAlcoholMilliGrams(0.055, 0.33);
+constants.KALJA05 = constants.calcAlcoholMilliGrams(0.047, 0.50);
+constants.SHOTTI40 = constants.calcAlcoholMilliGrams(0.4, 0.04);
+constants.STANDARD_DRINK_GRAMS = 10.6;
+
+constants.emoji = {
     beer: '🍺',
     wine: '🍷'
 };
 
-alcoconstants.milds = {
+constants.milds = {
     beercan: {
-        print: alcoconstants.emoji.beer + ' 33cl 4.7%',
-        mg: alcomath.calcAlcoholMilliGrams(0.047, 0.33)
+        print: constants.emoji.beer + ' 33cl 4.7%',
+        mg: constants.calcAlcoholMilliGrams(0.047, 0.33)
     },
     beer04: {
-        print: alcoconstants.emoji.beer + ' 40cl 4.7%',
-        mg: alcomath.calcAlcoholMilliGrams(0.047, 0.40)
+        print: constants.emoji.beer + ' 40cl 4.7%',
+        mg: constants.calcAlcoholMilliGrams(0.047, 0.40)
     },
     beer4: {
-        print: alcoconstants.emoji.beer + ' 33cl 5.5%',
-        mg: alcomath.calcAlcoholMilliGrams(0.055, 0.33)
+        print: constants.emoji.beer + ' 33cl 5.5%',
+        mg: constants.calcAlcoholMilliGrams(0.055, 0.33)
     },
     beer05: {
-        print: alcoconstants.emoji.beer + ' 50cl 4.7%',
-        mg: alcomath.calcAlcoholMilliGrams(0.047, 0.5)
+        print: constants.emoji.beer + ' 50cl 4.7%',
+        mg: constants.calcAlcoholMilliGrams(0.047, 0.5)
     },
     beerpint: {
-        print: alcoconstants.emoji.beer + ' 56.8cl 4.7%',
-        mg: alcomath.calcAlcoholMilliGrams(0.047, 0.568)
+        print: constants.emoji.beer + ' 56.8cl 4.7%',
+        mg: constants.calcAlcoholMilliGrams(0.047, 0.568)
     },
     lonkero: {
         print: 'Lonkero 33cl 5.3%',
-        mg: alcomath.calcAlcoholMilliGrams(0.053, 0.33)
+        mg: constants.calcAlcoholMilliGrams(0.053, 0.33)
     },
     wine12: {
-        print: alcoconstants.emoji.wine + ' 12cl 12%',
-        mg: alcomath.calcAlcoholMilliGrams(0.12, 0.12)
+        print: constants.emoji.wine + ' 12cl 12%',
+        mg: constants.calcAlcoholMilliGrams(0.12, 0.12)
     },
     wine16: {
-        print: alcoconstants.emoji.wine + ' 16cl 12%',
-        mg: alcomath.calcAlcoholMilliGrams(0.12, 0.16)
+        print: constants.emoji.wine + ' 16cl 12%',
+        mg: constants.calcAlcoholMilliGrams(0.12, 0.16)
     }
 };
 
-alcoconstants.booze = {
+constants.booze = {
     mild: {
         print: '20% 4cl',
-        mg: alcomath.calcAlcoholMilliGrams(0.2, 0.04)
+        mg: constants.calcAlcoholMilliGrams(0.2, 0.04)
     },
     medium: {
         print: '32% 4cl',
-        mg: alcomath.calcAlcoholMilliGrams(0.32, 0.04)
+        mg: constants.calcAlcoholMilliGrams(0.32, 0.04)
     },
     basic: {
         print: '40% 4cl',
-        mg: alcomath.calcAlcoholMilliGrams(0.4, 0.04)
+        mg: constants.calcAlcoholMilliGrams(0.4, 0.04)
     }
-}
+};
 
-module.exports = alcoconstants;
+constants.LIMITS = {
+    6.0: 'Hyvin todennäköinen kuolema (alkoholimyrkytys)',
+    5.0: 'Todennäköinen kuolema (alkoholimyrkytys)',
+    4.0: 'Keskimääräinen alkoholimyrkytys (18v)',
+    3.5: 'Sammuminen, mahdollinen alkoholimyrkytys',
+    3.25: 'Normaali ihminen ei kykene kävelemään',
+    3.0: 'Muisti menee',
+    2.5: 'Hoipertelua',
+    2.25: 'Tanssiminen ja liikkuminen vaikeaa',
+    2.0: 'Puhe sammaltaa, kivun tunne katoaa, tajunta heikkenee',
+    1.82: 'Omatoimikapteeniutta saattaa esiintyä',
+    1.5: 'Voimakasta estottomuutta, tunteellisuutta',
+    1.25: 'Törkeä rattijuopumus',
+    1.0: 'Aggressiot lisääntyvät, innostuneisuutta, kömpelyyttä',
+    0.75: 'Hyväntuulisuutta, estot poistuvat',
+    0.5: 'Rattijuopumus',
+    0.25: 'Impulsiivisuutta, hyvän olon tunne'
+};
+
+module.exports = constants;
