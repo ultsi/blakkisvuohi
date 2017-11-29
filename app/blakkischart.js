@@ -15,9 +15,9 @@
     You should have received a copy of the GNU General Public License
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
+'use strict';
 
 const ChartjsNode = require('chartjs-node');
-const fs = require('fs');
 const when = require('when');
 
 const blakkisChart = module.exports = {};
@@ -34,9 +34,9 @@ const lineChartTemplate = {
                 tension: 0, // disables bezier curves
             }
         },
-        title:{
-            display:true,
-            text:'Chart.js Line Chart'
+        title: {
+            display: true,
+            text: 'Chart.js Line Chart'
         },
         scales: {
             xAxes: [{
@@ -59,7 +59,7 @@ const lineChartTemplate = {
 
 blakkisChart.getLineGraphBuffer = function(data, title) {
     let deferred = when.defer();
-    console.log("Trying to make a line graph from data");
+    console.log('Trying to make a line graph from data');
     try {
         var chartNode = new ChartjsNode(1024, 728);
         var lineChartConfig = lineChartTemplate;
@@ -76,7 +76,7 @@ blakkisChart.getLineGraphBuffer = function(data, title) {
                 console.error(err);
                 deferred.reject();
             });
-    } catch(err){
+    } catch (err) {
         console.log('ChartJS err: ' + err);
         deferred.reject();
     }

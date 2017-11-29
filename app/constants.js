@@ -21,7 +21,10 @@
 let constants = module.exports = {};
 
 constants.ETANOL_GRAMS_PER_LITRE = 789;
-constants.LIQUID_PERCENT = {mies: 0.58, nainen: 0.53};
+constants.LIQUID_PERCENT = {
+    mies: 0.58,
+    nainen: 0.53
+};
 constants.MEAN_BODY_WATER = 0.806;
 
 constants.calcAlcoholMilliGrams = function(vol_perc, amount) {

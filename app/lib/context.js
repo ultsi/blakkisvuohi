@@ -26,7 +26,7 @@
 let when = require('when');
 let contexts = module.exports = {};
 
-contexts.Context = function(cmd, msg){
+contexts.Context = function(cmd, msg) {
     this.cmd = cmd;
     this.msg = msg;
     this.phase = 0;
@@ -44,13 +44,13 @@ contexts.Context.prototype.privateReply = function(text) {
         }
     };
     global.bot.sendMessage(self.msg.from.id, text, options)
-    .then(function () {
-        console.log('Sent ' + text + ' to ' + self.msg.from.username);
-        deferred.resolve();
-    }, function(err) {
-        console.error('couldn\'t send private msg! Err: ' + err + ' trace: ' + err.stack);
-        deferred.reject(err);
-    });
+        .then(function() {
+            console.log('Sent ' + text + ' to ' + self.msg.from.username);
+            deferred.resolve();
+        }, function(err) {
+            console.error('couldn\'t send private msg! Err: ' + err + ' trace: ' + err.stack);
+            deferred.reject(err);
+        });
     return deferred.promise;
 };
 
@@ -67,13 +67,13 @@ contexts.Context.prototype.privateReplyWithKeyboard = function(text, keyboardBut
         'reply_to_message_id': this.msg.message_id
     };
     global.bot.sendMessage(self.msg.from.id, text, options)
-    .then(function () {
-        console.log('Sent ' + text + ' to ' + self.msg.from.username);
-        deferred.resolve();
-    }, function(err) {
-        console.error('couldn\'t send private msg! Err: ' + err);
-        deferred.reject(err);
-    });
+        .then(function() {
+            console.log('Sent ' + text + ' to ' + self.msg.from.username);
+            deferred.resolve();
+        }, function(err) {
+            console.error('couldn\'t send private msg! Err: ' + err);
+            deferred.reject(err);
+        });
     return deferred.promise;
 };
 
@@ -81,27 +81,29 @@ contexts.Context.prototype.chatReply = function(text) {
     let deferred = when.defer();
     let self = this;
     global.bot.sendMessage(self.msg.chat.id, text)
-    .then(function () {
-        console.log('Sent ' + text + ' to chat ' + self.msg.chat.title);
-        deferred.resolve();
-    }, function(err) {
-        console.error('couldn\'t send chat msg! Err: ' + err);
-        deferred.reject(err);
-    });
+        .then(function() {
+            console.log('Sent ' + text + ' to chat ' + self.msg.chat.title);
+            deferred.resolve();
+        }, function(err) {
+            console.error('couldn\'t send chat msg! Err: ' + err);
+            deferred.reject(err);
+        });
     return deferred.promise;
 };
 
 contexts.Context.prototype.photoReply = function(stream, caption) {
     let deferred = when.defer();
     let self = this;
-    global.bot.sendPhoto(self.msg.chat.id, stream, {caption: caption})
-    .then(function () {
-        console.log('Sent a photo to chat ' + self.msg.chat.title);
-        deferred.resolve();
-    }, function(err) {
-        console.error('couldn\'t send chat msg! Err: ' + err);
-        deferred.reject(err);
-    });
+    global.bot.sendPhoto(self.msg.chat.id, stream, {
+            caption: caption
+        })
+        .then(function() {
+            console.log('Sent a photo to chat ' + self.msg.chat.title);
+            deferred.resolve();
+        }, function(err) {
+            console.error('couldn\'t send chat msg! Err: ' + err);
+            deferred.reject(err);
+        });
     return deferred.promise;
 };
 
