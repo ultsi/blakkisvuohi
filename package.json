@@ -1,10 +1,9 @@
 {
-  "name": "heroku-node-telegram-bot",
-  "version": "1.0.0",
-  "description": "Starter pack for running telegram bot on the Heroku using Node.js",
+  "name": "blakkisvuohi",
+  "version": "2.0.0",
+  "description": "A telegram bot that helps to track estimated blood alcohol content",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
     "start": "export $(cat .env | xargs) && node index.js",
     "set_env": "export $(cat .env | xargs)",
     "start_win": "node index.js",
@@ -14,8 +13,8 @@
   "engines": {
     "node": "6.11.1"
   },
-  "author": "Volodymyr Lut",
-  "license": "ISC",
+  "author": "Joonas Ulmanen",
+  "license": "GPL-3.0",
   "dependencies": {
     "aws-sdk": "^2.61.0",
     "body-parser": "^1.15.0",
