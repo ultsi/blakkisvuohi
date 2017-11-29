@@ -24,10 +24,9 @@
 
 'use strict';
 
-const utils = require('./lib/utils.js');
-const when = require('when');
-const users = require('./lib/users.js');
-const contexts = require('./lib/context.js');
+const utils = require('./utils.js');
+const users = require('../db/users.js');
+const contexts = require('./context.js');
 
 let Commands = module.exports = {};
 let cmds = {};
