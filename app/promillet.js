@@ -26,7 +26,9 @@ const alcomath = require('./alcomath.js');
 const alcoconstants = require('./alcoconstants.js');
 const blakkisChart = require('./blakkischart.js');
 
-const DRINK_RESPONSES = ['Bäää.', 'Uuteen nousuun.', 'Muista juoda vettä!', 'Aamu alkaa A:lla.', 'Muista juoda vettä!', 'Juo viinaa, viina on hyvää.', 'Meno on meno.', 'Lörs lärä, viinaa!', 'Muista juoda vettä!'];
+const DRINK_RESPONSES = ['Bäää.', 'Uuteen nousuun.', 'Muista juoda vettä!', 'Aamu alkaa A:lla.', 
+                        'Muista juoda vettä!', 'Juo viinaa, viina on hyvää.', 'Meno on meno.', 
+                        'Lörs lärä, viinaa!', 'Muista juoda vettä!'];
 
 function getRandomResponse(){
     return DRINK_RESPONSES[Math.floor(Math.random()*DRINK_RESPONSES.length)];
@@ -34,7 +36,7 @@ function getRandomResponse(){
 
 /*
     /luotunnus
-    3 phased command where the user can sign up for the bot's functionality
+    3 phased command where the user can sign up to use the bot's functionality
     Asks for weight and gender for future calculations
 */
 

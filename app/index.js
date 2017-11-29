@@ -21,8 +21,6 @@ const TOKEN = process.env.TOKEN;
 
 const Bot = require('node-telegram-bot-api');
 const cmd = require('./lib/cmd.js');
-const users = require('./users.js');
-const promillet = require('./promillet.js');
 
 const botOptions = {
     polling: true // used when no HTTPS:// connection available
