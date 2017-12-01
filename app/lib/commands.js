@@ -27,6 +27,7 @@
 const users = require('../db/users.js');
 const contexts = require('./context.js');
 const settings = require('../settings.js');
+const strings = require('../strings.js');
 const log = require('loglevel').getLogger('system');
 
 
@@ -139,22 +140,28 @@ function callCommandFunction(context, cmd, msg, words) {
     }
 }
 
-function printHelp(msg) {
-    let cmdstr = 'BläkkisVuohi auttaa sinua ja ystäviäsi seuraamaan rippauksesi (lue: promillejesi) tasoa. Luo ensimmäiseksi tunnus komennolla /luotunnus. Tunnuksen luomisen jälkeen voit alkaa kellottamaan juomia sisään komennolla /juoma. Annan sinulle arvioita rippauksesta komennolla /promillet. Minut voi myös lisätä ryhmään, jolloin kerron /promillet-komennolla kaikkien ryhmässä olevien rippitasot. Jokaisen ryhmäläisen täytyy kuitenkin sanoa ryhmässä /moro, jotta he pääsevät rippilistaukseen mukaan.\n\nKomennot:\n';
+function listCmdHelp() {
+    let cmdHelpList = [];
     for (var i in cmds) {
-        if(!cmds.adminCommand){
-            cmdstr += cmds[i].help + '\n';
+        if(!cmds[i].adminCommand){
+            cmdHelpList.push(cmds[i].help);
         }
     }
-    return msg.sendPrivateMessage(cmdstr);
+    return cmdHelpList;
 }
 
 Commands.call = function call(firstWord, msg, words) {
     const userId = msg.from.id;
 
-    // Print command list
-    if (firstWord === '/komennot' || firstWord === '/start' || firstWord === '/help') {
-        return printHelp(msg);
+    // Print start message
+    if (firstWord === '/start') {
+        return msg.sendPrivateMessage(strings.help_text);
+    } else if (firstWord === '/komennot') {
+        const cmdListStr = listCmdHelp().join('\n');
+        return msg.sendPrivateMessage('Komennot:\n\n' + cmdListStr);
+    } else if (firstWord === '/help') {
+        const cmdListStr = listCmdHelp().join('\n');
+        return msg.sendPrivateMessage(strings.help_text + '\n\nKomennot:\n\n' + cmdListStr);
     }
 
     if (cmds[firstWord]) {
