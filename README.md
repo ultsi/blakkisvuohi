@@ -27,8 +27,13 @@ docker run --name postgres \
 Run the vuohi. Remember to set .env variables correctly
 
 ```
+source .env &&
 docker run --name blakkisvuohi \
   --link postgres:postgres \
+  -e TOKEN=$TOKEN \
+  -e DATABASE_URL=$DATABASE_URL \
+  -e BOT_MODE=polling \
+  -e NODE_ENV=production \
   --restart always \
   -d blakkisvuohi:latest
 ```
