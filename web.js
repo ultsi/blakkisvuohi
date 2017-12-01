@@ -16,36 +16,15 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-'use strict';
-const TOKEN = process.env.TOKEN;
+/*
+    web.js
+    Web endpoints for HTTPS webhook bot setups (like Heroku)
+*/
 
-const Bot = require('node-telegram-bot-api');
-const Commands = require('./app/lib/commands.js');
+'use strict';
 const express = require('express');
 const packageInfo = require('./package.json');
 const bodyParser = require('body-parser');
-
-// Load commands
-require('./app/loader.js');
-
-// Setup bot
-const bot = new Bot(TOKEN);
-global.bot = bot;
-
-// This informs the Telegram servers of the new webhook.
-// Note: we do not need to pass in the cert, as it already provided
-// bot.setWebHook(`${url}/bot${TOKEN}`);
-bot.setWebHook(process.env.APP_URL + TOKEN);
-
-bot.on('message', (msg) => {
-    console.log(msg);
-    if (!msg.text) {
-        return;
-    }
-    const words = msg.text.split(' ');
-    const cmd_only = words[0].replace(/@.+/, '').toLowerCase();
-    Commands.call(cmd_only, msg, words);
-});
 
 // Setup web server for heroku
 
@@ -64,11 +43,9 @@ var server = app.listen(process.env.PORT, '0.0.0.0', () => {
     console.log('Web server started at http://%s:%s', host, port);
 });
 
-app.post('/' + TOKEN, (req, res) => {
-    bot.processUpdate(req.body);
-    res.sendStatus(200);
-});
-
-console.log('BläkkisVuohi started in the ' + process.env.NODE_ENV + ' mode');
-
-module.exports = bot;
+module.exports = function(bot, token) {
+    app.post('/' + token, (req, res) => {
+        bot.processUpdate(req.body);
+        res.sendStatus(200);
+    });
+};

@@ -17,25 +17,36 @@
 */
 
 'use strict';
-const TOKEN = process.env.TOKEN;
 
+const TOKEN = process.env.TOKEN;
 const Bot = require('node-telegram-bot-api');
 const Commands = require('./app/lib/commands.js');
 
+// Load app
 require('./app/loader.js');
 
-const botOptions = {
-    polling: true // used when no HTTPS:// connection available
-};
-
-const bot = new Bot(TOKEN, botOptions);
+// Setup bot
+let bot;
 global.bot = bot;
 
-// This informs the Telegram servers of the new webhook.
-// Note: we do not need to pass in the cert, as it already provided
-// bot.setWebHook(`${url}/bot${TOKEN}`);
+if (process.env.BOT_MODE === 'webhook') {
+    bot = new Bot(TOKEN);
+    
+    // This informs the Telegram servers of the new webhook.
+    // Note: we do not need to pass in the cert, as it already provided
+    // bot.setWebHook(`${url}/bot${TOKEN}`);
+    bot.setWebHook(process.env.APP_URL + TOKEN);
 
-console.log('BläkkisVuohi started in the ' + process.env.NODE_ENV + ' mode');
+    // Load web server for Heroku
+    require('./web.js')(bot, TOKEN);
+} else {
+    const botOptions = {
+        polling: true // used when no HTTPS:// connection available
+    };
+    bot = new Bot(TOKEN, botOptions);
+}
+
+bot.setWebHook(process.env.APP_URL + TOKEN);
 
 bot.on('message', (msg) => {
     console.log(msg);
@@ -46,5 +57,7 @@ bot.on('message', (msg) => {
     const cmd_only = words[0].replace(/@.+/, '').toLowerCase();
     Commands.call(cmd_only, msg, words);
 });
+
+console.log('BläkkisVuohi started in the ' + process.env.NODE_ENV + ' mode');
 
 module.exports = bot;
