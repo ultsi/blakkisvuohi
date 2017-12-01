@@ -111,8 +111,8 @@ function getPermillesTextForGroup(groupId) {
     let group = new groups.Group(groupId);
     when.all([
         group.getDrinkTimes(),
-        group.getDrinkSumForXHours(12),
-        group.getDrinkSumForXHours(24)
+        group.getDrinkSumsByUser(12),
+        group.getDrinkSumsByUser(24)
     ]).spread(function(drinksByUser, drinkSumsByUser12h, drinkSumsByUser24h) {
         try  {
             let permilles = [];
@@ -147,8 +147,8 @@ function getDrinksTextForGroup(groupId) {
     let group = new groups.Group(groupId);
     when.all([
         group.getDrinkTimes(),
-        group.getDrinkSumForXHours(12),
-        users.getDrinkSumForXHours(24)
+        group.getDrinkSumsByUser(12),
+        group.getDrinkSumsByUser(24)
     ]).spread(function(drinksByUser, drinkSumsByUser12h, drinkSumsByUser24h) {
         try  {
             let drinks = [];
@@ -598,6 +598,7 @@ function kuvaaja(context, user, msg, words) {
 
     let graphTitle = 'Promillekuvaaja feat. ' + msg.chat.title;
 
+    let group = new groups.Group(msg.chat.id);
     group.getDrinkTimes(msg.chat.id)
         .then(function(drinksByUser) {
             try  {

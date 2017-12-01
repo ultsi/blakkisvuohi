@@ -65,7 +65,7 @@ Group.prototype.getDrinkSum = function() {
     return deferred.promise;
 };
 
-Group.prototype.getDrinksSumForXHours = function(hours) {
+Group.prototype.getDrinkSumForXHours = function(hours) {
     let deferred = when.defer();
     let hoursAgo = utils.getDateMinusHours(hours);
     query('select sum(alcohol) as sum, min(created) as created from users_in_groups left outer join users_drinks on users_drinks.userid=users_in_groups.userid and users_in_groups.groupid=$1 and users_drinks.created >= $2', [this.groupId, hoursAgo])
