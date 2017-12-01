@@ -21,6 +21,7 @@
 const Commands = require('./lib/commands.js');
 const utils = require('./lib/utils.js');
 const users = require('./db/users.js');
+const groups = require('./db/groups.js');
 const when = require('when');
 const alcomath = require('./alcomath.js');
 const constants = require('./constants.js');
@@ -107,10 +108,11 @@ Commands.registerUserCommand('/whoami', '/whoami - tulosta omat tietosi.', Comma
 
 function getPermillesTextForGroup(groupId) {
     let deferred = when.defer();
+    let group = new groups.Group(groupId);
     when.all([
-        users.getBoozeForGroup(groupId),
-        users.getDrinkSumForXHoursForGroup(groupId, 12),
-        users.getDrinkSumForXHoursForGroup(groupId, 24)
+        group.getDrinkTimes(),
+        group.getDrinkSumForXHours(12),
+        group.getDrinkSumForXHours(24)
     ]).spread(function(drinksByUser, drinkSumsByUser12h, drinkSumsByUser24h) {
         try  {
             let permilles = [];
@@ -142,10 +144,11 @@ function getPermillesTextForGroup(groupId) {
 
 function getDrinksTextForGroup(groupId) {
     let deferred = when.defer();
+    let group = new groups.Group(groupId);
     when.all([
-        users.getBoozeForGroup(groupId),
-        users.getDrinkSumFor12hForGroup(groupId),
-        users.getDrinkSumFor24hForGroup(groupId)
+        group.getDrinkTimes(),
+        group.getDrinkSumForXHours(12),
+        users.getDrinkSumForXHours(24)
     ]).spread(function(drinksByUser, drinkSumsByUser12h, drinkSumsByUser24h) {
         try  {
             let drinks = [];
@@ -385,7 +388,8 @@ function kulutus(context, user, msg, words) {
                 deferred.reject('Isompi ongelma, ota yhteyttä adminiin.');
             });
     } else {
-        users.getDrinkSumForGroupForXHours(msg.chat.id, hours)
+        let group = new groups.Group(msg.chat.id);
+        group.getDrinkSumForXHours(hours)
             .then(function(res) {
                 let sum = res.sum;
                 let created = new Date(res.created);
@@ -594,7 +598,7 @@ function kuvaaja(context, user, msg, words) {
 
     let graphTitle = 'Promillekuvaaja feat. ' + msg.chat.title;
 
-    users.getBoozeForGroup(msg.chat.id)
+    group.getDrinkTimes(msg.chat.id)
         .then(function(drinksByUser) {
             try  {
                 let labels = [];
@@ -641,24 +645,6 @@ function kuvaaja(context, user, msg, words) {
             deferred.reject('Isompi ongelma, ota yhteyttä adminiin.');
         });
 
-    /*users.getBoozeForGroup(msg.chat.id)
-        .then(function(drinksByUser){
-            console.log('got data');
-            console.log(data);
-            var formatted = formatDataForPlotting(data);
-            console.log('formatted data');
-            blakkisChart.getLineGraphBuffer(formatted, graphTitle)
-                .then(function(buffer){
-                    console.log('got the line graph buffer');
-                    console.log(buffer);
-                    deferred.resolve(context.photoReply(buffer, graphTitle));
-                }, function(err){
-                    console.log(err);
-                    deferred.resolve(context.chatReply('Kuvan muodostus epäonnistui!'));
-                });
-        }, function(err){
-            console.log(err);
-        });*/
     context.end();
     return deferred.promise;
 }
