@@ -21,6 +21,7 @@
 const TOKEN = process.env.TOKEN;
 const Bot = require('node-telegram-bot-api');
 const BOT_MODE = process.env.BOT_MODE || 'polling';
+const log = require('loglevel').getLogger('system');
 
 // Setup bot
 let bot;
@@ -45,4 +46,4 @@ if (BOT_MODE === 'polling') {
 // Load app
 require('./app/init.js')(bot);
 
-console.log('BläkkisVuohi started in ' + BOT_MODE + ' mode');
+log.info('BläkkisVuohi started in ' + BOT_MODE + ' mode');

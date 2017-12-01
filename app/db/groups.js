@@ -25,6 +25,7 @@
 const query = require('pg-query');
 const when = require('when');
 const utils = require('../lib/utils.js');
+const log = require('loglevel').getLogger('db');
 query.connectionParameters = process.env.DATABASE_URL;
 
 let groups = module.exports = {};
@@ -59,7 +60,8 @@ Group.prototype.getDrinkSum = function() {
         .then((res) => {
             deferred.resolve(res[0][0]);
         }, (err) => {
-            console.error(err.stack);
+            log.error(err);
+            log.debug(err.stack);
             deferred.reject(err);
         });
     return deferred.promise;
@@ -72,7 +74,8 @@ Group.prototype.getDrinkSumForXHours = function(hours) {
         .then((res) => {
             deferred.resolve(res[0][0]);
         }, (err) => {
-            console.error(err.stack);
+            log.error(err);
+            log.debug(err.stack);
             deferred.reject(err);
         });
     return deferred.promise;
@@ -97,7 +100,8 @@ Group.prototype.getDrinkSumsByUser = function(hours) {
             }
             deferred.resolve(drinkSumsByUser);
         }, (err) => {
-            console.error(err);
+            log.error(err);
+            log.debug(err.stack);
             deferred.reject('Ota adminiin yhteyttä.');
         });
     return deferred.promise;
@@ -110,7 +114,8 @@ Group.prototype.getDrinkTimes = function() {
             let drinksByUser = groupDrinksByUser(res[0]);
             deferred.resolve(drinksByUser);
         }, (err) => {
-            console.error(err);
+            log.error(err);
+            log.debug(err.stack);
             deferred.reject('Ota adminiin yhteyttä.');
         });
     return deferred.promise;
@@ -123,7 +128,8 @@ Group.prototype.getBoozeByHour = function() {
         .then((res) => {
             deferred.resolve(res[0]);
         }, (err) => {
-            console.error(err);
+            log.error(err);
+            log.debug(err.stack);
             deferred.reject('Ota adminiin yhteyttä.');
         });
     return deferred.promise;

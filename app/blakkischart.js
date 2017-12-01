@@ -19,6 +19,7 @@
 
 const ChartjsNode = require('chartjs-node');
 const when = require('when');
+const log = require('loglevel').getLogger('commands');
 
 const blakkisChart = module.exports = {};
 
@@ -58,8 +59,8 @@ const lineChartTemplate = {
 };
 
 blakkisChart.getLineGraphBuffer = function(data, title) {
+    log.debug('Trying to make a line chart from data');
     let deferred = when.defer();
-    console.log('Trying to make a line graph from data');
     try {
         var chartNode = new ChartjsNode(1024, 728);
         var lineChartConfig = lineChartTemplate;
@@ -69,15 +70,16 @@ blakkisChart.getLineGraphBuffer = function(data, title) {
 
         chartNode.drawChart(lineChartConfig)
             .then(() => {
-                console.log('Generated PNG buffer...');
-                deferred.resolve(chartNode.getImageBuffer('image/png'));
+                let buffer = chartNode.getImageBuffer('image/png');
+                log.debug('Drawing line chart succeeded');
+                deferred.resolve(buffer);
             }, (err) => {
-                console.log('Error writing PNG to buffer:');
-                console.error(err);
+                log.error('Error writing PNG to buffer:');
+                log.error(err);
                 deferred.reject();
             });
     } catch (err) {
-        console.log('ChartJS err: ' + err);
+        log.error('ChartJS err: ' + err);
         deferred.reject();
     }
 
