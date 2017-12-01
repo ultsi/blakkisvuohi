@@ -142,7 +142,9 @@ function callCommandFunction(context, cmd, msg, words) {
 function printHelp(msg) {
     let cmdstr = 'BläkkisVuohi auttaa sinua ja ystäviäsi seuraamaan rippauksesi (lue: promillejesi) tasoa. Luo ensimmäiseksi tunnus komennolla /luotunnus. Tunnuksen luomisen jälkeen voit alkaa kellottamaan juomia sisään komennolla /juoma. Annan sinulle arvioita rippauksesta komennolla /promillet. Minut voi myös lisätä ryhmään, jolloin kerron /promillet-komennolla kaikkien ryhmässä olevien rippitasot. Jokaisen ryhmäläisen täytyy kuitenkin sanoa ryhmässä /moro, jotta he pääsevät rippilistaukseen mukaan.\n\nKomennot:\n';
     for (var i in cmds) {
-        cmdstr += cmds[i].help + '\n';
+        if(!cmds.adminCommand){
+            cmdstr += cmds[i].help + '\n';
+        }
     }
     return msg.sendPrivateMessage(cmdstr);
 }
