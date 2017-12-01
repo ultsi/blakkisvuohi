@@ -10,6 +10,4 @@ RUN npm install
 
 COPY . .
 
-CMD ["source", ".env"]
-
 CMD ["node", "index.js"]
