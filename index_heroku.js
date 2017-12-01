@@ -30,7 +30,7 @@ global.bot = bot;
 // This informs the Telegram servers of the new webhook.
 // Note: we do not need to pass in the cert, as it already provided
 // bot.setWebHook(`${url}/bot${TOKEN}`);
-bot.setWebHook(process.env.APP_URL + bot.token);
+bot.setWebHook(process.env.APP_URL + TOKEN);
 
 console.log('BläkkisVuohi started in the ' + process.env.NODE_ENV + ' mode');
 
