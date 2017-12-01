@@ -2,6 +2,8 @@
 
 ## How to run
 
+### VPS
+
 Build dockerfile
 
 ```
@@ -22,14 +24,22 @@ docker run --name postgres \
 
 ```
 
-Run the vuohi
+Run the vuohi. Remember to set .env variables correctly
 
 ```
 docker run --name blakkisvuohi \
   --link postgres:postgres \
-  -e TOKEN="***REMOVED***" \
-  -e NODE_ENV="production" \
-  -e DATABASE_URL="***REMOVED***" \
   --restart always \
   -d blakkisvuohi:latest
 ```
+
+### Heroku
+
+Set the next env variables:  
+- `TOKEN` = your bot token
+- `APP_URL` = your heroku url (i.e. https://blakkisvuohi.heroku.com)
+- `DATABASE_URL` = your database url
+- `NODE_ENV` = 'production'
+- `BOT_MODE` = 'webhook'
+
+Bot runs automatically when pushed to the Heroku remote.
