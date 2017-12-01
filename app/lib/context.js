@@ -43,7 +43,7 @@ contexts.Context.prototype.privateReply = function(text) {
             'remove_keyboard': true
         }
     };
-    global.bot.sendMessage(self.msg.from.id, text, options)
+    self.msg.sendMessage(self.msg.from.id, text, options)
         .then(() => {
             console.log('Sent ' + text + ' to ' + self.msg.from.username);
             deferred.resolve();
@@ -66,7 +66,7 @@ contexts.Context.prototype.privateReplyWithKeyboard = function(text, keyboardBut
         },
         'reply_to_message_id': this.msg.message_id
     };
-    global.bot.sendMessage(self.msg.from.id, text, options)
+    self.msg.sendMessage(self.msg.from.id, text, options)
         .then(() => {
             console.log('Sent ' + text + ' to ' + self.msg.from.username);
             deferred.resolve();
@@ -80,7 +80,7 @@ contexts.Context.prototype.privateReplyWithKeyboard = function(text, keyboardBut
 contexts.Context.prototype.chatReply = function(text) {
     let deferred = when.defer();
     let self = this;
-    global.bot.sendMessage(self.msg.chat.id, text)
+    self.msg.sendMessage(self.msg.chat.id, text)
         .then(() => {
             console.log('Sent ' + text + ' to chat ' + self.msg.chat.title);
             deferred.resolve();
@@ -94,7 +94,7 @@ contexts.Context.prototype.chatReply = function(text) {
 contexts.Context.prototype.photoReply = function(stream, caption) {
     let deferred = when.defer();
     let self = this;
-    global.bot.sendPhoto(self.msg.chat.id, stream, {
+    self.msg.sendPhoto(self.msg.chat.id, stream, {
             caption: caption
         })
         .then(() => {

@@ -20,15 +20,17 @@
 
 const TOKEN = process.env.TOKEN;
 const Bot = require('node-telegram-bot-api');
-const Commands = require('./app/lib/commands.js');
-
-// Load app
-require('./app/loader.js');
+const BOT_MODE = process.env.BOT_MODE || 'polling';
 
 // Setup bot
 let bot;
 
-if (process.env.BOT_MODE === 'webhook') {
+if (BOT_MODE === 'polling') {
+    const botOptions = {
+        polling: true // used when no HTTPS:// connection available
+    };
+    bot = new Bot(TOKEN, botOptions);
+} else {
     bot = new Bot(TOKEN);
     
     // This informs the Telegram servers of the new webhook.
@@ -36,27 +38,11 @@ if (process.env.BOT_MODE === 'webhook') {
     // bot.setWebHook(`${url}/bot${TOKEN}`);
     bot.setWebHook(process.env.APP_URL + TOKEN);
 
-    // Load web server for Heroku
+    // Load web server
     require('./web.js')(bot, TOKEN);
-} else {
-    const botOptions = {
-        polling: true // used when no HTTPS:// connection available
-    };
-    bot = new Bot(TOKEN, botOptions);
 }
 
-bot.setWebHook(process.env.APP_URL + TOKEN);
+// Load app
+require('./app/init.js')(bot);
 
-bot.on('message', (msg) => {
-    console.log(msg);
-    if (!msg.text) {
-        return;
-    }
-    const words = msg.text.split(' ');
-    const cmd_only = words[0].replace(/@.+/, '').toLowerCase();
-    Commands.call(cmd_only, msg, words);
-});
-
-global.bot = bot;
-
-console.log('BläkkisVuohi started in the ' + process.env.NODE_ENV + ' mode');
+console.log('BläkkisVuohi started in ' + BOT_MODE + ' mode');
