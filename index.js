@@ -60,5 +60,3 @@ bot.on('message', (msg) => {
 global.bot = bot;
 
 console.log('BläkkisVuohi started in the ' + process.env.NODE_ENV + ' mode');
-
-module.exports = bot;
