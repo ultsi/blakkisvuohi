@@ -27,7 +27,6 @@ require('./app/loader.js');
 
 // Setup bot
 let bot;
-global.bot = bot;
 
 if (process.env.BOT_MODE === 'webhook') {
     bot = new Bot(TOKEN);
@@ -57,6 +56,8 @@ bot.on('message', (msg) => {
     const cmd_only = words[0].replace(/@.+/, '').toLowerCase();
     Commands.call(cmd_only, msg, words);
 });
+
+global.bot = bot;
 
 console.log('BläkkisVuohi started in the ' + process.env.NODE_ENV + ' mode');
 
