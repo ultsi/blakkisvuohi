@@ -156,7 +156,7 @@ Group.prototype.getStandardDrinksListing = function() {
                 if (userDrinks > 0) {
                     let sum12h = drinkSumsByUser12h[details.userid] && drinkSumsByUser12h[details.userid].sum || 0;
                     let sum24h = drinkSumsByUser24h[details.userid] && drinkSumsByUser24h[details.userid].sum || 0;
-                    drinks.push([user.username, userDrinks / (constants.STANDARD_DRINK_GRAMS), sum12h / (constants.STANDARD_DRINK_GRAMS*1000), sum24h / (constants.STANDARD_DRINK_GRAMS/1000)]);
+                    drinks.push([user.username, userDrinks / (constants.STANDARD_DRINK_GRAMS), sum12h / (constants.STANDARD_DRINK_GRAMS*1000), sum24h / (constants.STANDARD_DRINK_GRAMS*1000)]);
                 }
             }
             drinks = drinks.sort((a, b) => {
