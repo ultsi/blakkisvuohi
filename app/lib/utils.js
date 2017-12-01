@@ -32,10 +32,11 @@ utils.getDateMinusHours = function(hours) {
     return hoursAgo;
 };
 
-function createSendPrivateMsgFunction(msg) {
+
+function createSendPrivateMsgFunction(msg, bot) {
     return function(text) {
         let deferred = when.defer();
-        global.bot.sendMessage(msg.from.id, text)
+        bot.sendMessage(msg.from.id, text)
             .then(() => {
                 console.log('sent ' + text + ' to ' + msg.from.username);
                 deferred.resolve();
@@ -47,10 +48,10 @@ function createSendPrivateMsgFunction(msg) {
     };
 }
 
-function createSendChatMsgFunction(msg) {
+function createSendChatMsgFunction(msg, bot) {
     return function(text) {
         let deferred = when.defer();
-        global.bot.sendMessage(msg.chat.id, text)
+        bot.sendMessage(msg.chat.id, text)
             .then(() => {
                 console.log('sent ' + text + ' to chat ' + msg.chat.title);
                 deferred.resolve();
@@ -62,12 +63,27 @@ function createSendChatMsgFunction(msg) {
     };
 }
 
-function createSendMsgToFunction(msg) {
-    return function(chatId, text) {
+function createSendMsgToFunction(msg, bot) {
+    return function(chatId, text, options) {
         let deferred = when.defer();
-        global.bot.sendMessage(chatId, text)
+        bot.sendMessage(chatId, text, options)
             .then(() => {
                 console.log('sent ' + text + ' to chat ' + chatId);
+                deferred.resolve();
+            }, (err) => {
+                console.error('couldn\'t send chat msg! Err: ' + err);
+                deferred.reject(err);
+            });
+        return deferred.promise;
+    };
+}
+
+function createSendPhotoFunction(msg, bot) {
+    return function(chatId, stream, options) {
+        let deferred = when.defer();
+        bot.sendPhoto(chatId, stream, options)
+            .then(() => {
+                console.log('sent photo to chat ' + chatId);
                 deferred.resolve();
             }, (err) => {
                 console.error('couldn\'t send chat msg! Err: ' + err);
@@ -83,11 +99,12 @@ function createUserToStringFunction(msg) {
     };
 }
 
-utils.attachMethods = function attachMethods(msg)  {
-    msg.sendPrivateMsg = createSendPrivateMsgFunction(msg);
-    msg.sendChatMsg = createSendChatMsgFunction(msg);
-    msg.sendMsgTo = createSendMsgToFunction(msg);
-    msg.userToString = createUserToStringFunction(msg);
+utils.attachMethods = function attachMethods(msg, bot)  {
+    msg.sendPrivateMessage = createSendPrivateMsgFunction(msg, bot);
+    msg.sendChatMessage = createSendChatMsgFunction(msg, bot);
+    msg.sendMessage = createSendMsgToFunction(msg, bot);
+    msg.userToString = createUserToStringFunction(msg, bot);
+    msg.sendPhoto = createSendPhotoFunction(msg, bot);
 };
 
 utils.isValidInt = function(num) {

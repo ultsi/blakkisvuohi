@@ -24,9 +24,9 @@
 
 'use strict';
 
-const utils = require('./utils.js');
 const users = require('../db/users.js');
 const contexts = require('./context.js');
+
 
 let Commands = module.exports = {};
 let cmds = {};
@@ -89,15 +89,15 @@ function callCommandFunction(context, cmd, msg, words) {
                             console.log('Phase ' + context.phase + ' of cmd ' + cmd.name + ' executed perfectly.');
                         }, (err) => {
                             console.error('Error executing cmd function "' + cmd.name + '" phase ' + context.phase + '! ' + err + ' trace: ' + err.stack);
-                            msg.sendPrivateMsg('Virhe: Komennon käyttö: ' + cmd.help);
+                            msg.sendPrivateMessage('Virhe: Komennon käyttö: ' + cmd.help);
                         });
                 } catch (err) {
                     console.error('Couldn\'t execute cmd function "' + cmd.name + '" phase ' + context.phase + '! ' + err + ' trace: ' + err.stack);
-                    msg.sendPrivateMsg('Virhe: Komennon käyttö: ' + cmd.help);
+                    msg.sendPrivateMessage('Virhe: Komennon käyttö: ' + cmd.help);
                 }
             }, (err) => {
                 console.error('Couldn\'t find user for cmd "' + cmd.name + '" phase ' + context.phase + '! ' + err + ' trace: ' + err.stack);
-                msg.sendPrivateMsg('Virhe: Komennon käyttö: ' + cmd.help);
+                msg.sendPrivateMessage('Virhe: Komennon käyttö: ' + cmd.help);
             });
     } else {
         return phaseFunc(context, msg, words)
@@ -105,7 +105,7 @@ function callCommandFunction(context, cmd, msg, words) {
                 console.log('Phase ' + context.phase + ' of cmd ' + cmd.name + ' executed perfectly.');
             }, (err) => {
                 console.error('Couldn\'t execute cmd "' + cmd.name + '" phase ' + context.phase + '! ' + err + ' trace: ' + err.stack);
-                msg.sendPrivateMsg('Virhe: Komennon käyttö: ' + cmd.help);
+                msg.sendPrivateMessage('Virhe: Komennon käyttö: ' + cmd.help);
             });
     }
 }
@@ -115,11 +115,10 @@ function printHelp(msg) {
     for (var i in cmds) {
         cmdstr += cmds[i].help + '\n';
     }
-    return msg.sendPrivateMsg(cmdstr);
+    return msg.sendPrivateMessage(cmdstr);
 }
 
 Commands.call = function call(firstWord, msg, words) {
-    utils.attachMethods(msg);
     const userId = msg.from.id;
 
     // Print command list
@@ -142,12 +141,12 @@ Commands.call = function call(firstWord, msg, words) {
             callCommandFunction(context, cmd, msg, words);
         } catch (err) {
             console.log('Couldn\'t execute cmd "' + cmd.name + '"! ' + err + ' trace: ' + err.stack);
-            return msg.sendChatMsg('Virhe! Komennon käyttö: ' + cmd.help);
+            return msg.sendChatMessage('Virhe! Komennon käyttö: ' + cmd.help);
         }
     } else {
         const context = retrieveContext(userId, msg);
         if (!context) {
-            return msg.sendChatMsg('Aloita käyttö kirjoittamalla /help');
+            return msg.sendChatMessage('Aloita käyttö kirjoittamalla /help');
         }
 
         const cmd = context.cmd;
@@ -159,7 +158,7 @@ Commands.call = function call(firstWord, msg, words) {
             return callCommandFunction(context, cmd, msg, words);
         } catch (err) {
             console.log('Couldn\'t execute cmd "' + cmd.name + '"! ' + err + ' trace: ' + err.stack);
-            return msg.sendChatMsg('Virhe! Komennon käyttö: ' + cmd.help);
+            return msg.sendChatMessage('Virhe! Komennon käyttö: ' + cmd.help);
         }
     }
 };
