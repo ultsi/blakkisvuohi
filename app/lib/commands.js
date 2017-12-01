@@ -26,6 +26,7 @@
 
 const users = require('../db/users.js');
 const contexts = require('./context.js');
+const settings = require('../settings.js');
 const log = require('loglevel').getLogger('system');
 
 
@@ -58,6 +59,18 @@ Commands.registerUserCommand = function(cmdName, cmdHelp, cmdType, cmdFunctions)
     log.info('Added usercommand ' + cmdName + ' : (' + cmdType + ') with ' + cmdFunctions.length + ' phases.');
 };
 
+Commands.registerAdminCommand = function(cmdName, cmdHelp, cmdType, cmdFunctions) {
+    cmds[cmdName] = {
+        name: cmdName,
+        type: cmdType,
+        funcs: cmdFunctions,
+        help: cmdHelp,
+        userCommand: true,
+        adminCommand: true
+    };
+    log.info('Added admincommand ' + cmdName + ' : (' + cmdType + ') with ' + cmdFunctions.length + ' phases.');
+};
+
 function initContext(userId, cmd, msg) {
     let context = new contexts.Context(cmd, msg);
     userContexts[userId] = context;
@@ -88,14 +101,20 @@ function callCommandFunction(context, cmd, msg, words) {
                     log.debug('Executing phase ' + context.phase + ' of usercmd ' + cmd.name);
                     log.debug('Words: ' + words);
                     log.debug('User: ' + user.username + ' id: ' + user.userId);
-                    phaseFunc(context, user, msg, words)
-                        .then((res) => {
-                            log.debug('Phase ' + context.phase + ' of cmd ' + cmd.name + ' executed perfectly.');
-                        }, (err) => {
-                            log.error('Error executing user cmd function "' + cmd.name + '" phase ' + context.phase + '! ' + err);
-                            log.debug(err.stack);
-                            msg.sendPrivateMessage('Virhe: Komennon käyttö: ' + cmd.help);
-                        });
+
+                    if (cmd.adminCommand && user.userId !== settings.admin_id) {
+                        log.info('User ' + user.username + ' tried to use admin command');
+                        msg.sendPrivateMessage('Unauthorized.');
+                    } else {
+                        phaseFunc(context, user, msg, words)
+                            .then((res) => {
+                                log.debug('Phase ' + context.phase + ' of cmd ' + cmd.name + ' executed perfectly.');
+                            }, (err) => {
+                                log.error('Error executing user cmd function "' + cmd.name + '" phase ' + context.phase + '! ' + err);
+                                log.debug(err.stack);
+                                msg.sendPrivateMessage('Virhe: Komennon käyttö: ' + cmd.help);
+                            });
+                    }
                 } catch (err) {
                     log.error('Couldn\'t execute user cmd function "' + cmd.name + '" phase ' + context.phase + '! ' + err);
                     log.debug(err.stack);

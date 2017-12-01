@@ -27,10 +27,6 @@ const Commands = require('../lib/commands.js');
 
 function loglevel(context, user, msg, words)  {
     let deferred = when.defer();
-    if (user.userId !== 62461364) {
-        deferred.resolve();
-        return;
-    }
     log.getLogger('commands').debug(log.getLoggers());
 
     let what = words[1] || 'commands';
@@ -51,7 +47,7 @@ function loglevel(context, user, msg, words)  {
     return deferred.promise;
 }
 
-Commands.registerUserCommand(
+Commands.registerAdminCommand(
     '/loglevel',
     '/loglevel <system|commands> <debug|info|error> - säädä logauksen määrää.',
     Commands.TYPE_PRIVATE, [loglevel]
