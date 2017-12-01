@@ -1,41 +1,55 @@
+/*
+    Bläkkisvuohi, a Telegram bot to help track estimated blood alcohol concentration.
+    Copyright (C) 2017  Joonas Ulmanen
+
+    This program is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with this program.  If not, see <http://www.gnu.org/licenses/>.
+*/
+
+/*
+    index.js
+    Main entrypoint, initialize tg-bot and then start to initialize 
+    the possible web server and finally the app.
+*/
+
 'use strict';
+
 const TOKEN = process.env.TOKEN;
-
 const Bot = require('node-telegram-bot-api');
-const cmd = require('./cmd.js');
-const users = require('./users.js');
-const promillet = require('./promillet.js');
+const BOT_MODE = process.env.BOT_MODE || 'polling';
+const log = require('loglevel').getLogger('system');
 
-const botOptions = {
-  /*
-    OLD HEROKU SETTINGS
-  webHook: {
-    // Port to which you should bind is assigned to $PORT variable
-    // See: https://devcenter.heroku.com/articles/dynos#local-environment-variables
-    port: process.env.PORT
-    // you do NOT need to set up certificates since Heroku provides
-    // the SSL certs already (https://<app-name>.herokuapp.com)
-    // Also no need to pass IP because on Heroku you need to bind to 0.0.0.0
-  }*/
-  polling: true // used when no HTTPS:// connection available
-};
-// const url = process.env.APP_URL || 'https://hymybot.herokuapp.com:443';
+// Setup bot
+let bot;
 
-const bot = new Bot(TOKEN, botOptions);
-global.bot = bot;
+if (BOT_MODE === 'polling') {
+    const botOptions = {
+        polling: true // used when no HTTPS:// connection available
+    };
+    bot = new Bot(TOKEN, botOptions);
+} else {
+    bot = new Bot(TOKEN);
 
-// This informs the Telegram servers of the new webhook.
-// Note: we do not need to pass in the cert, as it already provided
-// bot.setWebHook(`${url}/bot${TOKEN}`);
+    // This informs the Telegram servers of the new webhook.
+    // Note: we do not need to pass in the cert, as it already provided
+    // bot.setWebHook(`${url}/bot${TOKEN}`);
+    bot.setWebHook(process.env.APP_URL + TOKEN);
 
-console.log('BläkkisVuohi started in the ' + process.env.NODE_ENV + ' mode');
+    // Load web server
+    require('./web.js')(bot, TOKEN);
+}
 
-bot.on('message', function(msg) {
-  console.log(msg);
-  if(!msg.text){ return; }
-  const words = msg.text.split(' ');
-  const cmd_only = words[0].replace(/@.+/, '').toLowerCase();
-  cmd.call(cmd_only, msg, words);
-});
+// Load app
+require('./app/init.js')(bot);
 
-module.exports = bot;
+log.info('BläkkisVuohi started in ' + BOT_MODE + ' mode');
