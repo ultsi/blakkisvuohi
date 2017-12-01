@@ -71,9 +71,7 @@ function otinko(context, user, msg, words) {
 }
 
 Commands.registerUserCommand(
-    '/otinko', 
-    '/otinko - näyttää otitko ja kuinka monta viime yönä.', 
-    Commands.TYPE_PRIVATE, 
-    [otinko]
+    '/otinko',
+    '/otinko - näyttää otitko ja kuinka monta viime yönä.',
+    Commands.TYPE_PRIVATE, [otinko]
 );
-

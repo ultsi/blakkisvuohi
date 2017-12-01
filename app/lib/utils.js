@@ -112,7 +112,7 @@ utils.attachMethods = function attachMethods(msg, bot) {
 };
 
 utils.getRandom = function(arr) {
-    return arr[Math.floor(Math.random()*arr.length)];
+    return arr[Math.floor(Math.random() * arr.length)];
 };
 
 utils.isValidInt = function(num) {

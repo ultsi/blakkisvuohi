@@ -64,8 +64,7 @@ function kulutus(context, user, msg, words) {
 }
 
 Commands.registerUserCommand(
-    '/kulutus', 
-    '/kulutus <päivissä> - listaa kulutus. Voit myös antaa päivät parametrina, jolloin näet kulutuksen viime päiviltä.', 
-    Commands.TYPE_ALL, 
-    [kulutus]
+    '/kulutus',
+    '/kulutus <päivissä> - listaa kulutus. Voit myös antaa päivät parametrina, jolloin näet kulutuksen viime päiviltä.',
+    Commands.TYPE_ALL, [kulutus]
 );

@@ -16,6 +16,11 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
+/*
+    alcomath.js
+    Alcohol related math wizardry.
+*/
+
 'use strict';
 
 const constants = require('../constants.js');

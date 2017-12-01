@@ -17,8 +17,8 @@
 */
 
 /*
- Group.prototype.js
- All group related database actions 
+    groups.js
+    All group related database actions 
 */
 
 'use strict';
@@ -147,7 +147,7 @@ Group.prototype.getStandardDrinksListing = function() {
         self.getDrinkSumsByUser(12),
         self.getDrinkSumsByUser(24)
     ]).spread((drinksByUser, drinkSumsByUser12h, drinkSumsByUser24h) => {
-        try  {
+        try {
             let drinks = [];
             for (var userId in drinksByUser) {
                 let details = drinksByUser[userId];
@@ -163,7 +163,7 @@ Group.prototype.getStandardDrinksListing = function() {
                 return b[1] - a[1];
             });
             deferred.resolve(drinks);
-        } catch (err)  {
+        } catch (err) {
             log.error(err);
             log.debug(err.stack);
             deferred.reject('Isompi ongelma, ota yhteyttä adminiin.');
@@ -184,7 +184,7 @@ Group.prototype.getPermillesListing = function() {
         self.getDrinkSumsByUser(12),
         self.getDrinkSumsByUser(24)
     ]).spread((drinksByUser, drinkSumsByUser12h, drinkSumsByUser24h) => {
-        try  {
+        try {
             let permilles = [];
             for (var userId in drinksByUser) {
                 let details = drinksByUser[userId];
@@ -200,7 +200,7 @@ Group.prototype.getPermillesListing = function() {
                 return b[1] - a[1];
             });
             deferred.resolve(permilles);
-        } catch (err)  {
+        } catch (err) {
             log.error(err);
             log.debug(err.stack);
             deferred.reject('Isompi ongelma, ota yhteyttä adminiin.');

@@ -98,8 +98,7 @@ function kuvaaja(context, user, msg, words) {
 }
 
 Commands.registerUserCommand(
-    '/kuvaaja', 
-    '/kuvaaja - Näyttää ryhmän 24h tapahtumat kuvaajana.', 
-    Commands.TYPE_ALL, 
-    [kuvaaja]
+    '/kuvaaja',
+    '/kuvaaja - Näyttää ryhmän 24h tapahtumat kuvaajana.',
+    Commands.TYPE_ALL, [kuvaaja]
 );

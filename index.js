@@ -16,11 +16,17 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
+/*
+    index.js
+    Main entrypoint, initialize tg-bot and then start to initialize 
+    the possible web server and finally the app.
+*/
+
 'use strict';
 
 const TOKEN = process.env.TOKEN;
 const Bot = require('node-telegram-bot-api');
-const BOT_MODE = process.env.BOT_MODE || 'polling';
+const BOT_MODE = process.env.BOT_MODE || 'polling';
 const log = require('loglevel').getLogger('system');
 
 // Setup bot
@@ -33,7 +39,7 @@ if (BOT_MODE === 'polling') {
     bot = new Bot(TOKEN, botOptions);
 } else {
     bot = new Bot(TOKEN);
-    
+
     // This informs the Telegram servers of the new webhook.
     // Note: we do not need to pass in the cert, as it already provided
     // bot.setWebHook(`${url}/bot${TOKEN}`);

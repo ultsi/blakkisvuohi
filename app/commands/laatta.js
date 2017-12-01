@@ -60,8 +60,7 @@ function undoDrink(context, user, msg, words) {
 }
 
 Commands.registerUserCommand(
-    '/laatta', 
-    '/laatta - kumoaa edellisen lisätyn juoman', 
-    Commands.TYPE_PRIVATE, 
-    [undoDrinkConfirmation, undoDrink]
+    '/laatta',
+    '/laatta - kumoaa edellisen lisätyn juoman',
+    Commands.TYPE_PRIVATE, [undoDrinkConfirmation, undoDrink]
 );

@@ -88,9 +88,7 @@ function signupPhase3(context, msg, words) {
 
 // Register the command
 Commands.register(
-    '/luotunnus', 
-    '/luotunnus - Luo itsellesi tunnus botin käyttöä varten.', 
-    Commands.TYPE_PRIVATE, 
-    [signupPhase1, signupPhase2, signupPhase3]
+    '/luotunnus',
+    '/luotunnus - Luo itsellesi tunnus botin käyttöä varten.',
+    Commands.TYPE_PRIVATE, [signupPhase1, signupPhase2, signupPhase3]
 );
-

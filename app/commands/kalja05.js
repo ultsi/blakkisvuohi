@@ -43,8 +43,7 @@ function kalja05Command(context, user, msg, words) {
 }
 
 Commands.registerUserCommand(
-    '/kalja05', 
-    '/kalja05 - pikanäppäin yhdelle kappaleelle 0.5l olutta. Ammattilaiskäyttöön.', 
-    Commands.TYPE_PRIVATE, 
-    [kalja05Command]
+    '/kalja05',
+    '/kalja05 - pikanäppäin yhdelle kappaleelle 0.5l olutta. Ammattilaiskäyttöön.',
+    Commands.TYPE_PRIVATE, [kalja05Command]
 );

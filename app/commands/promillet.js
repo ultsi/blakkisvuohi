@@ -72,5 +72,3 @@ function listPermilles(context, user, msg, words) {
 }
 
 Commands.registerUserCommand('/promillet', '/promillet - listaa kuinka paljon promilleja sinulla tai chatissa olevilla suunnilleen on.', Commands.TYPE_ALL, [listPermilles]);
-
-

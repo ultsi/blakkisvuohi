@@ -44,8 +44,7 @@ function kaljaCommand(context, user, msg, words) {
 }
 
 Commands.registerUserCommand(
-    '/kalja033', 
-    '/kalja033 - pikanäppäin yhdelle kappaleelle olutta. Ammattilaiskäyttöön.', 
-    Commands.TYPE_PRIVATE, 
-    [kaljaCommand]
+    '/kalja033',
+    '/kalja033 - pikanäppäin yhdelle kappaleelle olutta. Ammattilaiskäyttöön.',
+    Commands.TYPE_PRIVATE, [kaljaCommand]
 );
