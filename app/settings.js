@@ -21,5 +21,6 @@
 module.exports = {
     'log_system_level': 'debug',
     'log_db_level': 'debug',
-    'log_commands_level': 'debug'
+    'log_commands_level': 'debug',
+    'admin_id': 62461364 // @ultsi
 };
