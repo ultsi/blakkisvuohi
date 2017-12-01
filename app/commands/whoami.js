@@ -16,10 +16,21 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
+/*
+    /whoami
+    If registered with the bot, tells about yourself
+*/
 'use strict';
 
-module.exports = {
-    'log_system_level': 'debug',
-    'log_db_level': 'debug',
-    'log_commands_level': 'debug'
-};
+const Commands = require('../lib/commands.js');
+
+function whoAmI(context, user, msg, words) {
+    return context.privateReply('Käyttäjä ' + user.username + ', id: ' + user.userId + ', paino: ' + user.weight + ', sukupuoli: ' + user.gender);
+}
+
+Commands.registerUserCommand(
+    '/whoami', 
+    '/whoami - tulosta omat tietosi.', 
+    Commands.TYPE_PRIVATE, 
+    [whoAmI]
+);

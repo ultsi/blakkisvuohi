@@ -17,15 +17,16 @@
 */
 
 /*
- users.js
- Manages the user models in database.
+    users.js
+    Manages the user models in database.
 */
 
 'use strict';
 const query = require('pg-query');
 const when = require('when');
-const utils = require('../lib/utils.js');
 const log = require('loglevel').getLogger('db');
+const utils = require('../lib/utils.js');
+const alcomath = require('../lib/alcomath.js');
 query.connectionParameters = process.env.DATABASE_URL;
 
 let users = module.exports = {};
@@ -189,6 +190,28 @@ User.prototype.getDrinkCountsByGroup = function() {
             log.error(err);
             log.debug(err.stack);
             deferred.reject('Ota adminiin yhteyttä.');
+        });
+    return deferred.promise;
+};
+
+User.prototype.drinkBoozeReturnPermilles = function(amount, description, msg) {
+    let deferred = when.defer();
+    let self = this;
+    self.drinkBooze(amount, description)
+        .then((amount) => {
+            self.getBooze()
+                .then((drinks) => {
+                    let permilles = alcomath.getPermillesFromDrinks(self, drinks);
+                    deferred.resolve(permilles);
+                }, (err) => {
+                    log.error(err);
+                    log.debug(err.stack);
+                    deferred.reject(err);
+                });
+        }, (err) => {
+            log.error(err);
+            log.debug(err.stack);
+            deferred.reject('Isompi ongelma, ota yhteyttä adminiin.');
         });
     return deferred.promise;
 };

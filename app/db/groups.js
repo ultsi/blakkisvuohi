@@ -24,8 +24,11 @@
 'use strict';
 const query = require('pg-query');
 const when = require('when');
-const utils = require('../lib/utils.js');
 const log = require('loglevel').getLogger('db');
+const utils = require('../lib/utils.js');
+const alcomath = require('../lib/alcomath.js');
+const constants = require('../constants.js');
+const users = require('./users.js');
 query.connectionParameters = process.env.DATABASE_URL;
 
 let groups = module.exports = {};
@@ -134,3 +137,78 @@ Group.prototype.getBoozeByHour = function() {
         });
     return deferred.promise;
 };
+
+
+Group.prototype.getStandardDrinksListing = function() {
+    let deferred = when.defer();
+    let self = this;
+    when.all([
+        self.getDrinkTimes(),
+        self.getDrinkSumsByUser(12),
+        self.getDrinkSumsByUser(24)
+    ]).spread((drinksByUser, drinkSumsByUser12h, drinkSumsByUser24h) => {
+        try  {
+            let drinks = [];
+            for (var userId in drinksByUser) {
+                let details = drinksByUser[userId];
+                let user = new users.User(details.userid, details.nick, details.weight, details.gender);
+                let userDrinks = alcomath.sumGramsUnBurned(user, details.drinks);
+                if (userDrinks > 0) {
+                    let sum12h = drinkSumsByUser12h[details.userid] && drinkSumsByUser12h[details.userid].sum || 0;
+                    let sum24h = drinkSumsByUser24h[details.userid] && drinkSumsByUser24h[details.userid].sum || 0;
+                    drinks.push([user.username, userDrinks / constants.STANDARD_DRINK_GRAMS, sum12h / constants.STANDARD_DRINK_GRAMS, sum24h / constants.STANDARD_DRINK_GRAMS]);
+                }
+            }
+            drinks = drinks.sort((a, b) => {
+                return b[1] - a[1];
+            });
+            deferred.resolve(drinks);
+        } catch (err)  {
+            log.error(err);
+            log.debug(err.stack);
+            deferred.reject('Isompi ongelma, ota yhteyttä adminiin.');
+        }
+    }, (err) => {
+        log.error(err);
+        log.debug(err.stack);
+        deferred.reject('Isompi ongelma, ota yhteyttä adminiin.');
+    });
+    return deferred.promise;
+};
+
+Group.prototype.getPermillesListing = function() {
+    let deferred = when.defer();
+    let self = this;
+    when.all([
+        self.getDrinkTimes(),
+        self.getDrinkSumsByUser(12),
+        self.getDrinkSumsByUser(24)
+    ]).spread((drinksByUser, drinkSumsByUser12h, drinkSumsByUser24h) => {
+        try  {
+            let permilles = [];
+            for (var userId in drinksByUser) {
+                let details = drinksByUser[userId];
+                let user = new users.User(details.userid, details.nick, details.weight, details.gender);
+                let userPermilles = alcomath.getPermillesFromDrinks(user, details.drinks);
+                if (userPermilles > 0) {
+                    let sum12h = drinkSumsByUser12h[details.userid] && drinkSumsByUser12h[details.userid].sum || 0;
+                    let sum24h = drinkSumsByUser24h[details.userid] && drinkSumsByUser24h[details.userid].sum || 0;
+                    permilles.push([user.username, userPermilles, sum12h / constants.STANDARD_DRINK_GRAMS, sum24h / constants.STANDARD_DRINK_GRAMS]);
+                }
+            }
+            permilles = permilles.sort((a, b) => {
+                return b[1] - a[1];
+            });
+            deferred.resolve(permilles);
+        } catch (err)  {
+            log.error(err);
+            log.debug(err.stack);
+            deferred.reject('Isompi ongelma, ota yhteyttä adminiin.');
+        }
+    }, (err) => {
+        log.error(err);
+        log.debug(err.stack);
+        deferred.reject('Isompi ongelma, ota yhteyttä adminiin.');
+    });
+    return deferred.promise;
+}

@@ -33,7 +33,6 @@ utils.getDateMinusHours = function(hours) {
     return hoursAgo;
 };
 
-
 function createSendPrivateMsgFunction(msg, bot) {
     return function(text) {
         let deferred = when.defer();
@@ -104,12 +103,16 @@ function createUserToStringFunction(msg) {
     };
 }
 
-utils.attachMethods = function attachMethods(msg, bot)  {
+utils.attachMethods = function attachMethods(msg, bot) {
     msg.sendPrivateMessage = createSendPrivateMsgFunction(msg, bot);
     msg.sendChatMessage = createSendChatMsgFunction(msg, bot);
     msg.sendMessage = createSendMsgToFunction(msg, bot);
     msg.userToString = createUserToStringFunction(msg, bot);
     msg.sendPhoto = createSendPhotoFunction(msg, bot);
+};
+
+utils.getRandom = function(arr) {
+    return arr[Math.floor(Math.random()*arr.length)];
 };
 
 utils.isValidInt = function(num) {
