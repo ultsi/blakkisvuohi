@@ -1,6 +1,6 @@
 /*
     Bläkkisvuohi, a Telegram bot to help track estimated blood alcohol concentration.
-    Copyright (C) 2017  Joonas Ulmanen
+    Copyright (C) 2017 Joonas Ulmanen
 
     This program is free software: you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -16,10 +16,16 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
+/*
+    strings.js
+    Contains all printable strings of the app
+*/
 'use strict';
 
 module.exports = {
-    'log_system_level': 'debug',
-    'log_db_level': 'debug',
-    'log_commands_level': 'debug'
+    'drink_responses': [
+        'Bäää.', 'Uuteen nousuun.', 'Muista juoda vettä!', 'Aamu alkaa A:lla.',
+        'Muista juoda vettä!', 'Juo viinaa, viina on hyvää.', 'Meno on meno.',
+        'Lörs lärä, viinaa!', 'Muista juoda vettä!'
+    ]
 };

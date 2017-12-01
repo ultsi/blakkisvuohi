@@ -19,9 +19,9 @@
 
 const ChartjsNode = require('chartjs-node');
 const when = require('when');
-const log = require('loglevel').getLogger('commands');
+const log = require('loglevel').getLogger('system');
 
-const blakkisChart = module.exports = {};
+const linechart = module.exports = {};
 
 const lineChartTemplate = {
     type: 'line',
@@ -58,7 +58,7 @@ const lineChartTemplate = {
     }
 };
 
-blakkisChart.getLineGraphBuffer = function(data, title) {
+linechart.getLineGraphBuffer = function(data, title) {
     log.debug('Trying to make a line chart from data');
     let deferred = when.defer();
     try {

@@ -85,6 +85,9 @@ function callCommandFunction(context, cmd, msg, words) {
         return users.find(msg.from.id)
             .then((user) => {
                 try {
+                    log.debug('Executing phase ' + context.phase + ' of usercmd ' + cmd.name);
+                    log.debug('Words: ' + words);
+                    log.debug('User: ' + user.username + ' id: ' + user.userId);
                     phaseFunc(context, user, msg, words)
                         .then((res) => {
                             log.debug('Phase ' + context.phase + ' of cmd ' + cmd.name + ' executed perfectly.');
@@ -106,6 +109,8 @@ function callCommandFunction(context, cmd, msg, words) {
     } else {
         return phaseFunc(context, msg, words)
             .then((res) => {
+                log.debug('Executing phase ' + context.phase + ' of cmd ' + cmd.name);
+                log.debug('Words: ' + words);
                 log.debug('Phase ' + context.phase + ' of cmd ' + cmd.name + ' executed perfectly.');
             }, (err) => {
                 log.error('Couldn\'t execute cmd function "' + cmd.name + '" phase ' + context.phase + '! ' + err);

@@ -18,7 +18,7 @@
 
 'use strict';
 
-const constants = require('./constants.js');
+const constants = require('../constants.js');
 let alcomath = module.exports = {};
 
 alcomath.getPermillesFromGrams = function(user, grams) {
