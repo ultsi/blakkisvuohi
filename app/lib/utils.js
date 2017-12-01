@@ -36,10 +36,10 @@ function createSendPrivateMsgFunction(msg) {
     return function(text) {
         let deferred = when.defer();
         global.bot.sendMessage(msg.from.id, text)
-            .then(function() {
+            .then(() => {
                 console.log('sent ' + text + ' to ' + msg.from.username);
                 deferred.resolve();
-            }, function(err) {
+            }, (err) => {
                 console.error('couldn\'t send private msg! Err: ' + err);
                 deferred.reject(err);
             });
@@ -51,10 +51,10 @@ function createSendChatMsgFunction(msg) {
     return function(text) {
         let deferred = when.defer();
         global.bot.sendMessage(msg.chat.id, text)
-            .then(function() {
+            .then(() => {
                 console.log('sent ' + text + ' to chat ' + msg.chat.title);
                 deferred.resolve();
-            }, function(err) {
+            }, (err) => {
                 console.error('couldn\'t send chat msg! Err: ' + err + ' trace: ' + err.stack);
                 deferred.reject(err);
             });
@@ -66,10 +66,10 @@ function createSendMsgToFunction(msg) {
     return function(chatId, text) {
         let deferred = when.defer();
         global.bot.sendMessage(chatId, text)
-            .then(function() {
+            .then(() => {
                 console.log('sent ' + text + ' to chat ' + chatId);
                 deferred.resolve();
-            }, function(err) {
+            }, (err) => {
                 console.error('couldn\'t send chat msg! Err: ' + err);
                 deferred.reject(err);
             });

@@ -44,10 +44,10 @@ contexts.Context.prototype.privateReply = function(text) {
         }
     };
     global.bot.sendMessage(self.msg.from.id, text, options)
-        .then(function() {
+        .then(() => {
             console.log('Sent ' + text + ' to ' + self.msg.from.username);
             deferred.resolve();
-        }, function(err) {
+        }, (err) => {
             console.error('couldn\'t send private msg! Err: ' + err + ' trace: ' + err.stack);
             deferred.reject(err);
         });
@@ -67,10 +67,10 @@ contexts.Context.prototype.privateReplyWithKeyboard = function(text, keyboardBut
         'reply_to_message_id': this.msg.message_id
     };
     global.bot.sendMessage(self.msg.from.id, text, options)
-        .then(function() {
+        .then(() => {
             console.log('Sent ' + text + ' to ' + self.msg.from.username);
             deferred.resolve();
-        }, function(err) {
+        }, (err) => {
             console.error('couldn\'t send private msg! Err: ' + err);
             deferred.reject(err);
         });
@@ -81,10 +81,10 @@ contexts.Context.prototype.chatReply = function(text) {
     let deferred = when.defer();
     let self = this;
     global.bot.sendMessage(self.msg.chat.id, text)
-        .then(function() {
+        .then(() => {
             console.log('Sent ' + text + ' to chat ' + self.msg.chat.title);
             deferred.resolve();
-        }, function(err) {
+        }, (err) => {
             console.error('couldn\'t send chat msg! Err: ' + err);
             deferred.reject(err);
         });
@@ -97,10 +97,10 @@ contexts.Context.prototype.photoReply = function(stream, caption) {
     global.bot.sendPhoto(self.msg.chat.id, stream, {
             caption: caption
         })
-        .then(function() {
+        .then(() => {
             console.log('Sent a photo to chat ' + self.msg.chat.title);
             deferred.resolve();
-        }, function(err) {
+        }, (err) => {
             console.error('couldn\'t send chat msg! Err: ' + err);
             deferred.reject(err);
         });

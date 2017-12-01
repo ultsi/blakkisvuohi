@@ -37,7 +37,7 @@ global.bot = bot;
 // bot.setWebHook(`${url}/bot${TOKEN}`);
 bot.setWebHook(process.env.APP_URL + TOKEN);
 
-bot.on('message', function(msg) {
+bot.on('message', (msg) => {
     console.log(msg);
     if (!msg.text) {
         return;
@@ -52,19 +52,19 @@ bot.on('message', function(msg) {
 var app = express();
 app.use(bodyParser.json());
 
-app.get('/', function(req, res) {
+app.get('/', (req, res) => {
     res.json({
         version: packageInfo.version
     });
 });
 
-var server = app.listen(process.env.PORT, '0.0.0.0', function() {
+var server = app.listen(process.env.PORT, '0.0.0.0', () => {
     var host = server.address().address;
     var port = server.address().port;
     console.log('Web server started at http://%s:%s', host, port);
 });
 
-app.post('/' + TOKEN, function(req, res) {
+app.post('/' + TOKEN, (req, res) => {
     bot.processUpdate(req.body);
     res.sendStatus(200);
 });

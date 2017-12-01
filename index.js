@@ -37,7 +37,7 @@ global.bot = bot;
 
 console.log('BläkkisVuohi started in the ' + process.env.NODE_ENV + ' mode');
 
-bot.on('message', function(msg) {
+bot.on('message', (msg) => {
     console.log(msg);
     if (!msg.text) {
         return;

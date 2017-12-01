@@ -82,12 +82,12 @@ function callCommandFunction(context, cmd, msg, words) {
 
     if (cmd.userCommand) {
         return users.find(msg.from.id)
-            .then(function(user) {
+            .then((user) => {
                 try {
                     phaseFunc(context, user, msg, words)
-                        .then(function(res) {
+                        .then((res) => {
                             console.log('Phase ' + context.phase + ' of cmd ' + cmd.name + ' executed perfectly.');
-                        }, function(err) {
+                        }, (err) => {
                             console.error('Error executing cmd function "' + cmd.name + '" phase ' + context.phase + '! ' + err + ' trace: ' + err.stack);
                             msg.sendPrivateMsg('Virhe: Komennon käyttö: ' + cmd.help);
                         });
@@ -95,15 +95,15 @@ function callCommandFunction(context, cmd, msg, words) {
                     console.error('Couldn\'t execute cmd function "' + cmd.name + '" phase ' + context.phase + '! ' + err + ' trace: ' + err.stack);
                     msg.sendPrivateMsg('Virhe: Komennon käyttö: ' + cmd.help);
                 }
-            }, function(err) {
+            }, (err) => {
                 console.error('Couldn\'t find user for cmd "' + cmd.name + '" phase ' + context.phase + '! ' + err + ' trace: ' + err.stack);
                 msg.sendPrivateMsg('Virhe: Komennon käyttö: ' + cmd.help);
             });
     } else {
         return phaseFunc(context, msg, words)
-            .then(function(res) {
+            .then((res) => {
                 console.log('Phase ' + context.phase + ' of cmd ' + cmd.name + ' executed perfectly.');
-            }, function(err) {
+            }, (err) => {
                 console.error('Couldn\'t execute cmd "' + cmd.name + '" phase ' + context.phase + '! ' + err + ' trace: ' + err.stack);
                 msg.sendPrivateMsg('Virhe: Komennon käyttö: ' + cmd.help);
             });
