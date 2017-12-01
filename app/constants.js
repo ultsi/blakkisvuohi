@@ -16,6 +16,11 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
+/*
+    constants.js
+    Commonly used constants
+*/
+
 'use strict';
 
 let constants = module.exports = {};

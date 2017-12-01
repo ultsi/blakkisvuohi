@@ -29,8 +29,7 @@ function whoAmI(context, user, msg, words) {
 }
 
 Commands.registerUserCommand(
-    '/whoami', 
-    '/whoami - tulosta omat tietosi.', 
-    Commands.TYPE_PRIVATE, 
-    [whoAmI]
+    '/whoami',
+    '/whoami - tulosta omat tietosi.',
+    Commands.TYPE_PRIVATE, [whoAmI]
 );

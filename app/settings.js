@@ -16,6 +16,11 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
+/*
+    settings.js
+    Contains all settings
+*/
+
 'use strict';
 
 module.exports = {

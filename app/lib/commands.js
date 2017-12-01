@@ -143,7 +143,7 @@ function callCommandFunction(context, cmd, msg, words) {
 function listCmdHelp() {
     let cmdHelpList = [];
     for (var i in cmds) {
-        if(!cmds[i].adminCommand){
+        if (!cmds[i].adminCommand) {
             cmdHelpList.push(cmds[i].help);
         }
     }

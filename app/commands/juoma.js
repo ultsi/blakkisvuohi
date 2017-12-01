@@ -17,7 +17,8 @@
 */
 
 /*
-    /juoma command. Multiple phase command with lots of options
+    /juoma
+    Multiple phase command with lots of options what to drink
 */
 'use strict';
 
@@ -169,8 +170,8 @@ drinkCommand.omajuomaEnd = function(context, user, msg, words) {
 };
 
 Commands.registerUserCommand(
-    '/juoma', 
-    '/juoma - lisää yksi juoma tilastoihin', 
-    Commands.TYPE_PRIVATE, 
+    '/juoma',
+    '/juoma - lisää yksi juoma tilastoihin',
+    Commands.TYPE_PRIVATE,
     drinkCommand
 );

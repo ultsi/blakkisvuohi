@@ -44,8 +44,7 @@ function moro(context, user, msg, words)  {
 }
 
 Commands.registerUserCommand(
-    '/moro', 
-    '/moro - Lisää sinut ryhmään mukaan.', 
-    Commands.TYPE_ALL, 
-    [moro]
+    '/moro',
+    '/moro - Lisää sinut ryhmään mukaan.',
+    Commands.TYPE_ALL, [moro]
 );
