@@ -18,11 +18,13 @@
 
 'use strict';
 
+const when = require('when');
+const log = require('loglevel').getLogger('commands');
+
 const Commands = require('./lib/commands.js');
 const utils = require('./lib/utils.js');
 const users = require('./db/users.js');
 const groups = require('./db/groups.js');
-const when = require('when');
 const alcomath = require('./alcomath.js');
 const constants = require('./constants.js');
 const blakkisChart = require('./blakkischart.js');
@@ -91,7 +93,8 @@ function signupPhase3(context, msg, words) {
         .then((user) => {
             deferred.resolve(context.privateReply('Moikka ' + username + '! Tunnuksesi luotiin onnistuneesti. Muista, että antamani luvut alkoholista ovat vain arvioita, eikä niihin voi täysin luottaa. Ja eikun juomaan!'));
         }, (err) => {
-            console.log(err);
+            log.error('Error creating new user! ' + err);
+            log.debug(err.stack);
             deferred.reject('Isompi ongelma, ota yhteyttä adminiin.');
         });
     return deferred.promise;
@@ -132,11 +135,13 @@ function getPermillesTextForGroup(groupId) {
             permilles = permilles.map(user => user[0] + '... ' + user[1].toFixed(2) + '‰ (' + user[2].toFixed(1) + '/' + user[3].toFixed(1) + ')');
             deferred.resolve('Käyttäjä...‰ (annoksia 12h/24h)\n\n' + permilles.join('\n'));
         } catch (err)  {
-            console.error(err);
+            log.error(err);
+            log.debug(err.stack);
             deferred.reject('Isompi ongelma, ota yhteyttä adminiin.');
         }
     }, (err) => {
-        console.error(err);
+        log.error(err);
+        log.debug(err.stack);
         deferred.reject('Isompi ongelma, ota yhteyttä adminiin.');
     });
     return deferred.promise;
@@ -168,11 +173,13 @@ function getDrinksTextForGroup(groupId) {
             drinks = drinks.map(user => user[0] + '... ' + user[1].toFixed(2) + 'kpl (' + user[2].toFixed(1) + '/' + user[3].toFixed(1) + ')');
             deferred.resolve('Käyttäjä... annoksia (yht 12h/24h)\n\n' + drinks.join('\n'));
         } catch (err)  {
-            console.error(err);
+            log.error(err);
+            log.debug(err.stack);
             deferred.reject('Isompi ongelma, ota yhteyttä adminiin.');
         }
     }, (err) => {
-        console.error(err);
+        log.error(err);
+        log.debug(err.stack);
         deferred.reject('Isompi ongelma, ota yhteyttä adminiin.');
     });
     return deferred.promise;
@@ -188,11 +195,13 @@ function drinkBoozeReturnPermilles(user, amount, description, msg) {
                     let permilles = alcomath.getPermillesFromDrinks(user, drinks);
                     deferred.resolve(permilles);
                 }, (err) => {
-                    console.log(err);
+                    log.error(err);
+                    log.debug(err.stack);
                     deferred.reject(err);
                 });
         }, (err) => {
-            console.error(err);
+            log.error(err);
+            log.debug(err.stack);
             deferred.reject('Isompi ongelma, ota yhteyttä adminiin.');
         });
     return deferred.promise;
@@ -264,7 +273,8 @@ drinkCommand.miedot = function(context, user, msg, words) {
         .then((permilles) => {
             deferred.resolve(context.privateReply(getRandomResponse() + ' ' + permilles.toFixed(2) + '‰'));
         }, (err) => {
-            console.error(err.stack);
+            log.error(err);
+            log.debug(err.stack);
             deferred.reject('Isompi ongelma, ota yhteyttä adminiin.');
         });
     context.end();
@@ -292,7 +302,8 @@ drinkCommand.tiukat = function(context, user, msg, words) {
         .then((permilles) => {
             deferred.resolve(context.privateReply(getRandomResponse() + ' ' + permilles.toFixed(2) + '‰'));
         }, (err) => {
-            console.error(err.stack);
+            log.error(err);
+            log.debug(err.stack);
             deferred.reject('Isompi ongelma, ota yhteyttä adminiin.');
         });
     context.end();
@@ -332,7 +343,8 @@ drinkCommand.omajuomaEnd = function(context, user, msg, words) {
         .then((permilles) => {
             deferred.resolve(context.privateReply(getRandomResponse() + ' ' + permilles.toFixed(2) + '‰'));
         }, (err) => {
-            console.error(err.stack);
+            log.error(err);
+            log.debug(err.stack);
             deferred.reject('Isompi ongelma, ota yhteyttä adminiin.');
         });
     context.end();
@@ -347,7 +359,8 @@ function kaljaCommand(context, user, msg, words) {
         .then((permilles) => {
             deferred.resolve(context.privateReply(getRandomResponse() + ' ' + permilles.toFixed(2) + '‰'));
         }, (err) => {
-            console.error(err.stack);
+            log.error(err);
+            log.debug(err.stack);
             deferred.reject('Isompi ongelma, ota yhteyttä adminiin.');
         });
     context.end();
@@ -362,7 +375,8 @@ function kalja05Command(context, user, msg, words) {
         .then((permilles) => {
             deferred.resolve(context.privateReply(getRandomResponse() + ' ' + permilles.toFixed(2) + '‰'));
         }, (err) => {
-            console.error(err.stack);
+            log.error(err);
+            log.debug(err.stack);
             deferred.reject('Isompi ongelma, ota yhteyttä adminiin.');
         });
     context.end();
@@ -384,7 +398,8 @@ function kulutus(context, user, msg, words) {
                 let grams = sum / 1000.0;
                 deferred.resolve(context.privateReply('Olet ' + daysBetween + ' päivän aikana tuhonnut ' + Math.round(grams) + ' grammaa alkoholia, joka vastaa ' + Math.round(grams / 12.2) + ' annosta. Keskimäärin olet juonut ' + Math.round((grams / daysBetween / 12.2)) + ' annosta per päivä. Hienosti.'));
             }, (err) => {
-                console.error(err);
+                log.error(err);
+                log.debug(err.stack);
                 deferred.reject('Isompi ongelma, ota yhteyttä adminiin.');
             });
     } else {
@@ -398,7 +413,8 @@ function kulutus(context, user, msg, words) {
                 let grams = sum / 1000.0;
                 deferred.resolve(context.chatReply('Ryhmän jäsenet ovat ' + daysBetween + ' päivän aikana tuhonneet ' + Math.round(grams) + ' grammaa alkoholia, joka vastaa ' + Math.round(grams / 12.2) + ' annosta. Keskimäärin on juotu ' + Math.round((grams / daysBetween / 12.2)) + ' annosta per päivä. Hienosti.'));
             }, (err) => {
-                console.error(err);
+                log.error(err);
+                log.debug(err.stack);
                 deferred.reject(err);
             });
     }
@@ -422,11 +438,13 @@ function annokset(context, user, msg, words) {
                     let minutes = ('0' + Math.ceil((time - hours) * 60)).slice(-2);
                     deferred.resolve(context.privateReply('Olet ' + permilles.toFixed(2) + '‰ humalassa. Veressäsi on ' + grams.toFixed(2) + ' grammaa alkoholia, joka vastaa ' + (grams / 12.2).toFixed(2) + ' annosta. Olet selvinpäin ' + hours + 'h' + minutes + 'min päästä.'));
                 } catch (err) {
-                    console.error(err);
+                    log.error(err);
+                    log.debug(err.stack);
                     deferred.reject('Isompi ongelma, ota yhteyttä adminiin.');
                 }
             }, (err) => {
-                console.error(err);
+                log.error(err);
+                log.debug(err.stack);
                 deferred.reject('Isompi ongelma, ota yhteyttä adminiin.');
             });
     } else {
@@ -435,7 +453,9 @@ function annokset(context, user, msg, words) {
                 text = msg.chat.title + ' -kavereiden rippitaso:\n' + text;
                 deferred.resolve(context.chatReply(text));
             }, (err) => {
-                deferred.reject(err);
+                log.error(err);
+                log.debug(err.stack);
+                deferred.reject('Isompi ongelma, ota yhteyttä adminiin.');
             });
     }
     context.end();
@@ -462,11 +482,13 @@ function listPermilles(context, user, msg, words) {
                     let minutes = ('0' + Math.ceil((time - hours) * 60)).slice(-2);
                     deferred.resolve(context.privateReply('Olet ' + permilles.toFixed(2) + '‰ humalassa. Veressäsi on ' + grams.toFixed(2) + ' grammaa alkoholia, joka vastaa ' + (grams / 12.2).toFixed(2) + ' annosta. Olet selvinpäin ' + hours + 'h' + minutes + 'min päästä.'));
                 } catch (err) {
-                    console.error(err);
+                    log.error(err);
+                    log.debug(err.stack);
                     deferred.reject('Isompi ongelma, ota yhteyttä adminiin.');
                 }
             }, (err) => {
-                console.error(err);
+                log.error(err);
+                log.debug(err.stack);
                 deferred.reject('Isompi ongelma, ota yhteyttä adminiin.');
             });
     } else {
@@ -475,7 +497,9 @@ function listPermilles(context, user, msg, words) {
                 text = msg.chat.title + ' -kavereiden rippitaso:\n' + text;
                 deferred.resolve(context.chatReply(text));
             }, (err) => {
-                deferred.reject(err);
+                log.error(err);
+                log.debug(err.stack);
+                deferred.reject('Isompi ongelma, ota yhteyttä adminiin.');
             });
     }
     context.end();
@@ -503,11 +527,13 @@ function undoDrink(context, user, msg, words) {
                         let permilles = alcomath.getPermillesFromDrinks(user, drinks);
                         deferred.resolve(context.privateReply('Laatta onnistui. Olet enää ' + permilles.toFixed(2) + '‰ humalassa.'));
                     }, (err) => {
-                        console.log(err.stack);
+                        log.error(err);
+                        log.debug(err.stack);
                         deferred.reject(err);
                     });
             }, (err) => {
-                console.log(err.stack);
+                log.error(err);
+                log.debug(err.stack);
                 deferred.reject(err);
             });
     } else {
@@ -552,11 +578,13 @@ function otinko(context, user, msg, words) {
                 let drinkList = makeDrinksString(drinks);
                 deferred.resolve(context.privateReply('Viimeisen kahden päivän häppeningit:\n' + drinkList));
             } catch (err) {
-                console.error(err);
+                log.error(err);
+                log.debug(err.stack);
                 deferred.reject('Isompi ongelma, ota yhteyttä adminiin.');
             }
         }, (err) => {
-            console.error(err);
+            log.error(err);
+            log.debug(err.stack);
             deferred.reject('Isompi ongelma, ota yhteyttä adminiin.');
         });
     context.end();
@@ -575,7 +603,8 @@ function moro(context, user, msg, words)  {
         .then(() => {
             deferred.resolve(context.chatReply('Rippaa rauhassa kera ' + msg.chat.title + ' -kavereiden.'));
         }, (err) => {
-            console.log(err);
+            log.error(err);
+            log.debug(err.stack);
             deferred.resolve(context.chatReply('Rippaa rauhassa kera ' + msg.chat.title + ' -kavereiden.'));
         });
     context.end();
@@ -594,7 +623,7 @@ function randomColor() {
 
 function kuvaaja(context, user, msg, words) {
     let deferred = when.defer();
-    console.log('trying to form graph');
+    log.debug('Trying to form graph image');
 
     let graphTitle = 'Promillekuvaaja feat. ' + msg.chat.title;
 
@@ -615,7 +644,7 @@ function kuvaaja(context, user, msg, words) {
                         }
                         permilles.push(dataByHour.permillesByHour[i].permilles);
                     }
-                    console.log(dataByHour);
+
                     let color = randomColor();
                     datasets.push({
                         label: details.nick,
@@ -630,19 +659,20 @@ function kuvaaja(context, user, msg, words) {
                         datasets: datasets
                     }, graphTitle)
                     .then((buffer) => {
-                        console.log('got the line graph buffer');
-                        console.log(buffer);
                         deferred.resolve(context.photoReply(buffer, graphTitle));
                     }, (err) => {
-                        console.log(err);
+                        log.error(err);
+                        log.debug(err.stack);
                         deferred.resolve(context.chatReply('Kuvan muodostus epäonnistui!'));
                     });
             } catch (err)  {
-                console.error(err);
+                log.error(err);
+                log.debug(err.stack);
                 deferred.reject('Isompi ongelma, ota yhteyttä adminiin.');
             }
         }, (err) => {
-            console.error(err);
+            log.error(err);
+            log.debug(err.stack);
             deferred.reject('Isompi ongelma, ota yhteyttä adminiin.');
         });
 

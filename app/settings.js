@@ -16,36 +16,8 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-/*
-    init.js
-    Initialize Bläkkisvuohi, set hooks & load enabled commands
-*/
-
 'use strict';
 
-module.exports = function(bot) {
-
-    const Commands = require('./lib/commands.js');
-    const utils = require('./lib/utils.js');
-    const log = require('loglevel').getLogger('system');
-    const settings = require('./settings.js');
-
-    log.setDefaultLevel(settings.log_level);
-
-    // Initialize message hook to Command framework
-    bot.on('message', (msg) => {
-        log.debug(msg);
-        if (!msg.text) {
-            return;
-        }
-        const words = msg.text.split(' ');
-        const cmd_only = words[0].replace(/@.+/, '').toLowerCase(); // remove trailing @username
-
-        utils.attachMethods(msg, bot);
-
-        Commands.call(cmd_only, msg, words);
-    });
-
-    require('./bot_commands.js');
-
+module.exports = {
+    'log_level': 'info'
 };

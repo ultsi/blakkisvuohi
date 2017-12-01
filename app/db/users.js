@@ -25,6 +25,7 @@
 const query = require('pg-query');
 const when = require('when');
 const utils = require('../lib/utils.js');
+const log = require('loglevel').getLogger('db');
 query.connectionParameters = process.env.DATABASE_URL;
 
 let users = module.exports = {};
@@ -67,7 +68,8 @@ users.new = function(userId, nick, weight, gender) {
         .then(() => {
             deferred.resolve(new User(params[0], nick, params[2], gender));
         }, (err) => {
-            console.error(err);
+            log.error(err);
+            log.debug(err.stack);
             deferred.reject(err);
         });
     return deferred.promise;
@@ -90,7 +92,8 @@ users.find = function find(userId) {
                 deferred.reject('user not found');
             }
         }, (err) => {
-            console.error(err);
+            log.error(err);
+            log.debug(err.stack);
             deferred.reject(err);
         });
     return deferred.promise;
@@ -102,7 +105,8 @@ User.prototype.drinkBooze = function(amount, description) {
         .then(() => {
             deferred.resolve(amount);
         }, (err) => {
-            console.error(err);
+            log.error(err);
+            log.debug(err.stack);
             deferred.reject(err);
         });
     return deferred.promise;
@@ -114,7 +118,8 @@ User.prototype.getBooze = function() {
         .then((res) => {
             deferred.resolve(res[0]);
         }, (err) => {
-            console.error(err);
+            log.error(err);
+            log.debug(err.stack);
             deferred.reject(err);
         });
     return deferred.promise;
@@ -127,7 +132,8 @@ User.prototype.getDrinkSumForXHours = function(hours) {
         .then((res) => {
             deferred.resolve(res[0][0]);
         }, (err) => {
-            console.error(err);
+            log.error(err);
+            log.debug(err.stack);
             deferred.reject(err);
         });
     return deferred.promise;
@@ -139,8 +145,8 @@ User.prototype.undoDrink = function() {
         .then((res) => {
             deferred.resolve(res[0]);
         }, (err) => {
-            console.error(err);
-            console.log(err.stack);
+            log.error(err);
+            log.debug(err.stack);
             deferred.reject(err);
         });
     return deferred.promise;
@@ -153,7 +159,8 @@ User.prototype.getBoozeForLastHours = function(hours) {
         .then((res) => {
             deferred.resolve(res[0]);
         }, (err) => {
-            console.error(err);
+            log.error(err);
+            log.debug(err.stack);
             deferred.reject(err);
         });
     return deferred.promise;
@@ -165,7 +172,8 @@ User.prototype.joinGroup = function(msg) {
         .then((res) => {
             deferred.resolve(res[0]);
         }, (err) => {
-            console.error(err);
+            log.error(err);
+            log.debug(err.stack);
             deferred.reject('Ota adminiin yhteyttä.');
         });
     return deferred.promise;
@@ -178,7 +186,8 @@ User.prototype.getDrinkCountsByGroup = function() {
             let rows = res[0];
             deferred.resolve(rows);
         }, (err) => {
-            console.error(err);
+            log.error(err);
+            log.debug(err.stack);
             deferred.reject('Ota adminiin yhteyttä.');
         });
     return deferred.promise;

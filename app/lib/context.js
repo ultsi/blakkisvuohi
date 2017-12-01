@@ -23,8 +23,10 @@
 
 'use strict';
 
-let when = require('when');
+const when = require('when');
+const log = require('loglevel').getLogger('system');
 let contexts = module.exports = {};
+
 
 contexts.Context = function(cmd, msg) {
     this.cmd = cmd;
@@ -45,10 +47,11 @@ contexts.Context.prototype.privateReply = function(text) {
     };
     self.msg.sendMessage(self.msg.from.id, text, options)
         .then(() => {
-            console.log('Sent ' + text + ' to ' + self.msg.from.username);
+            log.debug('Sent ' + text + ' to ' + self.msg.from.username);
             deferred.resolve();
         }, (err) => {
-            console.error('couldn\'t send private msg! Err: ' + err + ' trace: ' + err.stack);
+            log.error('couldn\'t send private msg! Err: ' + err);
+            log.debug(err.stack);
             deferred.reject(err);
         });
     return deferred.promise;
@@ -68,10 +71,11 @@ contexts.Context.prototype.privateReplyWithKeyboard = function(text, keyboardBut
     };
     self.msg.sendMessage(self.msg.from.id, text, options)
         .then(() => {
-            console.log('Sent ' + text + ' to ' + self.msg.from.username);
+            log.debug('Sent ' + text + ' to ' + self.msg.from.username);
             deferred.resolve();
         }, (err) => {
-            console.error('couldn\'t send private msg! Err: ' + err);
+            log.error('couldn\'t send private msg! Err: ' + err);
+            log.debug(err.stack);
             deferred.reject(err);
         });
     return deferred.promise;
@@ -82,10 +86,11 @@ contexts.Context.prototype.chatReply = function(text) {
     let self = this;
     self.msg.sendMessage(self.msg.chat.id, text)
         .then(() => {
-            console.log('Sent ' + text + ' to chat ' + self.msg.chat.title);
+            log.debug('Sent ' + text + ' to chat ' + self.msg.chat.title);
             deferred.resolve();
         }, (err) => {
-            console.error('couldn\'t send chat msg! Err: ' + err);
+            log.error('couldn\'t send chat msg! Err: ' + err);
+            log.debug(err.stack);
             deferred.reject(err);
         });
     return deferred.promise;
@@ -98,10 +103,11 @@ contexts.Context.prototype.photoReply = function(stream, caption) {
             caption: caption
         })
         .then(() => {
-            console.log('Sent a photo to chat ' + self.msg.chat.title);
+            log.debug('Sent a photo to chat ' + self.msg.chat.title);
             deferred.resolve();
         }, (err) => {
-            console.error('couldn\'t send chat msg! Err: ' + err);
+            log.error('couldn\'t send photo to chat! Err: ' + err);
+            log.debug(err.stack);
             deferred.reject(err);
         });
     return deferred.promise;

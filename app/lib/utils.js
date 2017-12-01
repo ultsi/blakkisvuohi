@@ -23,8 +23,9 @@
 
 'use strict';
 
+const when = require('when');
+const log = require('loglevel').getLogger('system');
 let utils = module.exports = {};
-let when = require('when');
 
 utils.getDateMinusHours = function(hours) {
     const hourInMillis = 3600 * 1000;
@@ -38,10 +39,11 @@ function createSendPrivateMsgFunction(msg, bot) {
         let deferred = when.defer();
         bot.sendMessage(msg.from.id, text)
             .then(() => {
-                console.log('sent ' + text + ' to ' + msg.from.username);
+                log.debug('sent ' + text + ' to ' + msg.from.username);
                 deferred.resolve();
             }, (err) => {
-                console.error('couldn\'t send private msg! Err: ' + err);
+                log.error('couldn\'t send private msg! Err: ' + err);
+                log.debug(err.stack);
                 deferred.reject(err);
             });
         return deferred.promise;
@@ -53,10 +55,11 @@ function createSendChatMsgFunction(msg, bot) {
         let deferred = when.defer();
         bot.sendMessage(msg.chat.id, text)
             .then(() => {
-                console.log('sent ' + text + ' to chat ' + msg.chat.title);
+                log.debug('sent ' + text + ' to chat ' + msg.chat.title);
                 deferred.resolve();
             }, (err) => {
-                console.error('couldn\'t send chat msg! Err: ' + err + ' trace: ' + err.stack);
+                log.error('couldn\'t send chat msg! Err: ' + err);
+                log.debug(err.stack);
                 deferred.reject(err);
             });
         return deferred.promise;
@@ -68,10 +71,11 @@ function createSendMsgToFunction(msg, bot) {
         let deferred = when.defer();
         bot.sendMessage(chatId, text, options)
             .then(() => {
-                console.log('sent ' + text + ' to chat ' + chatId);
+                log.debug('sent ' + text + ' to chat ' + chatId);
                 deferred.resolve();
             }, (err) => {
-                console.error('couldn\'t send chat msg! Err: ' + err);
+                log.error('couldn\'t send msg! Err: ' + err);
+                log.debug(err.stack);
                 deferred.reject(err);
             });
         return deferred.promise;
@@ -83,10 +87,11 @@ function createSendPhotoFunction(msg, bot) {
         let deferred = when.defer();
         bot.sendPhoto(chatId, stream, options)
             .then(() => {
-                console.log('sent photo to chat ' + chatId);
+                log.debug('sent photo to chat ' + chatId);
                 deferred.resolve();
             }, (err) => {
-                console.error('couldn\'t send chat msg! Err: ' + err);
+                log.error('couldn\'t send photo! Err: ' + err);
+                log.debug(err.stack);
                 deferred.reject(err);
             });
         return deferred.promise;

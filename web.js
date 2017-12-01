@@ -25,6 +25,7 @@
 const express = require('express');
 const packageInfo = require('./package.json');
 const bodyParser = require('body-parser');
+const log = require('loglevel').getLogger('system');
 
 // Setup web server for heroku
 
@@ -40,7 +41,7 @@ app.get('/', (req, res) => {
 var server = app.listen(process.env.PORT, '0.0.0.0', () => {
     var host = server.address().address;
     var port = server.address().port;
-    console.log('Web server started at http://%s:%s', host, port);
+    log.info('Web server started at http://%s:%s', host, port);
 });
 
 module.exports = function(bot, token) {
