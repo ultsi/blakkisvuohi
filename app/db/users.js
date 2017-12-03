@@ -215,3 +215,34 @@ User.prototype.drinkBoozeReturnPermilles = function(amount, description) {
         });
     return deferred.promise;
 };
+
+User.prototype.drinkBoozeLate = function(drinks, hours) {
+    let deferred = when.defer();
+    let self = this;
+    log.debug('Drinking late');
+    let queries = [];
+    for(let i in drinks) {
+        log.debug(drinks[i].text, drinks[i].mg);
+        let drink = drinks[i];
+        let hoursAgo = utils.getDateMinusHours(hours - hours/Math.max(drinks.length-1, 1)*i);
+        log.debug(hoursAgo);
+        queries.push(query('insert into users_drinks (userId, alcohol, description, created) values($1, $2, $3, $4)', [this.userId, drink.mg, drink.text, hoursAgo]));
+    }
+    when.all(queries)
+        .then(() => {
+            self.getBooze()
+                .then((drinks) => {
+                    let permilles = alcomath.getPermillesFromDrinks(self, drinks);
+                    deferred.resolve(permilles);
+                }, (err) => {
+                    log.error(err);
+                    log.debug(err.stack);
+                    deferred.reject(err);
+                });
+        }, (err) => {
+            log.error(err);
+            log.debug(err.stack);
+            deferred.reject('Isompi ongelma, ota yhteyttä adminiin.');
+        });
+    return deferred.promise;
+};

@@ -67,8 +67,7 @@ let command = {
                 let vol = parseFloat(words[i + 2]);
                 if (!utils.isValidFloat(centiliters) || !utils.isValidFloat(vol) ||
                     centiliters < 0 ||  centiliters > 250 ||
-                    vol < 0 || vol >= 100)
-                {
+                    vol < 0 || vol >= 100) {
                     context.privateReply('Tarkista juoman ' + name + ' senttilitrat ja tilavuus');
                     return false;
                 }
@@ -80,24 +79,37 @@ let command = {
             let deferred = when.defer();
             deferred.resolve();
             // Skip to end if first word is 'stop'
-            if (words[0] === 'stop') {
+            if (words[0] !== 'stop') {
+                let drinks = context.fetchVariable('drinks');
+                for (let i = 0; i < words.length; i += 3) {
+                    drinks.push({
+                        name: words[i],
+                        centiliters: parseFloat(words[1]),
+                        vol: parseFloat(words[2])
+                    });
+                }
+                context.storeVariable('drinks', drinks);
+                context.privateReply('Juoma tallennettu!');
+            } else {
                 let hours = context.fetchVariable('hours');
                 let drinks = context.fetchVariable('drinks');
-                context.privateReply('Halusit tallentaa seuraavat juomat viimeiseltä ' + hours + ' tunnilta.\n' + drinks.map((d) => d.name + ' ' + d.centiliters + 'cl ' + d.vol + '%').join('\n'));
-                context.toPhase('END');
-                return deferred.promise;
-            }
-
-            let drinks = context.fetchVariable('drinks');
-            for(let i = 0; i < words.length; i += 3){
-                drinks.push({
-                    name: words[i],
-                    centiliters: parseFloat(words[1]),
-                    vol: parseFloat(words[2])
+                drinks = drinks.map((d) => {
+                    return {
+                        text: d.name + ' ' + d.centiliters + 'cl ' + d.vol + '%',
+                        mg: constants.calcAlcoholMilligrams(d.vol / 100, d.centiliters / 100)
+                    };
                 });
+
+                user.drinkBoozeLate(drinks, hours)
+                    .then((permilles) => {
+                        deferred.resolve(context.privateReply(utils.getRandom(strings.drink_responses) + ' ' + permilles.toFixed(2) + '‰'));
+                    }, (err) => {
+                        log.error(err);
+                        log.debug(err.stack);
+                        deferred.reject(err);
+                    });
+                context.toPhase('END');
             }
-            context.storeVariable('drinks', drinks);
-            context.privateReply('Juoma tallennettu!');
             return deferred.promise;
         },
         nextPhase: 'inputDrinks',
