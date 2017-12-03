@@ -57,6 +57,7 @@ module.exports = function(bot) {
 
     // Enable commands here.
     require('./commands/annokset.js');
+    require('./commands/jalkikellotus.js');
     require('./commands/juoma.js');
     require('./commands/kalja033.js');
     require('./commands/kalja05.js');
