@@ -33,10 +33,10 @@ module.exports = {
 
     /* jalkikellotus -strings */
     'jalkikellotus': {
-        'start': 'Kuinka pitkältä aikaväliltä haluat syöttää unohtuneita juomia? Syötä aikaväli tunneissa. Esimerkiksi kaksi ja puoli tuntia: 2.5, tai yksi tunti ja 15 minuuttia: 1.25.', 
+        'start': 'Kuinka pitkältä aikaväliltä haluat syöttää unohtuneita juomia? Syötä aikaväli tunneissa. \n\nEsimerkiksi kaksi ja puoli tuntia: 2.5 \nYksi tunti ja 15 minuuttia: 1.25.', 
         'hours_error': 'Tunnit väärin. Mahdolliset arvot välillä 0-24. Älä käytä pilkkua.',
-        'input_drinks_start': 'Kirjoita juomia seuraavassa muodossa: Juomannimi Senttilitrat Tilavuusprosentti. Esimerkiksi: kalja 33 4.7. Erota eri juomat joko rivinvaihdolla tai kirjoita useampi viesti. Lopeta kirjoittamalla stop.',
-        'input_drinks_error': 'Kirjoititko varmasti ohjeiden mukaisesti? Käytä pistettä, älä pilkkua.'
-
+        'input_drinks_start': 'Kirjoita juomia seuraavassa muodossa: \nJuomannimi Senttilitrat Tilavuusprosentti. \nEsimerkiksi: kalja 33 4.7. \n\nErota eri juomat joko rivinvaihdolla tai kirjoita useampi viesti. Lopeta kirjoittamalla stop.',
+        'input_drinks_error': 'Kirjoititko varmasti ohjeiden mukaisesti? Käytä pistettä, älä pilkkua.',
+        'cmd_text': 'Kellota unohtuneet juomat'
     }
 };
