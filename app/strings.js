@@ -37,6 +37,6 @@ module.exports = {
         'hours_error': 'Tunnit väärin. Mahdolliset arvot välillä 0-24. Älä käytä pilkkua.',
         'input_drinks_start': 'Kirjoita juomia seuraavassa muodossa: \nJuomannimi Senttilitrat Tilavuusprosentti. \nEsimerkiksi: kalja 33 4.7. \n\nErota eri juomat joko rivinvaihdolla tai kirjoita useampi viesti. Lopeta kirjoittamalla stop.',
         'input_drinks_error': 'Kirjoititko varmasti ohjeiden mukaisesti? Käytä pistettä, älä pilkkua.',
-        'cmd_text': 'Kellota unohtuneet juomat'
+        'cmd_text': '/jalkikellotus - Kellota unohtuneet juomat mukaan tilastoihin'
     }
 };
