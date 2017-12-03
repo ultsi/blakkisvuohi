@@ -24,6 +24,7 @@
 const when = require('when');
 const log = require('loglevel').getLogger('commands');
 const Commands = require('../lib/commands.js');
+const timezoneOffset = process.env.TZ_OFFSET || 0;
 
 function makeDrinksString(drinks) {
     let list = [];
@@ -31,6 +32,7 @@ function makeDrinksString(drinks) {
     for (var i in drinks) {
         let drink = drinks[i];
         let drinkTime = new Date(Date.parse(drink.created));
+        drinkTime.setHours((drinkTime.getHours() + timezoneOffset) % 24);
         let drinkShortDate = drinkTime.getDate() + '.' + (drinkTime.getMonth() + 1) + '.';
         if (day !== drinkShortDate)  {
             day = drinkShortDate;
