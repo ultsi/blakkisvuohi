@@ -25,10 +25,11 @@ const when = require('when');
 const log = require('loglevel').getLogger('commands');
 const Commands = require('../lib/commands.js');
 const alcomath = require('../lib/alcomath.js');
+const message = require('../lib/message.js');
 
 let command = {
     [0]: {
-        startReply: Commands.privateReplyWithKeyboard('Olet laattaamassa viimeksi juodun juomasi. Oletko varma?', [['Kyllä', 'En']]),
+        startMessage: message.PrivateKeyboardMessage('Olet laattaamassa viimeksi juodun juomasi. Oletko varma?', [['Kyllä', 'En']]),
         validateInput: (context, user, msg, words) => {
             let answer = words[0].toLowerCase();
             return answer === 'kyllä' || answer === 'en';
@@ -57,7 +58,7 @@ let command = {
             }
             return deferred.promise;
         },
-        errorReply: 'Kirjoita kyllä tai en'
+        errorMessage: message.PrivateMessage('Kirjoita kyllä tai en')
     }
 };
 

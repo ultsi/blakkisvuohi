@@ -105,7 +105,7 @@ function callCommandFunction(context, cmd, msg, words) {
         return;
     }
 
-    const phase = cmd.funcs[context.phase];
+    const phaseFunc = cmd.funcs[context.phase];
 
     if (cmd.userCommand) {
         return users.find(msg.from.id)
@@ -119,21 +119,20 @@ function callCommandFunction(context, cmd, msg, words) {
                         log.info('User ' + user.username + ' tried to use admin command');
                         msg.sendPrivateMessage('Unauthorized.');
                     } else if (cmd.version === 2) {
+
                         /* Version 2 definition of commands */
+                        const phase = phaseFunc;
+
                         if (context.phase === 0 && !context.fetchVariable('_started')) {
-                            let reply = phase.startReply;
-                            if (reply.type === 'private_keyboard') {
-                                context.privateReplyWithKeyboard(reply.text, reply.keyboard_arr);
-                            } else {
-                                context.privateReply(reply.text);
-                            }
+                            context.sendMessage(phase.startMessage);
                             context.storeVariable('_started', true);
                         } else if (phase.validateInput(context, user, msg, words)) {
                             try {
                                 phase.onValidInput(context, user, msg, words);
                                 if (phase.nextPhase) {
                                     context.toPhase(phase.nextPhase);
-                                    context.privateReply(cmd.funcs[context.phase].startReply);
+                                    let newPhase = cmd.funcs[context.phase];
+                                    context.sendMessage(newPhase.startReply);
                                 } else {
                                     context.end();
                                 }
@@ -143,10 +142,11 @@ function callCommandFunction(context, cmd, msg, words) {
                                 msg.sendPrivateMessage('Virhe! Ota yhteyttä @ultsi');
                             }
                         } else {
-                            context.privateReply(phase.errorReply);
+                            context.sendMessage(phase.errorMessage);
                         }
+
                     } else {
-                        phase(context, user, msg, words)
+                        phaseFunc(context, user, msg, words)
                             .then((res) => {
                                 log.debug('Phase ' + context.phase + ' of cmd ' + cmd.name + ' executed perfectly.');
                             }, (err) => {
@@ -166,7 +166,7 @@ function callCommandFunction(context, cmd, msg, words) {
                 msg.sendPrivateMessage('Virhe: Komennon käyttö: ' + cmd.help);
             });
     } else {
-        return phase(context, msg, words)
+        return phaseFunc(context, msg, words)
             .then((res) => {
                 log.debug('Executing phase ' + context.phase + ' of cmd ' + cmd.name);
                 log.debug('Words: ' + words);
@@ -240,19 +240,4 @@ Commands.call = function call(firstWord, msg, words) {
             return msg.sendChatMessage('Virhe! Komennon käyttö: ' + cmd.help);
         }
     }
-};
-
-Commands.privateReplyWithKeyboard = function(text, keyboard_arr) {
-    return {
-        type: 'private_keyboard',
-        text: text,
-        keyboard_arr: keyboard_arr
-    };
-};
-
-Commands.privateReply = function(text) {
-    return {
-        type: 'private_reply',
-        text: text
-    };
 };

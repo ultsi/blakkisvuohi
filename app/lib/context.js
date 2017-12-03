@@ -113,6 +113,39 @@ contexts.Context.prototype.photoReply = function(stream, caption) {
     return deferred.promise;
 };
 
+contexts.Context.prototype.sendMessage = function(message) {
+    if (!message.type || !message.text) {
+        log.error('sendMessage: invalid message object! ' + message);
+        return;
+    }
+    let deferred = when.defer();
+    let self = this;
+
+    if (message.type === 'photo') {
+        self.msg.sendPhoto(self.msg.chat.id, message.buffer, message.options)
+            .then(() => {
+                log.debug('Sent a photo to chat ' + self.msg.chat.title);
+                deferred.resolve();
+            }, (err) => {
+                log.error('couldn\'t send photo to chat! Err: ' + err);
+                log.debug(err.stack);
+                deferred.reject(err);
+            });
+    } else {
+        let to = message.type === 'private_message' ? self.msg.from : self.msg.chat;
+        self.msg.sendMessage(to.id, message.text, message.options)
+            .then(() => {
+                log.debug('Sent ' + message.text + ' to ' + to.title || to.username || to.first_name);
+                deferred.resolve();
+            }, (err) => {
+                log.error('couldn\'t send msg! Err: ' + err);
+                log.debug(err.stack);
+                deferred.reject(err);
+            });
+    }
+    return deferred.promise;
+};
+
 contexts.Context.prototype.storeVariable = function(key, value) {
     this.variables[key] = value;
 };
