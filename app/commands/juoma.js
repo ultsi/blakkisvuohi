@@ -71,7 +71,10 @@ let command ={
             return drinkCommand.startKeyboard[0].find((x) => x.toLowerCase() === msg.text.toLowerCase());
         },
         onValidInput: (context, user, msg, words) => {
+            let deferred = when.defer();
             context.toPhase(words[0].toLowerCase());
+            deferred.resolve();
+            return deferred.promise;
         },
         nextPhase: 0,
         errorMessage: message.PrivateKeyboardMessage('Valitse juoman kategoria', drinkCommand.startKeyboard)
@@ -92,8 +95,8 @@ let command ={
                     drink = milds[key];
                 }
             }
-            saveDrink(context, user, drink.mg, drink.print);
             context.toPhase('END');
+            return saveDrink(context, user, drink.mg, drink.print);
         },
         nextPhase: 'miedot',
         errorMessage: message.PrivateKeyboardMessage(drinkCommand.miedotReply.text, drinkCommand.miedotReply.keyboard)
@@ -116,8 +119,8 @@ let command ={
                 }
             }
 
-            saveDrink(context, user, drink.mg, drink.print);
             context.toPhase('END');
+            return saveDrink(context, user, drink.mg, drink.print);
         },
         nextPhase: 'tiukat',
         errorMessage: message.PrivateKeyboardMessage(drinkCommand.tiukatReply.text, drinkCommand.tiukatReply.keyboard)
@@ -129,8 +132,11 @@ let command ={
             return utils.isValidFloat(vol) && vol > 0 || vol < 100;
         },
         onValidInput: (context, user, msg, words) => {
+            let deferred = when.defer();
             context.storeVariable('vol', parseFloat(words[0]));
             context.toPhase('omacl');
+            deferred.resolve();
+            return deferred.promise;
         },
         nextPhase: 'oma',
         errorMessage: message.PrivateMessage('Syötä juoman tilavuusprosentti, esim: 12.5.')
@@ -145,8 +151,8 @@ let command ={
             let vol = context.fetchVariable('vol');
             let cl = parseInt(words[0]);
             let mg = constants.calcAlcoholMilligrams(vol / 100.0, cl / 100.0);
-            saveDrink(context, user, mg, 'Oma juoma - ' + cl + 'cl ' + vol + '%');
             context.toPhase('END');
+            return saveDrink(context, user, mg, 'Oma juoma - ' + cl + 'cl ' + vol + '%');
         },
         nextPhase: 'omacl',
         errorMessage: message.PrivateMessage('Syötä juoman määrä senttilitroissa, esim: 4')

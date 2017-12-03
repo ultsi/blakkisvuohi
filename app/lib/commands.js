@@ -127,15 +127,23 @@ function callCommandFunction(context, cmd, msg, words) {
                             context.storeVariable('_started', true);
                         } else if (phase.validateInput(context, user, msg, words)) {
                             try {
-                                phase.onValidInput(context, user, msg, words);
-                                phase = cmd.funcs[context.phase];
-                                if (phase.nextPhase || phase.nextPhase === 0) {
-                                    context.toPhase(phase.nextPhase);
-                                    let newPhase = cmd.funcs[context.phase];
-                                    context.sendMessage(newPhase.startMessage);
-                                } else {
-                                    context.end();
-                                }
+                                phase.onValidInput(context, user, msg, words)
+                                .then(() => {
+                                    phase = cmd.funcs[context.phase];
+                                    if (phase.nextPhase || phase.nextPhase === 0) {
+                                        context.toPhase(phase.nextPhase);
+                                        let newPhase = cmd.funcs[context.phase];
+                                        context.sendMessage(newPhase.startMessage);
+                                    } else {
+                                        context.end();
+                                    }
+                                    log.debug('Executing phase ' + context.phase + ' of usercmd ' + cmd.name);
+                                    log.debug('Words: ' + words);
+                                    log.debug('Phase ' + context.phase + ' of cmd ' + cmd.name + ' executed perfectly.');
+                                }, (err) => {
+                                    log.error('Couldn\'t execute cmd function "' + cmd.name + '" phase ' + context.phase + '! ' + err);
+                                    msg.sendPrivateMessage('Virhe! Ota yhteyttä @ultsi');
+                                });
                             } catch (err) {
                                 log.error('Error executing v2 user cmd function "' + cmd.name + '" phase ' + context.phase + '! ' + err);
                                 log.debug(err.stack);
@@ -173,15 +181,24 @@ function callCommandFunction(context, cmd, msg, words) {
             context.storeVariable('_started', true);
         } else if (phase.validateInput(context, msg, words)) {
             try {
-                phase.onValidInput(context, msg, words);
-                phase = cmd.funcs[context.phase];
-                if (phase.nextPhase || phase.nextPhase === 0) {
-                    context.toPhase(phase.nextPhase);
-                    let newPhase = cmd.funcs[context.phase];
-                    context.sendMessage(newPhase.startMessage);
-                } else {
-                    context.end();
-                }
+                phase.onValidInput(context, msg, words)
+                .then(() => {
+                    phase = cmd.funcs[context.phase];
+                    if (phase.nextPhase || phase.nextPhase === 0) {
+                        context.toPhase(phase.nextPhase);
+                        let newPhase = cmd.funcs[context.phase];
+                        context.sendMessage(newPhase.startMessage);
+                    } else {
+                        context.end();
+                    }
+                    log.debug('Executing phase ' + context.phase + ' of cmd ' + cmd.name);
+                    log.debug('Words: ' + words);
+                    log.debug('Phase ' + context.phase + ' of cmd ' + cmd.name + ' executed perfectly.');
+                }, (err) => {
+                    log.error('Couldn\'t execute cmd function "' + cmd.name + '" phase ' + context.phase + '! ' + err);
+                    msg.sendPrivateMessage('Virhe! Ota yhteyttä @ultsi');
+                });
+
             } catch (err) {
                 log.error('Error executing v2 cmd function "' + cmd.name + '" phase ' + context.phase + '! ' + err);
                 log.debug(err.stack);

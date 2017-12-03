@@ -39,6 +39,7 @@ let command = {
             return utils.isValidInt(words[0]) && weight > 20 && weight < 250;
         },
         onValidInput: (context, msg, words) => {
+            let deferred = when.defer();
             let username = msg.from.username;
             if (!username) {
                 username = msg.from.first_name;
@@ -51,6 +52,9 @@ let command = {
 
             let weight = parseInt(words[0], 10);
             context.storeVariable('weight', weight);
+            deferred.resolve();
+
+            return deferred.promise;
         },
         nextPhase: 'gender',
         errorMessage: message.PrivateMessage('Syötä paino uudelleen. Painon pitää olla kokonaisluku ja ala- ja ylärajat ovat 20kg ja 250kg.')
