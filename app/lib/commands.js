@@ -166,16 +166,30 @@ function callCommandFunction(context, cmd, msg, words) {
                 msg.sendPrivateMessage('Virhe: Komennon käyttö: ' + cmd.help);
             });
     } else {
-        return phaseFunc(context, msg, words)
-            .then((res) => {
-                log.debug('Executing phase ' + context.phase + ' of cmd ' + cmd.name);
-                log.debug('Words: ' + words);
-                log.debug('Phase ' + context.phase + ' of cmd ' + cmd.name + ' executed perfectly.');
-            }, (err) => {
-                log.error('Couldn\'t execute cmd function "' + cmd.name + '" phase ' + context.phase + '! ' + err);
+        /* Version 2 definition of commands */
+        let phase = phaseFunc;
+        if (context.phase === 0 && !context.fetchVariable('_started')) {
+            context.sendMessage(phase.startMessage);
+            context.storeVariable('_started', true);
+        } else if (phase.validateInput(context, msg, words)) {
+            try {
+                phase.onValidInput(context, msg, words);
+                phase = cmd.funcs[context.phase];
+                if (phase.nextPhase || phase.nextPhase === 0) {
+                    context.toPhase(phase.nextPhase);
+                    let newPhase = cmd.funcs[context.phase];
+                    context.sendMessage(newPhase.startMessage);
+                } else {
+                    context.end();
+                }
+            } catch (err) {
+                log.error('Error executing v2 cmd function "' + cmd.name + '" phase ' + context.phase + '! ' + err);
                 log.debug(err.stack);
-                msg.sendPrivateMessage('Virhe: Komennon käyttö: ' + cmd.help);
-            });
+                msg.sendPrivateMessage('Virhe! Ota yhteyttä @ultsi');
+            }
+        } else {
+            context.sendMessage(phase.errorMessage);
+        }
     }
 }
 
