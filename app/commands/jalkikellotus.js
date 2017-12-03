@@ -43,7 +43,7 @@ let command = {
             let deferred = when.defer();
             context.storeVariable('hours', parseFloat(words[0]));
             deferred.resolve();
-            return deferred.promise();
+            return deferred.promise;
         },
         nextPhase: 'inputDrinks',
         errorMessage: message.PrivateMessage(strings.jalkikellotus.hours_error)
@@ -84,7 +84,7 @@ let command = {
                 let drinks = context.fetchVariable('drinks');
                 context.privateReply('Halusit tallentaa seuraavat juomat viimeiseltä ' + hours + 'tunnilta.\n' + drinks.map((d) => d[0] + ' ' + d[1] + 'cl ' + d[2] + '%').join('\n'));
                 context.toPhase('END');
-                return deferred.promise();
+                return deferred.promise;
             }
 
             let drinks = context.fetchVariable('drinks') ||  [];
@@ -96,7 +96,7 @@ let command = {
                 });
             }
             context.storeVariable('drinks', drinks);
-            return deferred.promise();
+            return deferred.promise;
         },
         nextPhase: 'inputDrinks',
         errorMessage: message.PrivateMessage(strings.jalkikellotus.input_drinks_error)
