@@ -60,6 +60,18 @@ Commands.registerUserCommand = function(cmdName, cmdHelp, cmdType, cmdFunctions)
     log.info('Added usercommand ' + cmdName + ' : (' + cmdType + ') with ' + cmdFunctions.length + ' phases.');
 };
 
+Commands.registerUserCommandV2 = function(cmdName, cmdHelp, cmdType, cmdFunctions) {
+    cmds[cmdName] = {
+        name: cmdName,
+        type: cmdType,
+        funcs: cmdFunctions,
+        help: cmdHelp,
+        userCommand: true,
+        version: 2
+    };
+    log.info('Added usercommand ' + cmdName + ' : (' + cmdType + ') with ' + cmdFunctions.length + ' phases.');
+};
+
 Commands.registerAdminCommand = function(cmdName, cmdHelp, cmdType, cmdFunctions) {
     cmds[cmdName] = {
         name: cmdName,
@@ -106,6 +118,41 @@ function callCommandFunction(context, cmd, msg, words) {
                     if (cmd.adminCommand && user.userId !== settings.admin_id) {
                         log.info('User ' + user.username + ' tried to use admin command');
                         msg.sendPrivateMessage('Unauthorized.');
+                    } else if (cmd.version === 2) {
+
+                        /* Version 2 definition of commands */
+                        let phase = phaseFunc;
+                        if (context.phase === 0 && !context.fetchVariable('_started')) {
+                            context.sendMessage(phase.startMessage);
+                            context.storeVariable('_started', true);
+                        } else if (phase.validateInput(context, user, msg, words)) {
+                            try {
+                                phase.onValidInput(context, user, msg, words)
+                                .then(() => {
+                                    phase = cmd.funcs[context.phase];
+                                    if (phase.nextPhase || phase.nextPhase === 0) {
+                                        context.toPhase(phase.nextPhase);
+                                        let newPhase = cmd.funcs[context.phase];
+                                        context.sendMessage(newPhase.startMessage);
+                                    } else {
+                                        context.end();
+                                    }
+                                    log.debug('Executing phase ' + context.phase + ' of usercmd ' + cmd.name);
+                                    log.debug('Words: ' + words);
+                                    log.debug('Phase ' + context.phase + ' of cmd ' + cmd.name + ' executed perfectly.');
+                                }, (err) => {
+                                    log.error('Couldn\'t execute cmd function "' + cmd.name + '" phase ' + context.phase + '! ' + err);
+                                    msg.sendPrivateMessage('Virhe! Ota yhteyttä @ultsi');
+                                });
+                            } catch (err) {
+                                log.error('Error executing v2 user cmd function "' + cmd.name + '" phase ' + context.phase + '! ' + err);
+                                log.debug(err.stack);
+                                msg.sendPrivateMessage('Virhe! Ota yhteyttä @ultsi');
+                            }
+                        } else {
+                            context.sendMessage(phase.errorMessage);
+                        }
+
                     } else {
                         phaseFunc(context, user, msg, words)
                             .then((res) => {
@@ -127,16 +174,39 @@ function callCommandFunction(context, cmd, msg, words) {
                 msg.sendPrivateMessage('Virhe: Komennon käyttö: ' + cmd.help);
             });
     } else {
-        return phaseFunc(context, msg, words)
-            .then((res) => {
-                log.debug('Executing phase ' + context.phase + ' of cmd ' + cmd.name);
-                log.debug('Words: ' + words);
-                log.debug('Phase ' + context.phase + ' of cmd ' + cmd.name + ' executed perfectly.');
-            }, (err) => {
-                log.error('Couldn\'t execute cmd function "' + cmd.name + '" phase ' + context.phase + '! ' + err);
+        /* Version 2 definition of commands */
+        let phase = phaseFunc;
+        if (context.phase === 0 && !context.fetchVariable('_started')) {
+            context.sendMessage(phase.startMessage);
+            context.storeVariable('_started', true);
+        } else if (phase.validateInput(context, msg, words)) {
+            try {
+                phase.onValidInput(context, msg, words)
+                .then(() => {
+                    phase = cmd.funcs[context.phase];
+                    if (phase.nextPhase || phase.nextPhase === 0) {
+                        context.toPhase(phase.nextPhase);
+                        let newPhase = cmd.funcs[context.phase];
+                        context.sendMessage(newPhase.startMessage);
+                    } else {
+                        context.end();
+                    }
+                    log.debug('Executing phase ' + context.phase + ' of cmd ' + cmd.name);
+                    log.debug('Words: ' + words);
+                    log.debug('Phase ' + context.phase + ' of cmd ' + cmd.name + ' executed perfectly.');
+                }, (err) => {
+                    log.error('Couldn\'t execute cmd function "' + cmd.name + '" phase ' + context.phase + '! ' + err);
+                    msg.sendPrivateMessage('Virhe! Ota yhteyttä @ultsi');
+                });
+
+            } catch (err) {
+                log.error('Error executing v2 cmd function "' + cmd.name + '" phase ' + context.phase + '! ' + err);
                 log.debug(err.stack);
-                msg.sendPrivateMessage('Virhe: Komennon käyttö: ' + cmd.help);
-            });
+                msg.sendPrivateMessage('Virhe! Ota yhteyttä @ultsi');
+            }
+        } else {
+            context.sendMessage(phase.errorMessage);
+        }
     }
 }
 

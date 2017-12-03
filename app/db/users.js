@@ -194,7 +194,7 @@ User.prototype.getDrinkCountsByGroup = function() {
     return deferred.promise;
 };
 
-User.prototype.drinkBoozeReturnPermilles = function(amount, description, msg) {
+User.prototype.drinkBoozeReturnPermilles = function(amount, description) {
     let deferred = when.defer();
     let self = this;
     self.drinkBooze(amount, description)

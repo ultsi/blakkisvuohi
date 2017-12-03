@@ -25,42 +25,45 @@ const when = require('when');
 const log = require('loglevel').getLogger('commands');
 const Commands = require('../lib/commands.js');
 const alcomath = require('../lib/alcomath.js');
+const message = require('../lib/message.js');
 
-function undoDrinkConfirmation(context, user, msg, words) {
-    context.nextPhase();
-    return context.privateReplyWithKeyboard('Olet laattaamassa viimeksi juodun juomasi. Oletko varma?', [
-        ['Kyllä', 'En']
-    ]);
-}
-
-function undoDrink(context, user, msg, words) {
-    let deferred = when.defer();
-    if (words[0].toLowerCase() === 'kyllä') {
-        user.undoDrink()
-            .then(() => {
-                user.getBooze()
-                    .then((drinks) => {
-                        let permilles = alcomath.getPermillesFromDrinks(user, drinks);
-                        deferred.resolve(context.privateReply('Laatta onnistui. Olet enää ' + permilles.toFixed(2) + '‰ humalassa.'));
+let command = {
+    [0]: {
+        startMessage: message.PrivateKeyboardMessage('Olet laattaamassa viimeksi juodun juomasi. Oletko varma?', [['Kyllä', 'En']]),
+        validateInput: (context, user, msg, words) => {
+            let answer = words[0].toLowerCase();
+            return answer === 'kyllä' || answer === 'en';
+        },
+        onValidInput: (context, user, msg, words) => {
+            let deferred = when.defer();
+            if (words[0].toLowerCase() === 'kyllä') {
+                user.undoDrink()
+                    .then(() => {
+                        user.getBooze()
+                            .then((drinks) => {
+                                let permilles = alcomath.getPermillesFromDrinks(user, drinks);
+                                deferred.resolve(context.privateReply('Laatta onnistui. Olet enää ' + permilles.toFixed(2) + '‰ humalassa.'));
+                            }, (err) => {
+                                log.error(err);
+                                log.debug(err.stack);
+                                deferred.reject(err);
+                            });
                     }, (err) => {
                         log.error(err);
                         log.debug(err.stack);
                         deferred.reject(err);
                     });
-            }, (err) => {
-                log.error(err);
-                log.debug(err.stack);
-                deferred.reject(err);
-            });
-    } else {
-        deferred.resolve(context.privateReply('Laatta peruttu.'));
+            } else {
+                deferred.resolve(context.privateReply('Laatta peruttu.'));
+            }
+            return deferred.promise;
+        },
+        errorMessage: message.PrivateMessage('Kirjoita kyllä tai en')
     }
-    context.end();
-    return deferred.promise;
-}
+};
 
-Commands.registerUserCommand(
+Commands.registerUserCommandV2(
     '/laatta',
     '/laatta - kumoaa edellisen lisätyn juoman',
-    Commands.TYPE_PRIVATE, [undoDrinkConfirmation, undoDrink]
+    Commands.TYPE_PRIVATE, command
 );

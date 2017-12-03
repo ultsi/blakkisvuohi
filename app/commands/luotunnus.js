@@ -29,66 +29,69 @@ const when = require('when');
 const Commands = require('../lib/commands.js');
 const utils = require('../lib/utils.js');
 const users = require('../db/users.js');
+const message = require('../lib/message.js');
 
-function signupPhase1(context, msg, words) {
-    let username = msg.from.username;
-    if (!username) {
-        username = msg.from.first_name;
-        if (msg.from.last_name) {
-            username = username + ' ' + msg.from.last_name;
-        }
+let command = {
+    [0]: {
+        startMessage: message.PrivateMessage('Tervetuloa uuden tunnuksen luontiin. Alkoholilaskuria varten tarvitsen tiedot painosta ja sukupuolesta.\n\nSyötä ensimmäiseksi paino kilogrammoissa ja kokonaislukuna:'),
+        validateInput: (context, msg, words) => {
+            let weight = parseInt(words[0], 10);
+            return utils.isValidInt(words[0]) && weight > 20 && weight < 250;
+        },
+        onValidInput: (context, msg, words) => {
+            let deferred = when.defer();
+            let username = msg.from.username;
+            if (!username) {
+                username = msg.from.first_name;
+                if (msg.from.last_name) {
+                    username = username + ' ' + msg.from.last_name;
+                }
+            }
+            context.storeVariable('username', username);
+            context.storeVariable('userId', msg.from.id);
+
+            let weight = parseInt(words[0], 10);
+            context.storeVariable('weight', weight);
+            deferred.resolve();
+
+            return deferred.promise;
+        },
+        nextPhase: 'gender',
+        errorMessage: message.PrivateMessage('Syötä paino uudelleen. Painon pitää olla kokonaisluku ja ala- ja ylärajat ovat 20kg ja 250kg.')
+    },
+    gender: {
+        startMessage: message.PrivateKeyboardMessage('Paino tallennettu. Syötä seuraavaksi sukupuoli:', [
+            ['Mies', 'Nainen']
+        ]),
+        validateInput: (context, msg, words) => {
+            let gender = words[0].toLowerCase();
+            return gender === 'mies' || gender === 'nainen';
+        },
+        onValidInput: (context, msg, words) => {
+            const userId = context.fetchVariable('userId');
+            const username = context.fetchVariable('username');
+            const weight = context.fetchVariable('weight');
+            const gender = words[0].toLowerCase();
+            let deferred = when.defer();
+            users.new(userId, username, weight, gender)
+                .then((user) => {
+                    deferred.resolve(context.privateReply('Moikka ' + user.username + '! Tunnuksesi luotiin onnistuneesti. Muista, että antamani luvut alkoholista ovat vain arvioita, eikä niihin voi täysin luottaa. Ja eikun juomaan!'));
+                }, (err) => {
+                    log.error('Error creating new user! ' + err);
+                    log.debug(err.stack);
+                    deferred.reject('Isompi ongelma, ota yhteyttä adminiin.');
+                });
+            return deferred.promise;
+        },
+        errorMessage: message.PrivateKeyboardMessage('Syötä joko mies tai nainen:', [
+            ['Mies', 'Nainen']
+        ])
     }
-    context.storeVariable('username', username);
-    context.storeVariable('userId', msg.from.id);
-    context.nextPhase();
-    return context.privateReply('Tervetuloa uuden tunnuksen luontiin ' + username + '. Alkoholilaskuria varten tarvitsen tiedot painosta ja sukupuolesta.\n\nSyötä ensimmäiseksi paino kilogrammoissa ja kokonaislukuna:');
-}
-
-function signupPhase2(context, msg, words) {
-    if (!utils.isValidInt(words[0])) {
-        return context.privateReply('Paino ei ole kokonaisluku');
-    }
-
-    let weight = parseInt(words[0], 10);
-    if (weight < 30 || weight > 200) {
-        return context.privateReply('Painon ala- ja ylärajat ovat 30kg ja 200kg.');
-    }
-
-    context.storeVariable('weight', weight);
-    context.nextPhase();
-    return context.privateReplyWithKeyboard('Paino tallennettu. Syötä seuraavaksi sukupuoli:', [
-        ['mies', 'nainen']
-    ]);
-}
-
-function signupPhase3(context, msg, words) {
-    if (words[0] !== 'nainen' && words[0] !== 'mies') {
-        return context.privateReplyWithKeyboard('Syötä joko nainen tai mies', [
-            ['mies', 'nainen']
-        ]);
-    }
-
-    const userId = context.fetchVariable('userId');
-    const username = context.fetchVariable('username');
-    const weight = context.fetchVariable('weight');
-    const gender = words[0];
-    context.end();
-
-    let deferred = when.defer();
-    users.new(userId, username, weight, gender)
-        .then((user) => {
-            deferred.resolve(context.privateReply('Moikka ' + user.username + '! Tunnuksesi luotiin onnistuneesti. Muista, että antamani luvut alkoholista ovat vain arvioita, eikä niihin voi täysin luottaa. Ja eikun juomaan!'));
-        }, (err) => {
-            log.error('Error creating new user! ' + err);
-            log.debug(err.stack);
-            deferred.reject('Isompi ongelma, ota yhteyttä adminiin.');
-        });
-    return deferred.promise;
-}
+};
 
 // Register the command
 Commands.register(
     '/luotunnus',
     '/luotunnus - Luo itsellesi tunnus botin käyttöä varten.',
-    Commands.TYPE_PRIVATE, [signupPhase1, signupPhase2, signupPhase3]
+    Commands.TYPE_PRIVATE, command
 );
