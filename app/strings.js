@@ -35,6 +35,8 @@ module.exports = {
     'jalkikellotus': {
         'start': 'Kuinka pitkältä aikaväliltä haluat syöttää unohtuneita juomia? Syötä aikaväli tunneissa. Esimerkiksi kaksi ja puoli tuntia: 2.5, tai yksi tunti ja 15 minuuttia: 1.25.', 
         'hours_error': 'Tunnit väärin. Mahdolliset arvot välillä 0-24. Älä käytä pilkkua.',
-        'input_drinks_start': 'Tunnit oikein. Aloita kirjoittamaan juomia seuraavassa muodossa: Juomannimi Senttilitrat Tilavuusprosentti. Esimerkiksi: kalja 33 4.7. Erota eri juomat joko rivinvaihdolla tai kirjoita useampi viesti. Lopeta kirjoittamalla stop.'
+        'input_drinks_start': 'Kirjoita juomia seuraavassa muodossa: Juomannimi Senttilitrat Tilavuusprosentti. Esimerkiksi: kalja 33 4.7. Erota eri juomat joko rivinvaihdolla tai kirjoita useampi viesti. Lopeta kirjoittamalla stop.',
+        'input_drinks_error': 'Kirjoititko varmasti ohjeiden mukaisesti? Käytä pistettä, älä pilkkua.'
+
     }
 };

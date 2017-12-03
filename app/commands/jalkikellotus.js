@@ -42,6 +42,7 @@ let command = {
         onValidInput: (context, user, msg, words) => {
             let deferred = when.defer();
             context.storeVariable('hours', parseFloat(words[0]));
+            context.storeVariable('drinks', []);
             deferred.resolve();
             return deferred.promise;
         },
@@ -55,7 +56,7 @@ let command = {
             if (words[0] === 'stop') {
                 return true;
             }
-            if (words.length < 3 ||  words.length % 3 !== 0) {
+            if (words.length < 3 || words.length % 3 !== 0) {
                 return false;
             }
 
@@ -64,7 +65,7 @@ let command = {
                 let name = words[i];
                 let centiliters = parseFloat(words[i + 1]);
                 let vol = parseFloat(words[i + 2]);
-                if (!utils.isValidFloat(centiliters) ||  !utils.isValidFloat(vol) ||
+                if (!utils.isValidFloat(centiliters) || !utils.isValidFloat(vol) ||
                     centiliters < 0 ||  centiliters > 250 ||
                     vol < 0 || vol >= 100)
                 {
@@ -82,12 +83,12 @@ let command = {
             if (words[0] === 'stop') {
                 let hours = context.fetchVariable('hours');
                 let drinks = context.fetchVariable('drinks');
-                context.privateReply('Halusit tallentaa seuraavat juomat viimeiseltä ' + hours + 'tunnilta.\n' + drinks.map((d) => d[0] + ' ' + d[1] + 'cl ' + d[2] + '%').join('\n'));
+                context.privateReply('Halusit tallentaa seuraavat juomat viimeiseltä ' + hours + ' tunnilta.\n' + drinks.map((d) => d.name + ' ' + d.centiliters + 'cl ' + d.vol + '%').join('\n'));
                 context.toPhase('END');
                 return deferred.promise;
             }
 
-            let drinks = context.fetchVariable('drinks') ||  [];
+            let drinks = context.fetchVariable('drinks');
             for(let i = 0; i < words.length; i += 3){
                 drinks.push({
                     name: words[i],
