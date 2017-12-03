@@ -71,5 +71,6 @@ module.exports = function(bot) {
 
     // Admin commands
     require('./commands/admin_loglevel.js');
+    require('./commands/admin_stats.js');
 
 };
