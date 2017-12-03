@@ -60,6 +60,18 @@ Commands.registerUserCommand = function(cmdName, cmdHelp, cmdType, cmdFunctions)
     log.info('Added usercommand ' + cmdName + ' : (' + cmdType + ') with ' + cmdFunctions.length + ' phases.');
 };
 
+Commands.registerUserCommandV2 = function(cmdName, cmdHelp, cmdType, cmdFunctions) {
+    cmds[cmdName] = {
+        name: cmdName,
+        type: cmdType,
+        funcs: cmdFunctions,
+        help: cmdHelp,
+        userCommand: true,
+        version: 2
+    };
+    log.info('Added usercommand ' + cmdName + ' : (' + cmdType + ') with ' + cmdFunctions.length + ' phases.');
+};
+
 Commands.registerAdminCommand = function(cmdName, cmdHelp, cmdType, cmdFunctions) {
     cmds[cmdName] = {
         name: cmdName,
@@ -93,7 +105,7 @@ function callCommandFunction(context, cmd, msg, words) {
         return;
     }
 
-    const phaseFunc = cmd.funcs[context.phase];
+    const phase = cmd.funcs[context.phase];
 
     if (cmd.userCommand) {
         return users.find(msg.from.id)
@@ -106,8 +118,35 @@ function callCommandFunction(context, cmd, msg, words) {
                     if (cmd.adminCommand && user.userId !== settings.admin_id) {
                         log.info('User ' + user.username + ' tried to use admin command');
                         msg.sendPrivateMessage('Unauthorized.');
+                    } else if (cmd.version === 2) {
+                        /* Version 2 definition of commands */
+                        if (context.phase === 0 && !context.fetchVariable('_started')) {
+                            let reply = phase.startReply;
+                            if (reply.type === 'private_keyboard') {
+                                context.privateReplyWithKeyboard(reply.text, reply.keyboard_arr);
+                            } else {
+                                context.privateReply(reply.text);
+                            }
+                            context.storeVariable('_started', true);
+                        } else if (phase.validateInput(context, user, msg, words)) {
+                            try {
+                                phase.onValidInput(context, user, msg, words);
+                                if (phase.nextPhase) {
+                                    context.toPhase(phase.nextPhase);
+                                    context.privateReply(cmd.funcs[context.phase].startReply);
+                                } else {
+                                    context.end();
+                                }
+                            } catch (err) {
+                                log.error('Error executing v2 user cmd function "' + cmd.name + '" phase ' + context.phase + '! ' + err);
+                                log.debug(err.stack);
+                                msg.sendPrivateMessage('Virhe! Ota yhteyttä @ultsi');
+                            }
+                        } else {
+                            context.privateReply(phase.errorReply);
+                        }
                     } else {
-                        phaseFunc(context, user, msg, words)
+                        phase(context, user, msg, words)
                             .then((res) => {
                                 log.debug('Phase ' + context.phase + ' of cmd ' + cmd.name + ' executed perfectly.');
                             }, (err) => {
@@ -127,7 +166,7 @@ function callCommandFunction(context, cmd, msg, words) {
                 msg.sendPrivateMessage('Virhe: Komennon käyttö: ' + cmd.help);
             });
     } else {
-        return phaseFunc(context, msg, words)
+        return phase(context, msg, words)
             .then((res) => {
                 log.debug('Executing phase ' + context.phase + ' of cmd ' + cmd.name);
                 log.debug('Words: ' + words);
@@ -201,4 +240,19 @@ Commands.call = function call(firstWord, msg, words) {
             return msg.sendChatMessage('Virhe! Komennon käyttö: ' + cmd.help);
         }
     }
+};
+
+Commands.privateReplyWithKeyboard = function(text, keyboard_arr) {
+    return {
+        type: 'private_keyboard',
+        text: text,
+        keyboard_arr: keyboard_arr
+    };
+};
+
+Commands.privateReply = function(text) {
+    return {
+        type: 'private_reply',
+        text: text
+    };
 };
