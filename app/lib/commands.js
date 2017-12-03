@@ -121,18 +121,18 @@ function callCommandFunction(context, cmd, msg, words) {
                     } else if (cmd.version === 2) {
 
                         /* Version 2 definition of commands */
-                        const phase = phaseFunc;
-
+                        let phase = phaseFunc;
                         if (context.phase === 0 && !context.fetchVariable('_started')) {
                             context.sendMessage(phase.startMessage);
                             context.storeVariable('_started', true);
                         } else if (phase.validateInput(context, user, msg, words)) {
                             try {
                                 phase.onValidInput(context, user, msg, words);
-                                if (phase.nextPhase) {
+                                phase = cmd.funcs[context.phase];
+                                if (phase.nextPhase || phase.nextPhase === 0) {
                                     context.toPhase(phase.nextPhase);
                                     let newPhase = cmd.funcs[context.phase];
-                                    context.sendMessage(newPhase.startReply);
+                                    context.sendMessage(newPhase.startMessage);
                                 } else {
                                     context.end();
                                 }

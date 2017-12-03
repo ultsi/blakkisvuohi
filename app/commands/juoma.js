@@ -28,6 +28,7 @@ const Commands = require('../lib/commands.js');
 const utils = require('../lib/utils.js');
 const constants = require('../constants.js');
 const strings = require('../strings.js');
+const message = require('../lib/message.js');
 
 let drinkCommand = {};
 drinkCommand.toStartText = 'Alkuun';
@@ -50,44 +51,9 @@ drinkCommand.tiukatReply = {
     ]
 };
 
-drinkCommand[0] = function(context, user, msg, words) {
-    context.nextPhase();
-    return context.privateReplyWithKeyboard('Valitse juoman kategoria', drinkCommand.startKeyboard);
-};
-
-drinkCommand[1] = function(context, user, msg, words) {
-    if (words[0].toLowerCase() === 'miedot') {
-        context.toPhase('miedot');
-        return context.privateReplyWithKeyboard(drinkCommand.miedotReply.text, drinkCommand.miedotReply.keyboard);
-    } else if (words[0].toLowerCase() === 'tiukat') {
-        context.toPhase('tiukat');
-        return context.privateReplyWithKeyboard(drinkCommand.tiukatReply.text, drinkCommand.tiukatReply.keyboard);
-    } else if (words[0].toLowerCase() === 'oma') {
-        context.toPhase('omajuoma');
-        return context.privateReplyWithKeyboard('Syötä juoman tilavuusprosentti, esim: 12.5.');
-    } else {
-        return context.privateReplyWithKeyboard('Väärä valinta, valitse juoman kategoria', drinkCommand.startKeyboard);
-    }
-};
-
-drinkCommand.miedot = function(context, user, msg, words) {
-    if (msg.text.toLowerCase() === drinkCommand.toStartText.toLowerCase()) {
-        context.toPhase(1);
-        return context.privateReplyWithKeyboard('Valitse juoman kategoria', drinkCommand.startKeyboard);
-    }
-    const milds = constants.milds;
-    let found = null;
-    for (let key in milds) {
-        if (milds[key].print.toLowerCase() === msg.text.toLowerCase()) {
-            found = milds[key];
-        }
-    }
-
-    if (!found) {
-        return context.privateReplyWithKeyboard(drinkCommand.miedotReply.text, drinkCommand.miedotReply.keyboard);
-    }
+function saveDrink(context, user, milligrams, drinkName) {
     let deferred = when.defer();
-    user.drinkBoozeReturnPermilles(found.mg, found.print, msg)
+    user.drinkBoozeReturnPermilles(milligrams, drinkName)
         .then((permilles) => {
             deferred.resolve(context.privateReply(utils.getRandom(strings.drink_responses) + ' ' + permilles.toFixed(2) + '‰'));
         }, (err) => {
@@ -95,83 +61,104 @@ drinkCommand.miedot = function(context, user, msg, words) {
             log.debug(err.stack);
             deferred.reject('Isompi ongelma, ota yhteyttä adminiin.');
         });
-    context.end();
     return deferred.promise;
+}
+
+let command ={
+    [0]: {
+        startMessage: message.PrivateKeyboardMessage('Valitse juoman kategoria', drinkCommand.startKeyboard),
+        validateInput: (context, user, msg, words) => {
+            return drinkCommand.startKeyboard[0].find((x) => x.toLowerCase() === msg.text.toLowerCase());
+        },
+        onValidInput: (context, user, msg, words) => {
+            context.toPhase(words[0].toLowerCase());
+        },
+        nextPhase: 0,
+        errorMessage: message.PrivateKeyboardMessage('Valitse juoman kategoria', drinkCommand.startKeyboard)
+    },
+    miedot: {
+        startMessage: message.PrivateKeyboardMessage(drinkCommand.miedotReply.text, drinkCommand.miedotReply.keyboard),
+        validateInput: (context, user, msg, words) => {
+            return drinkCommand.miedotReply.keyboard.find((row) => row.find((col) => col.toLowerCase() === msg.text.toLowerCase()));
+        },
+        onValidInput: (context, user, msg, words) => {
+            if(words[0].toLowerCase() === drinkCommand.toStartText.toLowerCase()){
+                return context.toPhase(0);
+            }
+            const milds = constants.milds;
+            let drink = null;
+            for (let key in milds) {
+                if (milds[key].print.toLowerCase() === msg.text.toLowerCase()) {
+                    drink = milds[key];
+                }
+            }
+            saveDrink(context, user, drink.mg, drink.print);
+            context.toPhase('END');
+        },
+        nextPhase: 'miedot',
+        errorMessage: message.PrivateKeyboardMessage(drinkCommand.miedotReply.text, drinkCommand.miedotReply.keyboard)
+    },
+    tiukat: {
+        startMessage: message.PrivateKeyboardMessage(drinkCommand.tiukatReply.text, drinkCommand.tiukatReply.keyboard),
+        validateInput: (context, user, msg, words) => {
+            return drinkCommand.tiukatReply.keyboard.find((row) => row.find((col) => col.toLowerCase() === msg.text.toLowerCase()));
+        },
+        onValidInput: (context, user, msg, words) => {
+            if(words[0].toLowerCase() === drinkCommand.toStartText.toLowerCase()){
+                return context.toPhase(0);
+            }
+
+            const booze = constants.booze;
+            let drink = null;
+            for (let key in booze) {
+                if (booze[key].print.toLowerCase() === msg.text.toLowerCase()) {
+                    drink = booze[key];
+                }
+            }
+
+            saveDrink(context, user, drink.mg, drink.print);
+            context.toPhase('END');
+        },
+        nextPhase: 'tiukat',
+        errorMessage: message.PrivateKeyboardMessage(drinkCommand.tiukatReply.text, drinkCommand.tiukatReply.keyboard)
+    },
+    oma: {
+        startMessage: message.PrivateMessage('Syötä juoman tilavuusprosentti, esim: 12.5.'),
+        validateInput: (context, user, msg, words) => {
+            let vol = parseFloat(words[0]);
+            return utils.isValidFloat(vol) && vol > 0 || vol < 100;
+        },
+        onValidInput: (context, user, msg, words) => {
+            context.storeVariable('vol', parseFloat(words[0]));
+            context.toPhase('omacl');
+        },
+        nextPhase: 'oma',
+        errorMessage: message.PrivateMessage('Syötä juoman tilavuusprosentti, esim: 12.5.')
+    },
+    omacl: {
+        startMessage: message.PrivateMessage('Syötä juoman määrä senttilitroissa, esim: 4'),
+        validateInput: (context, user, msg, words) => {
+            let cl = parseInt(words[0]);
+            return utils.isValidInt(cl) && cl > 0 || cl < 250;
+        },
+        onValidInput: (context, user, msg, words) => {
+            let vol = context.fetchVariable('vol');
+            let cl = parseInt(words[0]);
+            let mg = constants.calcAlcoholMilligrams(vol / 100.0, cl / 100.0);
+            saveDrink(context, user, mg, 'Oma juoma - ' + cl + 'cl ' + vol + '%');
+            context.toPhase('END');
+        },
+        nextPhase: 'omacl',
+        errorMessage: message.PrivateMessage('Syötä juoman määrä senttilitroissa, esim: 4')
+    },
+    END: {
+        /* empty for ending the command */
+    }
 };
 
-drinkCommand.tiukat = function(context, user, msg, words) {
-    if (msg.text.toLowerCase() === drinkCommand.toStartText.toLowerCase()) {
-        context.toPhase(1);
-        return context.privateReplyWithKeyboard('Valitse juoman kategoria', drinkCommand.startKeyboard);
-    }
-    const booze = constants.booze;
-    let found = null;
-    for (let key in booze) {
-        if (booze[key].print.toLowerCase() === msg.text.toLowerCase()) {
-            found = booze[key];
-        }
-    }
-
-    if (!found) {
-        return context.privateReplyWithKeyboard(drinkCommand.tiukatReply.text, drinkCommand.tiukatReply.keyboard);
-    }
-    let deferred = when.defer();
-    user.drinkBoozeReturnPermilles(found.mg, found.print, msg)
-        .then((permilles) => {
-            deferred.resolve(context.privateReply(utils.getRandom(strings.drink_responses) + ' ' + permilles.toFixed(2) + '‰'));
-        }, (err) => {
-            log.error(err);
-            log.debug(err.stack);
-            deferred.reject('Isompi ongelma, ota yhteyttä adminiin.');
-        });
-    context.end();
-    return deferred.promise;
-};
-
-drinkCommand.omajuoma = function(context, user, msg, words) {
-    let vol = parseFloat(words[0]);
-    if (!utils.isValidFloat(vol)) {
-        return context.privateReply('Prosentti on väärin kirjoitettu. Älä käytä pilkkua.');
-    } else if (vol <= 0) {
-        return context.privateReply('Alle 0-prosenttista viinaa ei kelloteta. Hölmö.');
-    } else if (vol > 100) {
-        return context.privateReply('Yli 100-prosenttista viinaa ei kelloteta. Hölmö.');
-    }
-
-    context.storeVariable('vol', vol);
-    context.toPhase('omajuomaEnd');
-    return context.privateReply('Hyvä, seuraavaksi syötä viinan määrä senttilitroissa.');
-};
-
-drinkCommand.omajuomaEnd = function(context, user, msg, words) {
-    let centiliters = parseInt(words[0]);
-    if (!utils.isValidInt(centiliters)) {
-        return context.privateReply('Kirjoita määrä senttilitroissa numerona.');
-    } else if (centiliters < 1) {
-        return context.privateReply('Alle 1 senttilitraa on liian vähän.');
-    } else if (centiliters >= 250) {
-        return context.privateReply('Yli 2.5 litraa viinaa? Ei käy.');
-    }
-
-    // Everything ok, use the variables
-    let vol = context.fetchVariable('vol');
-    let mg = constants.calcAlcoholMilligrams(vol / 100.0, centiliters / 100.0);
-    let deferred = when.defer();
-    user.drinkBoozeReturnPermilles(mg, 'Oma juoma - ' + centiliters + 'cl ' + vol + '%', msg)
-        .then((permilles) => {
-            deferred.resolve(context.privateReply(utils.getRandom(strings.drink_responses) + ' ' + permilles.toFixed(2) + '‰'));
-        }, (err) => {
-            log.error(err);
-            log.debug(err.stack);
-            deferred.reject('Isompi ongelma, ota yhteyttä adminiin.');
-        });
-    context.end();
-    return deferred.promise;
-};
-
-Commands.registerUserCommand(
+Commands.registerUserCommandV2(
     '/juoma',
     '/juoma - lisää yksi juoma tilastoihin',
     Commands.TYPE_PRIVATE,
-    drinkCommand
+    command
 );
