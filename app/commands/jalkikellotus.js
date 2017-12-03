@@ -97,6 +97,7 @@ let command = {
                 });
             }
             context.storeVariable('drinks', drinks);
+            context.privateReply('Juoma tallennettu!');
             return deferred.promise;
         },
         nextPhase: 'inputDrinks',
