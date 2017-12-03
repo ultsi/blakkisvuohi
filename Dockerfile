@@ -8,8 +8,8 @@ COPY package.json .
 
 RUN npm install
 
-RUN sudo echo "Europe/Helsinki" > /etc/timezone
-RUN sudo dpkg-reconfigure -f noninteractive tzdata
+RUN echo "Europe/Helsinki" > /etc/timezone
+RUN dpkg-reconfigure -f noninteractive tzdata
 
 COPY . .
 
