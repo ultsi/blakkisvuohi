@@ -34,20 +34,23 @@ const strings = require('../strings.js');
 let command = {
 
     [0]: {
-        startReply: strings.jalkikellotus.start,
+        startMessage: message.PrivateMessage(strings.jalkikellotus.start),
         validateInput: (context, user, msg, words) => {
             let hours = parseFloat(words[0]);
             return utils.isValidFloat(hours) && hours > 0 && hours < 24;
         },
         onValidInput: (context, user, msg, words) => {
+            let deferred = when.defer();
             context.storeVariable('hours', parseFloat(words[0]));
+            deferred.resolve();
+            return deferred.promise();
         },
         nextPhase: 'inputDrinks',
-        errorReply: strings.jalkikellotus.hours_error
+        errorMessage: message.PrivateMessage(strings.jalkikellotus.hours_error)
     },
 
     inputDrinks: {
-        startReply: strings.jalkikellotus.input_drinks_start,
+        startMessage: message.PrivateMessage(strings.jalkikellotus.input_drinks_start),
         validateInput: (context, user, msg, words) => {
             if (words[0] === 'stop') {
                 return true;
@@ -73,9 +76,15 @@ let command = {
             return true;
         },
         onValidInput: (context, user, msg, words) => {
+            let deferred = when.defer();
+            deferred.resolve();
             // Skip to end if first word is 'stop'
             if (words[0] === 'stop') {
-                return context.skipToPhase('end');
+                let hours = context.fetchVariable('hours');
+                let drinks = context.fetchVariable('drinks');
+                context.privateReply('Halusit tallentaa seuraavat juomat viimeiseltä ' + hours + 'tunnilta.\n' + drinks.map((d) => d[0] + ' ' + d[1] + 'cl ' + d[2] + '%').join('\n'));
+                context.toPhase('END');
+                return deferred.promise();
             }
 
             let drinks = context.fetchVariable('drinks') ||  [];
@@ -87,16 +96,13 @@ let command = {
                 });
             }
             context.storeVariable('drinks', drinks);
+            return deferred.promise();
         },
         nextPhase: 'inputDrinks',
-        errorReply: strings.jalkikellotus.input_drinks_error
+        errorMessage: message.PrivateMessage(strings.jalkikellotus.input_drinks_error)
     },
-
-    end: (context, user, msg, words) => {
-        // try to save the drinks etc
-        let hours = context.fetchVariable('hours');
-        let drinks = context.fetchVariable('drinks');
-        return context.privateReply('Halusit tallentaa seuraavat juomat viimeiseltä ' + hours + 'tunnilta.\n' + drinks.map((d) => d[0] + ' ' + d[1] + 'cl ' + d[2] + '%').join('\n'));
+    END: {
+        /* empty for ending the command */
     }
 };
 
