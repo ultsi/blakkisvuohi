@@ -43,23 +43,28 @@ module.exports = function(bot, newrelic) {
 
     // Initialize message hook to Command framework
     bot.on('message', (msg) => {
-        if (newrelic) {
-            newrelic.startWebTransaction('/message/'+msg.text, Commands.call);
-        }
         syslog.debug(msg);
         if (!msg.text) {
             return;
         }
-        const words = msg.text.split(' ');
-        const cmd_only = words[0].replace(/@.+/, '').toLowerCase(); // remove trailing @username
-
-        utils.attachMethods(msg, bot);
-
-        Commands.call(cmd_only, msg, words);
-        
         if (newrelic) {
-            let transaction = newrelic.getTransaction();
-            transaction.end();
+            newrelic.startWebTransaction('/message/'+msg.text, function(){
+                const words = msg.text.split(' ');
+                const cmd_only = words[0].replace(/@.+/, '').toLowerCase(); // remove trailing @username
+
+                utils.attachMethods(msg, bot);
+
+                Commands.call(cmd_only, msg, words);
+                let transaction = newrelic.getTransaction();
+                transaction.end();
+            });
+        } else {
+            const words = msg.text.split(' ');
+            const cmd_only = words[0].replace(/@.+/, '').toLowerCase(); // remove trailing @username
+
+            utils.attachMethods(msg, bot);
+
+            Commands.call(cmd_only, msg, words);
         }
     });
 
