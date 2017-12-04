@@ -28,6 +28,7 @@ const users = require('../db/users.js');
 const contexts = require('./context.js');
 const settings = require('../settings.js');
 const strings = require('../strings.js');
+const utils = require('./utils.js');
 const log = require('loglevel').getLogger('system');
 
 
@@ -225,29 +226,23 @@ Commands.call = function call(firstWord, msg, words) {
 
     // Print start message
     if (firstWord === '/start') {
-        return global.newrelic.startWebTransaction('command/start', function(){
-            const r = msg.sendPrivateMessage(strings.help_text);
-            global.newrelic.getTransaction().end();
-            return r;
+        return utils.hookNewRelic('command/start', function(){
+            return msg.sendPrivateMessage(strings.help_text);
         });
     } else if (firstWord === '/komennot') {
-        return global.newrelic.startWebTransaction('command/komennot', function(){
+        return utils.hookNewRelic('command/komennot', function(){
             const cmdListStr = listCmdHelp().join('\n');
-            const r = msg.sendPrivateMessage('Komennot:\n\n' + cmdListStr);
-            global.newrelic.getTransaction().end();
-            return r;
+            return msg.sendPrivateMessage('Komennot:\n\n' + cmdListStr);
         });
     } else if (firstWord === '/help') {
-        return global.newrelic.startWebTransaction('command/help', function(){
+        return utils.hookNewRelic('command/help', function(){
             const cmdListStr = listCmdHelp().join('\n');
-            const r = msg.sendPrivateMessage(strings.help_text + '\n\nKomennot:\n\n' + cmdListStr);
-            global.newrelic.getTransaction().end();
-            return r;
+            return msg.sendPrivateMessage(strings.help_text + '\n\nKomennot:\n\n' + cmdListStr);
         });
     }
 
     if (cmds[firstWord]) {
-        return global.newrelic.startWebTransaction('command/'+firstWord, function(){
+        return utils.hookNewRelic('command/'+firstWord, function(){
             const cmd = cmds[firstWord];
 
             // init context for command. Command context is always reinitialised
@@ -266,7 +261,6 @@ Commands.call = function call(firstWord, msg, words) {
                 log.debug(err.stack);
                 msg.sendChatMessage('Virhe! Komennon käyttö: ' + cmd.help);
             }
-            global.newrelic.getTransaction().end();
         });
     } else {
         const context = retrieveContext(userId, msg);
@@ -275,7 +269,7 @@ Commands.call = function call(firstWord, msg, words) {
         }
 
         const cmd = context.cmd;
-        return global.newrelic.startWebTransaction('command/'+cmd.name, function(){
+        return utils.hookNewRelic('command/'+cmd.name, function(){
             try {
                 if (!context.isPrivateChat()) {
                     // don't spam chats if not a command this bot recognizes
@@ -287,7 +281,6 @@ Commands.call = function call(firstWord, msg, words) {
                 log.debug(err.stack);
                 msg.sendChatMessage('Virhe! Komennon käyttö: ' + cmd.help);
             }
-            global.newrelic.getTransaction().end();
         });
     }
 };

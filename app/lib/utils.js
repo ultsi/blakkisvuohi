@@ -103,6 +103,17 @@ function createUserToStringFunction(msg) {
     };
 }
 
+utils.hookNewRelic = function(url, func) {
+    if (global.newrelic && global.newrelic.startWebTransaction) {
+        global.newrelic.startWebTransaction(url, function() {
+            func();
+            global.newrelic.getTransaction().end();
+        });
+    } else {
+        func();
+    }
+};
+
 utils.attachMethods = function attachMethods(msg, bot) {
     msg.sendPrivateMessage = createSendPrivateMsgFunction(msg, bot);
     msg.sendChatMessage = createSendChatMsgFunction(msg, bot);

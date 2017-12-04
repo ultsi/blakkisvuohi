@@ -47,25 +47,12 @@ module.exports = function(bot) {
         if (!msg.text) {
             return;
         }
-        if (newrelic) {
-            newrelic.startWebTransaction('/message/'+msg.text, function(){
-                const words = msg.text.split(' ');
-                const cmd_only = words[0].replace(/@.+/, '').toLowerCase(); // remove trailing @username
+        const words = msg.text.split(' ');
+        const cmd_only = words[0].replace(/@.+/, '').toLowerCase(); // remove trailing @username
 
-                utils.attachMethods(msg, bot);
+        utils.attachMethods(msg, bot);
 
-                Commands.call(cmd_only, msg, words);
-                let transaction = newrelic.getTransaction();
-                transaction.end();
-            });
-        } else {
-            const words = msg.text.split(' ');
-            const cmd_only = words[0].replace(/@.+/, '').toLowerCase(); // remove trailing @username
-
-            utils.attachMethods(msg, bot);
-
-            Commands.call(cmd_only, msg, words);
-        }
+        Commands.call(cmd_only, msg, words);
     });
 
     // Enable commands here.
