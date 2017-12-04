@@ -225,34 +225,49 @@ Commands.call = function call(firstWord, msg, words) {
 
     // Print start message
     if (firstWord === '/start') {
-        return msg.sendPrivateMessage(strings.help_text);
+        return global.newrelic.startWebTransaction('command/start', function(){
+            const r = msg.sendPrivateMessage(strings.help_text);
+            global.newrelic.getTransaction().end();
+            return r;
+        });
     } else if (firstWord === '/komennot') {
-        const cmdListStr = listCmdHelp().join('\n');
-        return msg.sendPrivateMessage('Komennot:\n\n' + cmdListStr);
+        return global.newrelic.startWebTransaction('command/komennot', function(){
+            const cmdListStr = listCmdHelp().join('\n');
+            const r = msg.sendPrivateMessage('Komennot:\n\n' + cmdListStr);
+            global.newrelic.getTransaction().end();
+            return r;
+        });
     } else if (firstWord === '/help') {
-        const cmdListStr = listCmdHelp().join('\n');
-        return msg.sendPrivateMessage(strings.help_text + '\n\nKomennot:\n\n' + cmdListStr);
+        return global.newrelic.startWebTransaction('command/help', function(){
+            const cmdListStr = listCmdHelp().join('\n');
+            const r = msg.sendPrivateMessage(strings.help_text + '\n\nKomennot:\n\n' + cmdListStr);
+            global.newrelic.getTransaction().end();
+            return r;
+        });
     }
 
     if (cmds[firstWord]) {
-        const cmd = cmds[firstWord];
+        return global.newrelic.startWebTransaction('command/'+firstWord, function(){
+            const cmd = cmds[firstWord];
 
-        // init context for command. Command context is always reinitialised
-        // when calling just the command
-        const context = initContext(userId, cmd, msg);
+            // init context for command. Command context is always reinitialised
+            // when calling just the command
+            const context = initContext(userId, cmd, msg);
 
-        try {
-            if (cmd.type === Commands.TYPE_PRIVATE && !context.isPrivateChat()) {
-                return context.privateReply('Käytä komentoa vain minun kanssa!');
+            try {
+                if (cmd.type === Commands.TYPE_PRIVATE && !context.isPrivateChat()) {
+                    return context.privateReply('Käytä komentoa vain minun kanssa!');
+                }
+
+                log.info((msg.from.username || msg.from.first_name) + ': ' + firstWord);
+                callCommandFunction(context, cmd, msg, words);
+            } catch (err) {
+                log.error('Couldn\'t execute cmd function "' + cmd.name + '" phase ' + context.phase + '! ' + err);
+                log.debug(err.stack);
+                msg.sendChatMessage('Virhe! Komennon käyttö: ' + cmd.help);
             }
-
-            log.info((msg.from.username || msg.from.first_name) + ': ' + firstWord);
-            callCommandFunction(context, cmd, msg, words);
-        } catch (err) {
-            log.error('Couldn\'t execute cmd function "' + cmd.name + '" phase ' + context.phase + '! ' + err);
-            log.debug(err.stack);
-            return msg.sendChatMessage('Virhe! Komennon käyttö: ' + cmd.help);
-        }
+            global.newrelic.getTransaction().end();
+        });
     } else {
         const context = retrieveContext(userId, msg);
         if (!context) {
@@ -260,16 +275,19 @@ Commands.call = function call(firstWord, msg, words) {
         }
 
         const cmd = context.cmd;
-        try {
-            if (!context.isPrivateChat()) {
-                // don't spam chats if not a command this bot recognizes
-                return;
+        return global.newrelic.startWebTransaction('command/'+cmd.name, function(){
+            try {
+                if (!context.isPrivateChat()) {
+                    // don't spam chats if not a command this bot recognizes
+                } else {
+                    callCommandFunction(context, cmd, msg, words);
+                }
+            } catch (err) {
+                log.error('Couldn\'t execute cmd function "' + cmd.name + '" phase ' + context.phase + '! ' + err);
+                log.debug(err.stack);
+                msg.sendChatMessage('Virhe! Komennon käyttö: ' + cmd.help);
             }
-            return callCommandFunction(context, cmd, msg, words);
-        } catch (err) {
-            log.error('Couldn\'t execute cmd function "' + cmd.name + '" phase ' + context.phase + '! ' + err);
-            log.debug(err.stack);
-            return msg.sendChatMessage('Virhe! Komennon käyttö: ' + cmd.help);
-        }
+            global.newrelic.getTransaction().end();
+        });
     }
 };

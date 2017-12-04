@@ -24,7 +24,7 @@
 
 'use strict';
 
-module.exports = function(bot, newrelic) {
+module.exports = function(bot) {
 
     const Commands = require('./lib/commands.js');
     const utils = require('./lib/utils.js');
