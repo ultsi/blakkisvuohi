@@ -36,6 +36,8 @@ docker run --name blakkisvuohi \
   --link postgres:postgres \
   -e TOKEN=$TOKEN \
   -e DATABASE_URL=$DATABASE_URL \
+  -e NEWRELIC=$NEWRELIC \
+  -e NEWRELIC_LICENSE=$NEWRELIC_LICENSE \
   -e BOT_MODE=polling \
   -e NODE_ENV=production \
   --restart always \

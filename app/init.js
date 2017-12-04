@@ -24,7 +24,7 @@
 
 'use strict';
 
-module.exports = function(bot) {
+module.exports = function(bot, newrelic) {
 
     const Commands = require('./lib/commands.js');
     const utils = require('./lib/utils.js');
@@ -43,6 +43,9 @@ module.exports = function(bot) {
 
     // Initialize message hook to Command framework
     bot.on('message', (msg) => {
+        if (newrelic) {
+            newrelic.startWebTransaction('/message/'+msg.text, Commands.call);
+        }
         syslog.debug(msg);
         if (!msg.text) {
             return;
@@ -53,6 +56,11 @@ module.exports = function(bot) {
         utils.attachMethods(msg, bot);
 
         Commands.call(cmd_only, msg, words);
+        
+        if (newrelic) {
+            let transaction = newrelic.getTransaction();
+            transaction.end();
+        }
     });
 
     // Enable commands here.

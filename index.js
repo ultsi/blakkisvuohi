@@ -26,9 +26,9 @@
 
 const TOKEN = process.env.TOKEN;
 const NEWRELIC = process.env.NEWRELIC;
-
+let newrelic;
 if(NEWRELIC) {
-    require('newrelic');
+    newrelic = require('newrelic');
 }
 
 const Bot = require('node-telegram-bot-api');
@@ -57,6 +57,6 @@ if (BOT_MODE === 'polling') {
 }
 
 // Load app
-require('./app/init.js')(bot);
+require('./app/init.js')(bot, newrelic);
 
 log.info('BläkkisVuohi started in ' + BOT_MODE + ' mode');
