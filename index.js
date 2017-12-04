@@ -25,9 +25,16 @@
 'use strict';
 
 const TOKEN = process.env.TOKEN;
+const NEWRELIC = process.env.NEWRELIC;
+
+if(NEWRELIC) {
+    require('newrelic');
+}
+
 const Bot = require('node-telegram-bot-api');
 const BOT_MODE = process.env.BOT_MODE || 'polling';
 const log = require('loglevel').getLogger('system');
+
 
 // Setup bot
 let bot;
