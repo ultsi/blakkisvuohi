@@ -86,7 +86,10 @@ let command ={
         },
         onValidInput: (context, user, msg, words) => {
             if(words[0].toLowerCase() === drinkCommand.toStartText.toLowerCase()){
-                return context.toPhase(0);
+                let deferred = when.defer();
+                context.toPhase(0);
+                deferred.resolve();
+                return deferred.promise;
             }
             const milds = constants.milds;
             let drink = null;
@@ -108,7 +111,10 @@ let command ={
         },
         onValidInput: (context, user, msg, words) => {
             if(words[0].toLowerCase() === drinkCommand.toStartText.toLowerCase()){
-                return context.toPhase(0);
+                let deferred = when.defer();
+                context.toPhase(0);
+                deferred.resolve();
+                return deferred.promise;
             }
 
             const booze = constants.booze;
