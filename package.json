@@ -22,6 +22,7 @@
     "chartjs-node": "^1.6.0",
     "express": "^4.13.4",
     "loglevel": "^1.6.0",
+    "newrelic": "^2.4.1",
     "node-telegram-bot-api": "^0.27.1",
     "pg": "^6.2.3",
     "pg-query": "^0.11.0"
