@@ -4,6 +4,8 @@ WORKDIR /app/blakkisvuohi
 
 RUN npm install canvas@1.6.7
 
+RUN npm install newrelic@2.4.1
+
 COPY package.json .
 
 RUN npm install
