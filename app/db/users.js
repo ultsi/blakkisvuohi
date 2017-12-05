@@ -238,7 +238,7 @@ User.prototype.drinkBoozeLate = function(drinks, hours) {
     return deferred.promise;
 };
 
-User.prototype.updateInfo = function(userId, username, weight, gender) {
+User.prototype.updateInfo = function(username, weight, gender) {
     let deferred = when.defer();
 
     query('update users set nick=$1, weight=$2, gender=$3 where userId=$4', [username, weight, gender, userId])
