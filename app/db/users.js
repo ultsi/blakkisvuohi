@@ -51,15 +51,6 @@ users.new = function(userId, nick, weight, gender) {
     if (!utils.isValidInt(params[0])) {
         err.push('userid');
     }
-    if (nick.length < 1) {
-        err.push('nick');
-    }
-    if (!utils.isValidInt(params[2]) && params[2] >= 40 && params[2] <= 200) {
-        err.push('weight');
-    }
-    if (!isValidGender(gender.toLowerCase())) {
-        err.push('gender');
-    }
     if (err.length > 0) {
         deferred.reject(err);
         return deferred.promise;
@@ -244,5 +235,20 @@ User.prototype.drinkBoozeLate = function(drinks, hours) {
             log.debug(err.stack);
             deferred.reject('Isompi ongelma, ota yhteyttä adminiin.');
         });
+    return deferred.promise;
+};
+
+User.prototype.updateInfo = function(userId, username, weight, gender) {
+    let deferred = when.defer();
+
+    query('update users set nick=$1, weight=$2, gender=$3 where userId=$4', [username, weight, gender, userId])
+    .then(() => {
+        deferred.resolve();
+    }, (err) => {
+        log.error(err);
+        log.debug(err.stack);
+        deferred.reject(err);
+    });
+
     return deferred.promise;
 };
