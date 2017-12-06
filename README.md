@@ -43,7 +43,10 @@ docker run --name blakkisvuohi \
   --restart always \
   -d blakkisvuohi:latest
 ```
-
+### Docker Compose
+```
+docker-compose up
+```
 ### Heroku
 
 Set the next env variables:
