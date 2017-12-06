@@ -25,8 +25,9 @@
 'use strict';
 
 const TOKEN = process.env.TOKEN;
-const NEWRELIC = process.env.NEWRELIC;
+const NEWRELIC = (process.env.NEWRELIC === 'true');
 if(NEWRELIC) {
+    console.log(typeof(NEWRELIC))
     global.newrelic = require('newrelic');
 }
 
