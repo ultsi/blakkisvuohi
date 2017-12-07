@@ -20,12 +20,9 @@ services:
     networks:
       - db
     volumes:
-      - dbdata:/var/lib/postgresql/data
+      - /srv/lxc/postgresql/data:/var/lib/postgresql/data
+    restart: always
 
 networks:
   db:
     driver: bridge
-
-volumes:
-  dbdata:
-    driver: local
