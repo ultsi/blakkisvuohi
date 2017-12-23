@@ -64,12 +64,56 @@ let alcomath = module.exports = {};
     SD = 24.48g/10g = 2.45
     BW = 0.58
     Wt = 80kg
-    MR = 0.017
+    MR = 0.015
     DP = 1
     EBAC = ((0.806 * 2.45 * 1.2) / (0.58 * 80) - (0.015*1)) * 10
          = 0.36 permilles
     
 */
+
+/*
+    Sum the milligrams of drinks over time from 
+    first drink's start time to current time
+    Calculate EBAC every time, if x<0, set time 
+    to start again from the current drink
+*/
+alcomath.STANDARD_DRINK_GRAMS = 10 * 1.2; // =12g, swedish standard drinks, used in Finland too
+alcomath.BODY_WATER_IN_BLOOD = 0.806;
+const BODY_WATER_CONSTANT = {
+    mies: 0.58,
+    nainen: 0.49
+};
+const METABOLISM_RATE = {
+    mies: 0.015,
+    nainen: 0.017
+};
+
+alcomath.estimateBloodAlcoholConcentration = (user, milligrams, drinking_period) => {
+    const grams = milligrams / 1000;
+    const BWIB = alcomath.BODY_WATER_IN_BLOOD;
+    const SD = grams / alcomath.STANDARD_DRINK_GRAMS;
+    const BW = BODY_WATER_CONSTANT[user.gender];
+    const Wt = user.weight;
+    const MR = METABOLISM_RATE[user.gender];
+    const DP = drinking_period;
+
+    return ((BWIB * SD) / (BW * Wt) - (MR * DP)) * 10;
+};
+
+alcomath.ebacForDrinks = (user, drinks) => {
+    let lastTime = null;
+    let now = Date.now();
+    let milligrams = 0;
+    let hourInMillis = 3600 * 1000;
+    for (let i in drinks) {
+        let drink = drinks[i];
+        let drinkTime = Date.parse(drink.created);
+        if (lastTime) {
+            // check if ebac < 0
+
+        }
+    }
+};
 
 alcomath.getPermillesFromGrams = function(user, grams) {
     let standard_drinks = grams / constants.STANDARD_DRINK_GRAMS;
