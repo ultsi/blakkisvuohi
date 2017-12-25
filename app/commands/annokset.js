@@ -37,10 +37,11 @@ function annokset(context, user, msg, words) {
         user.getBooze()
             .then((drinks) => {
                 try {
-                    let permilles = alcomath.getPermillesFromDrinks(user, drinks);
-                    let grams = alcomath.sumGramsUnBurned(user, drinks);
-                    let burnRate = alcomath.getUserBurnRate(user);
-                    let time = grams / burnRate;
+                    let ebac = alcomath.calculateEBACFromDrinks(user, drinks);
+                    let permilles = ebac.permilles;
+                    let grams = ebac.grams;
+                    let metabolismRate = alcomath.getUserMetabolismRate(user);
+                    let time = permilles / metabolismRate;
                     let hours = Math.floor(time);
                     let minutes = ('0' + Math.ceil((time - hours) * 60)).slice(-2);
                     deferred.resolve(context.privateReply('Olet ' + permilles.toFixed(2) + '‰ humalassa. Veressäsi on ' + grams.toFixed(2) + ' grammaa alkoholia, joka vastaa ' + (grams / 12.2).toFixed(2) + ' annosta. Olet selvinpäin ' + hours + 'h' + minutes + 'min päästä.'));

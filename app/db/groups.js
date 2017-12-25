@@ -152,11 +152,12 @@ Group.prototype.getStandardDrinksListing = function() {
             for (var userId in drinksByUser) {
                 let details = drinksByUser[userId];
                 let user = new users.User(details.userid, details.nick, details.weight, details.gender);
-                let userDrinks = alcomath.sumGramsUnBurned(user, details.drinks);
-                if (userDrinks > 0) {
+                let userEBAC = alcomath.calculateEBACFromDrinks(user, details.drinks);
+                let userGrams = userEBAC.grams;
+                if (userGrams > 0) {
                     let sum12h = drinkSumsByUser12h[details.userid] && drinkSumsByUser12h[details.userid].sum || 0;
                     let sum24h = drinkSumsByUser24h[details.userid] && drinkSumsByUser24h[details.userid].sum || 0;
-                    drinks.push([user.username, userDrinks / (constants.STANDARD_DRINK_GRAMS), sum12h / (constants.STANDARD_DRINK_GRAMS*1000), sum24h / (constants.STANDARD_DRINK_GRAMS*1000)]);
+                    drinks.push([user.username, userGrams / (constants.STANDARD_DRINK_GRAMS), sum12h / (constants.STANDARD_DRINK_GRAMS*1000), sum24h / (constants.STANDARD_DRINK_GRAMS*1000)]);
                 }
             }
             drinks = drinks.sort((a, b) => {
@@ -189,7 +190,8 @@ Group.prototype.getPermillesListing = function() {
             for (var userId in drinksByUser) {
                 let details = drinksByUser[userId];
                 let user = new users.User(details.userid, details.nick, details.weight, details.gender);
-                let userPermilles = alcomath.getPermillesFromDrinks(user, details.drinks);
+                let ebac = alcomath.calculateEBACFromDrinks(user, details.drinks);
+                let userPermilles = ebac.permilles;
                 if (userPermilles > 0) {
                     let sum12h = drinkSumsByUser12h[details.userid] && drinkSumsByUser12h[details.userid].sum || 0;
                     let sum24h = drinkSumsByUser24h[details.userid] && drinkSumsByUser24h[details.userid].sum || 0;

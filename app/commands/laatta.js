@@ -41,7 +41,8 @@ let command = {
                     .then(() => {
                         user.getBooze()
                             .then((drinks) => {
-                                let permilles = alcomath.getPermillesFromDrinks(user, drinks);
+                                let ebac = alcomath.calculateEBACFromDrinks(user, drinks);
+                                let permilles = ebac.permilles;
                                 deferred.resolve(context.privateReply('Laatta onnistui. Olet enää ' + permilles.toFixed(2) + '‰ humalassa.'));
                             }, (err) => {
                                 log.error(err);

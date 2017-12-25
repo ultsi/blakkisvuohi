@@ -192,7 +192,7 @@ User.prototype.drinkBoozeReturnPermilles = function(amount, description) {
         .then((amount) => {
             self.getBooze()
                 .then((drinks) => {
-                    let permilles = alcomath.getPermillesFromDrinks(self, drinks);
+                    let permilles = alcomath.calculateEBACFromDrinks(self, drinks).permilles;
                     deferred.resolve(permilles);
                 }, (err) => {
                     log.error(err);
@@ -223,7 +223,7 @@ User.prototype.drinkBoozeLate = function(drinks, hours) {
         .then(() => {
             self.getBooze()
                 .then((drinks) => {
-                    let permilles = alcomath.getPermillesFromDrinks(self, drinks);
+                    let permilles = alcomath.calculateEBACFromDrinks(self, drinks);
                     deferred.resolve(permilles);
                 }, (err) => {
                     log.error(err);
