@@ -59,3 +59,17 @@ stats.getGlobalStats = function() {
 
     return deferred.promise;
 };
+
+stats.getGroupStats = function(groupId) {
+    let deferred = when.defer();
+    log.debug('Fetching group stats from database');
+    query('select drinks.userid, nick, count from (select userid, count(*) as count from users_drinks group by userid) as drinks join users on users.userid=drinks.userid join users_in_groups on users_in_groups.userid=users.userid where users_in_groups.groupid=$1 order by count desc limit 10', [groupId])
+    .then((top10UserStats) => {
+            deferred.resolve(top10UserStats[0]);
+    }, (err) => {
+        log.error(err);
+        log.debug(err.stack);
+        deferred.reject(err);
+    });
+    return deferred.promise;
+};

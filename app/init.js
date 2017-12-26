@@ -68,6 +68,7 @@ module.exports = function(bot) {
     require('./commands/moro.js');
     require('./commands/otinko.js');
     require('./commands/promillet.js');
+    require('./commands/stats.js');
     require('./commands/whoami.js');
 
     // Admin commands
