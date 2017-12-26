@@ -26,25 +26,28 @@ const log = require('loglevel');
 const Commands = require('../lib/commands.js');
 const stats = require('../db/stats.js');
 
-function printAdminStats(context, user, msg, words)  {
+function printStats(context, user, msg, words)  {
     let deferred = when.defer();
 
-    stats.getGlobalStats()
-        .then((res) => {
-            let top10text = res.top10UserStats.map((stats) => stats.nick + ' - ' + stats.count).join('\n');
-            context.privateReply('Tilastoja:\nKäyttäjiä on yhteensä ' + res.usersCount + 'kpl, joista 14pv sisällä aktiivisia ' + res.activeUsers14DaysCount + ', ja 7pv sisällä aktiivisia ' + res.activeUsers7DaysCount + '.\nRyhmiä on yhteensä ' + res.groupsCount + 'kpl, joista 14pv sisällä aktiivisia ' + res.activeGroups14DaysCount + ', ja 7pv sisällä aktiivisia ' + res.activeGroups7DaysCount + '.\nTop10 tilastot:\n\n' + top10text);
-            deferred.resolve();
-        }, (err) => {
-            log.error(err);
-            context.privateReply('Virhe!');
-            deferred.resolve();
-        });
+    if(msg.chat.type !== 'private') {
+        stats.getGroupStats(msg.chat.id)
+            .then((res) => {
+                let top10text = res.map((stats) => stats.nick + ' - ' + stats.count).join('\n');
+                deferred.resolve(context.chatReply('Tilastoja:\n\nTop10 tilastot:\n\n' + top10text));
+            }, (err) => {
+                log.error(err);
+                context.privateReply('Virhe!');
+                deferred.resolve();
+            });
+    } else {
+        deferred.resolve();
+    }
 
     return deferred.promise;
 }
 
-Commands.registerAdminCommand(
-    '/admin_stats',
-    '/admin_stats - listaa botin statsit',
-    Commands.TYPE_PRIVATE, [printAdminStats]
+Commands.registerUserCommand(
+    '/stats',
+    '/stats - listaa tilastoja',
+    Commands.TYPE_ALL, [printStats]
 );
