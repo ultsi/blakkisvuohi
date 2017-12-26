@@ -23,61 +23,52 @@
 
 'use strict';
 
-const constants = require('../constants.js');
 let alcomath = module.exports = {};
 
-/* Variation of Widmark equation as developed by
-    National Highway Traffic Safety Administration, 1994
-    (https://academic.oup.com/alcalc/article/40/5/447/188561#1793285)
-    (https://www.ncbi.nlm.nih.gov/pmc/articles/PMC2724514/#B15)
+/*  Variation of the Widmark equation used from the Original article "The Estimation of Blood Alcohol Concentration"
+    DOI: 10.1385/Forensic Sci. Med. Pathol.:3:1:33
 
-    Are the calculations correct? https://doi.org/10.15288/jsa.2002.63.762
+    Most BAC calculations are based on the Widmark formula,
 
-    EBAC = ((0.806 * SD * 1.2) / (BW * Wt) - (MR * DP)) * 10
+        C = A/(rW) - (βt)
 
-    where,  0.806 is a constant for body water in the blood (mean 80.6%),
-            SD is the number of standard drinks (10g ethanol per drink)
-            1.2 to convert to Swedish unit of alcohol (alkoholiannos)
-            BW is the body water constant (0.58 for males, 0.49 for females)
-            Wt is the body weight (kg)
-            MR is the metabolism rate (0.015 for males, 0.017 for females)
-            DP is the drinking period (hours)
+    where C is the blood alcohol concentration; A is the mass of
+    alcohol consumed; r is the Widmark factor; W is body weight;
+    t is elapsed time since the start of drinking; and β is the elim-
+    ination rate.
 
-    Example:
+    Seidl et al. (8) gathered height (in centimeters), weight
+    (in kilograms), blood water content, and TBW data for 256
+    women and 273 men and used the data to fine tune the Widmark
+    equation according to the formulae
+
+    r(female) = 0.31223 – 0.006446W + 0.4466H
+    r(male) = 0.31608 – 0.004821W + 0.4632H
+
+    In addition, take alcohol absorption into account:
+
+    BAC[n] = (A[ingested]*(1 – e^(−kt[n])) − (βt[n]))/(r*W)
+
+    where k is the time constant for absorption rate (6.5 hours for full stomach, 2.3 hours for empty stomach)
+
+    The total observed BAC is the sum of the BACs for each
+    individual drink.
+
+    BAC[total] = sum(0->n)BAC[n]
 
     Ethanol grams per litre = 0.789g/cm^3
     Ethanol grams in a serving 
-
     Pure alcohol mass = volume * (alcohol by volume * volumetric mass density)
-    
+     
     where,  volume (litres)
             alcohol by volume = reported vol percentage (for example 4.7%)
             volumetric mass density = 789.24g/l
 
-    Two 0.33l 4.7% beers
+    20cl of 40% vodka
 
-    g = 2 * 0.33l * 0.047 * 789.24g/l
-    g = 24.48g
+    g = 0.20l * 0.4 * 789.24g/l
+    g = 63.1392g
 
-    What is the EBAC if 80kg male consumes 2 beers in 1 hour?
-    
-    SD = 24.48g/10g = 2.45
-    BW = 0.58
-    Wt = 80kg
-    MR = 0.015
-    DP = 1
-    EBAC = ((0.806 * 2.45 * 1.2) / (0.58 * 80) - (0.015*1)) * 10
-         = 0.36 permilles
-    
-    How many grams of alcohol drunk for certain EBAC level?
-    EBAC = 0.36
-
-    SD = ((EBAC/10 + MR * DP) * (BW * Wt)) / (0.806 * 1.2)
-         ((0.2549/10) * (0.58 * 80)) / (0.806 * 1.2)
-
-    Comparing to http://www.lintukoto.net/testit/alkoholilaskuri/
-
-    
 */
 
 /*
@@ -86,65 +77,82 @@ let alcomath = module.exports = {};
     Calculate EBAC every time, if x<0, set time 
     to start again from the current drink
 */
-alcomath.STANDARD_DRINK_GRAMS = 10;
-alcomath.BODY_WATER_IN_BLOOD = 0.806;
-const BODY_WATER_CONSTANT = {
-    mies: 0.58,
-    nainen: 0.49
+
+const MEAN_HEIGHT = {
+    mies: 177.9,
+    nainen: 167.2
 };
 
-// permilles per hour
-const METABOLISM_RATE = { 
-    mies: 0.15, 
-    nainen: 0.17
+alcomath.getMeanHeightForUser = (user) => {
+    return MEAN_HEIGHT[user.gender];
 };
 
+alcomath.getWidmarkFactorForUser = (user) => {
+    const H = alcomath.getMeanHeightForUser(user);
+    const W = user.weight;
+    return user.gender === 'mies' ? 
+        0.31608 - 0.004821*W + 0.4632*H:
+        0.31223 - 0.006446*W + 0.4466*H;
+};
+
+/*
+    BAC = (A[ingested]*(1 – e^(−kt)) − (βt))/(r*W)
+    where r
+    r(female) = 0.31223 – 0.006446W + 0.4466H
+    r(male) = 0.31608 – 0.004821W + 0.4632H
+
+
+
+    TODO: use real height instead of mean height
+*/
 alcomath.estimateBloodAlcoholConcentration = (user, milligrams, drinking_period) => {
-    const grams = milligrams / 1000;
-    const BWIB = alcomath.BODY_WATER_IN_BLOOD;
-    const SD = grams / alcomath.STANDARD_DRINK_GRAMS;
-    const BW = BODY_WATER_CONSTANT[user.gender];
-    const Wt = user.weight;
-    const MR = alcomath.getUserMetabolismRate(user);
-    const DP = drinking_period;
+    const grams = milligrams / 1000 ;
+    const magic_number = 7.93; // found by trial and error when comparing to Table 1 Seidl et al. data points in the original article
+    const A = grams / magic_number;
+    const r = alcomath.getWidmarkFactorForUser(user);
+    const half_t = 0.1066; // half life of absorption
+    const t = drinking_period;
+    const W = user.weight;
+    const B = 0.016/100; // common metabolism rate
 
-    const ebac = ((BWIB * SD * 1.2) / (BW * Wt)) * 10 - (MR * DP);
+    const ebac = ((A*(1 - Math.exp(-t * Math.log(2)/half_t)))/(r*W) - (B*t)) * 1000; // * 1000 convert to permilles
+
     return ebac > 0 ? ebac : 0;
 };
 
-alcomath.calculateGramsFromEBAC = (user, EBAC) => {
-    const BWIB = alcomath.BODY_WATER_IN_BLOOD;
-    const BW = BODY_WATER_CONSTANT[user.gender];
-    const Wt = user.weight;
+alcomath.estimateUnburnedAlcohol = (user, ebac, drinking_period) => {
+    const magic_number = 7.93; // found by trial and error when comparing to Table 1 Seidl et al. data points in the original article
+    const r = alcomath.getWidmarkFactorForUser(user);
+    const half_t = 0.1066; // half life of absorption
+    const t = 0.5;
+    const W = user.weight;
 
-    const SD = ((EBAC/10) * (BW * Wt)) / (BWIB*1.2);
-    return SD > 0 ? SD * 10 : 0;
+    const A = ((ebac/1000)*(r*W))/(1 - Math.exp(-t * Math.log(2)/half_t)) * magic_number;
+
+    return A > 0 ? A : 0;
 };
 
 alcomath.calculateEBACFromDrinks = (user, drinks) => {
     const now = Date.now();
     const hourInMillis = 3600 * 1000;
 
-    let startTime = Date.parse(drinks[0].created);
-    let milligrams = 0;
+    let ebacs = [];
+    let grams = [];
     for (let i in drinks) {
         let drink = drinks[i];
         let drinkTime = Date.parse(drink.created);
-        let drinking_period = (drinkTime - startTime) / hourInMillis;
-        let ebac = alcomath.estimateBloodAlcoholConcentration(user, milligrams, drinking_period);
-        if(ebac === 0){
-            startTime = drinkTime;
-            milligrams = 0;
-        }
-        milligrams += drink.alcohol;
+        let drinking_period = (now - drinkTime) / hourInMillis;
+        let ebac = alcomath.estimateBloodAlcoholConcentration(user, drink.alcohol, drinking_period);
+        let A = alcomath.estimateUnburnedAlcohol(user, ebac, drinking_period);
+        ebacs.push(ebac);
+        grams.push(A);
     }
 
-    let drinking_period = (now - startTime) / hourInMillis;
-    let permilles = alcomath.estimateBloodAlcoholConcentration(user, milligrams, drinking_period);
+    let permilles = ebacs.reduce((x,y) => x+y, 0);
 
     return {
         permilles: permilles,
-        grams: alcomath.calculateGramsFromEBAC(user, permilles)
+        grams: grams.reduce((x,y) => x+y, 0)
     };
 };
 
@@ -158,7 +166,7 @@ alcomath.sumGrams = function(drinks) {
 };
 
 alcomath.getUserMetabolismRate = function(user) {
-    return METABOLISM_RATE[user.gender];
+    return 0.16;
 };
 
 alcomath.calculateEBACFromDrinksByHour = (user, drinks) => {
