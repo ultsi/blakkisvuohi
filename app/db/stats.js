@@ -29,7 +29,7 @@ query.connectionParameters = process.env.DATABASE_URL;
 
 let stats = module.exports = {};
 
-stats.get = function() {
+stats.getGlobalStats = function() {
     let deferred = when.defer();
     log.debug('Fetching stats from database');
     when.all([

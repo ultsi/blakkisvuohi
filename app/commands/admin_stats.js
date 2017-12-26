@@ -29,7 +29,7 @@ const stats = require('../db/stats.js');
 function printAdminStats(context, user, msg, words)  {
     let deferred = when.defer();
 
-    stats.get()
+    stats.getGlobalStats()
         .then((res) => {
             let top10text = res.top10UserStats.map((stats) => stats.nick + ' - ' + stats.count).join('\n');
             context.privateReply('Tilastoja:\nKäyttäjiä on yhteensä ' + res.usersCount + 'kpl, joista 14pv sisällä aktiivisia ' + res.activeUsers14DaysCount + ', ja 7pv sisällä aktiivisia ' + res.activeUsers7DaysCount + '.\nRyhmiä on yhteensä ' + res.groupsCount + 'kpl, joista 14pv sisällä aktiivisia ' + res.activeGroups14DaysCount + ', ja 7pv sisällä aktiivisia ' + res.activeGroups7DaysCount + '.\nTop10 tilastot:\n\n' + top10text);
