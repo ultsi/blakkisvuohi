@@ -1,5 +1,5 @@
 
 node_modules/*
-# Heroku environment configuration
 .env
+.env_docker
 env.cmd

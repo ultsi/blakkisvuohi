@@ -1,0 +1,28 @@
+version: '3'
+
+services:
+
+  blakkis:
+    container_name: blakkis-bot
+    build: .
+    volumes:
+      - .:/app/blakkisvuohi
+    networks:
+      - db
+    restart: always
+    env_file: .env_docker
+
+  db:
+    container_name: blakkis-db
+    image: postgres:9.6.5-alpine
+    ports:
+     - "127.0.0.1:5432:5432" # For being able to connect from host to container database
+    networks:
+      - db
+    volumes:
+      - /srv/lxc/postgresql/data:/var/lib/postgresql/data
+    restart: always
+
+networks:
+  db:
+    driver: bridge

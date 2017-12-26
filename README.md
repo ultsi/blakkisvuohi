@@ -8,6 +8,8 @@ Thanks Yago for the excellent [Telegram Bot API framework for NodeJS](https://gi
 
 ### VPS
 
+#### Normal docker
+
 Build dockerfile
 
 ```
@@ -42,6 +44,13 @@ docker run --name blakkisvuohi \
   -e NODE_ENV=production \
   --restart always \
   -d blakkisvuohi:latest
+```
+#### Docker Compose
+
+Remember to set .env_docker variables as in .env_docker_example
+
+```
+docker-compose up -d
 ```
 
 ### Heroku
