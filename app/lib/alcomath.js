@@ -87,6 +87,10 @@ alcomath.getMeanHeightForUser = (user) => {
     return MEAN_HEIGHT[user.gender];
 };
 
+alcomath.getUserMetabolismRate = function(user) {
+    return 0.16;
+};
+
 alcomath.getWidmarkFactorForUser = (user) => {
     const H = alcomath.getMeanHeightForUser(user);
     const W = user.weight;
@@ -105,27 +109,25 @@ alcomath.getWidmarkFactorForUser = (user) => {
 
     TODO: use real height instead of mean height
 */
-const MAGIC_NUMBER = 7.8; // found by trial and error when comparing to Table 1 Seidl et al. data points in the original article
+const MAGIC_NUMBER = 6.9; // found by trial and error when comparing to multiple measurements
 
-alcomath.estimateBloodAlcoholConcentration = (user, milligrams, drinking_period) => {
+alcomath.estimateAbsorbedAlcoholConcentration = (user, milligrams, drinking_period) => {
     const grams = milligrams / 1000 ;
     const A = grams / MAGIC_NUMBER;
     const r = alcomath.getWidmarkFactorForUser(user);
     const half_t = 0.1066; // half life of absorption
     const t = drinking_period;
     const W = user.weight;
-    const B = 0.017/100; // common metabolism rate
 
-    const ebac = ((A*(1 - Math.exp(-t * Math.log(2)/half_t)))/(r*W) - (B*t)) * 1000; // * 1000 convert to permilles
+    const eaac = ((A*(1 - Math.exp(-t * Math.log(2)/half_t)))/(r*W)) * 1000; // * 1000 convert to permilles
 
-    return ebac > 0 ? ebac : 0;
+    return eaac > 0 ? eaac : 0;
 };
 
-alcomath.estimateUnburnedAlcohol = (user, ebac, drinking_period) => {
-    const MAGIC_NUMBER = 7.93; // found by trial and error when comparing to Table 1 Seidl et al. data points in the original article
+alcomath.estimateUnburnedAlcohol = (user, ebac) => {
     const r = alcomath.getWidmarkFactorForUser(user);
     const half_t = 0.1066; // half life of absorption
-    const t = 0.5;
+    const t = 1;
     const W = user.weight;
 
     const A = ((ebac/1000)*(r*W))/(1 - Math.exp(-t * Math.log(2)/half_t)) * MAGIC_NUMBER;
@@ -137,139 +139,69 @@ alcomath.calculateEBACFromDrinks = (user, drinks) => {
     const now = Date.now();
     const hourInMillis = 3600 * 1000;
     const in30Mins = now + hourInMillis * 0.5;
+    const MR = alcomath.getUserMetabolismRate(user);
 
-    let ebacs = [];
-    let ebacs_30min = [];
-    let grams = [];
+    let absorbedAlcoholConcentration = 0;
+    let absorbedAlcoholConcentrationIn30 = 0;
+    let startTime = Date.parse(drinks[0].created);
     for (let i in drinks) {
-        let drink = drinks[i];
-        let drinkTime = Date.parse(drink.created);
-        let drinking_period = (now - drinkTime) / hourInMillis;
-        let drinking_period30Mins = (in30Mins - drinkTime) / hourInMillis;
-        let ebac = alcomath.estimateBloodAlcoholConcentration(user, drink.alcohol, drinking_period);
-        let ebac30Mins = alcomath.estimateBloodAlcoholConcentration(user, drink.alcohol, drinking_period30Mins);
-        let A = alcomath.estimateUnburnedAlcohol(user, ebac, drinking_period);
-        ebacs.push(ebac);
-        ebacs_30min.push(ebac30Mins);
-        grams.push(A);
+        const drink = drinks[i];
+        const drinkTime = Date.parse(drink.created);
+        const burn_time = (drinkTime - startTime)/hourInMillis;
+        const ebac = absorbedAlcoholConcentration - MR * burn_time;
+        if (ebac <= 0) {
+            absorbedAlcoholConcentration = 0;
+            absorbedAlcoholConcentrationIn30 = 0;
+            startTime = drinkTime;
+        }
+        let absorption_time = (now - drinkTime) / hourInMillis;
+        let absorption_time30 = (in30Mins - drinkTime) / hourInMillis;
+        absorbedAlcoholConcentration += alcomath.estimateAbsorbedAlcoholConcentration(user, drink.alcohol, absorption_time);
+        absorbedAlcoholConcentrationIn30 += alcomath.estimateAbsorbedAlcoholConcentration(user, drink.alcohol, absorption_time30);
     }
 
-    let permilles = ebacs.reduce((x,y) => x+y, 0);
-    let permilles30Min = ebacs_30min.reduce((x,y) => x+y, 0);
+    const permilles = Math.max(absorbedAlcoholConcentration - MR * Math.max((now - startTime)/hourInMillis, 0), 0);
+    const permilles30Min = Math.max(absorbedAlcoholConcentrationIn30 - MR * Math.max((in30Mins - startTime)/hourInMillis, 0), 0);
 
     return {
         permilles: permilles,
         permilles30Min: permilles30Min,
-        grams: grams.reduce((x,y) => x+y, 0)
+        grams: alcomath.estimateUnburnedAlcohol(user, permilles)
     };
-};
-
-alcomath.sumGrams = function(drinks) {
-    let milligrams = 0;
-    for (var i in drinks) {
-        let drink = drinks[i];
-        milligrams += drink.alcohol;
-    }
-    return milligrams / 1000.0;
-};
-
-alcomath.getUserMetabolismRate = function(user) {
-    return 0.15;
 };
 
 alcomath.calculateEBACByHourFromDrinks = (user, drinks, lastNHours, predictNHours) => {
     const now = Date.now();
     const hourInMillis = 3600 * 1000;
-    const yesterday = (now - hourInMillis * lastNHours) - now%hourInMillis; // floor to hours
+    const startTime = (now - hourInMillis * lastNHours) - now%hourInMillis; // floor to hours
+    const MR = alcomath.getUserMetabolismRate(user);
 
     let permillesByHour = [];
     for (let i = 0; i < lastNHours + predictNHours + 1; i += 1) {
-        let time = new Date(yesterday + hourInMillis * i);
-        let ebacs = [];
+        let time = new Date(startTime + hourInMillis * i);
+        let absorbedAlcoholConcentration = 0;
+        let absorptionStartTime = Date.parse(drinks[0].created);
         for (let i in drinks) {
-            let drink = drinks[i];
-            let drinkTime = Date.parse(drink.created);
-            let drinking_period = (time - drinkTime) / hourInMillis;
-            if(drinking_period >= 0) {
-                let ebac = alcomath.estimateBloodAlcoholConcentration(user, drink.alcohol, drinking_period);
-                ebacs.push(ebac);
+            const drink = drinks[i];
+            const drinkTime = Date.parse(drink.created);
+            const burn_time = (drinkTime - absorptionStartTime)/hourInMillis;
+            if (time - drinkTime > 0) {
+                const ebac = absorbedAlcoholConcentration - MR * burn_time;
+                if (ebac <= 0) {
+                    absorbedAlcoholConcentration = 0;
+                    absorptionStartTime = drinkTime;
+                }
+                let absorption_time = (time - drinkTime) / hourInMillis;
+                absorbedAlcoholConcentration += alcomath.estimateAbsorbedAlcoholConcentration(user, drink.alcohol, absorption_time);
             }
         }
+        const permilles = Math.max(absorbedAlcoholConcentration - MR * Math.max((time - absorptionStartTime)/hourInMillis, 0), 0);
         permillesByHour[i] = {
-            permilles: ebacs.reduce((x,y) => x+y, 0),
+            permilles: permilles,
             hour: time.getHours(),
             time: time
         };
-        console.log(i, time.toString(), permillesByHour[i].permilles, permillesByHour[i].hour);
     }
 
     return permillesByHour;
-};
-
-alcomath.sumGramsUnBurnedByHour = function(user, drinks) {
-    let milligrams = 0;
-    let hourInMillis = 3600 * 1000;
-    let now = Date.now();
-    let yesterday = now - hourInMillis * 24;
-    let lastTime = null;
-    let userBurnRateMilligrams = alcomath.getUserBurnRate(user) * 1000;
-    let gramsByHour = [];
-    for (var i = 0; i < 25; i += 1) {
-        var time = new Date(yesterday + hourInMillis * i);
-        gramsByHour[i] = {
-            grams: 0,
-            hour: time.getHours(),
-            time: time
-        };
-    }
-
-    let lastFilledHour = 0;
-
-    for (var d in drinks) {
-        let drink = drinks[d];
-        let drinkTime = Date.parse(drink.created);
-        if (lastTime) {
-            let diff = drinkTime - lastTime;
-            let diffInHours = diff / hourInMillis;
-            milligrams -= (userBurnRateMilligrams * diffInHours);
-            milligrams = milligrams > 0 ? milligrams : 0;
-        }
-        milligrams += drink.alcohol;
-        lastTime = drinkTime;
-
-        for (var h = lastFilledHour; h < 25; h += 1) {
-            var hourDetails = gramsByHour[h];
-            if (drinkTime < hourDetails.time.getTime()) {
-                lastFilledHour = h;
-                break;
-            }
-            var _diffInHours = (drinkTime - hourDetails.time.getTime()) / hourInMillis;
-            var _milligrams = milligrams - (userBurnRateMilligrams * _diffInHours);
-            _milligrams = _milligrams > 0 ? _milligrams : 0;
-            gramsByHour[h].grams = _milligrams / 1000.0;
-        }
-
-    }
-
-
-    for (var ho = lastFilledHour; ho < 25; ho += 1) {
-        var hourDetailsLast = gramsByHour[ho];
-        if (now < hourDetailsLast.time.getTime()) {
-            lastFilledHour = ho;
-            break;
-        }
-        milligrams = milligrams - (userBurnRateMilligrams);
-        milligrams = milligrams > 0 ? milligrams : 0;
-        gramsByHour[ho].grams = milligrams / 1000.0;
-    }
-
-    return gramsByHour;
-};
-
-alcomath.getPermillesAndGramsFromDrinksByHour = function(user, drinks) {
-    var gramsByHour = alcomath.sumGramsUnBurnedByHour(user, drinks);
-    return {
-        permillesByHour: alcomath.getPermillesFromGramsByHour(user, gramsByHour),
-        gramsByHour: gramsByHour
-    };
 };

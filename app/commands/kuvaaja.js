@@ -62,10 +62,10 @@ function kuvaaja(context, user, msg, words) {
                         if (labels.length < permillesByHour.length) {
                             labels.push(permillesByHour[i].hour);
                         }
-                        if (i < lastNHours) {
+                        if (i <= lastNHours) {
                             permillesLastNHours[i] = permillesByHour[i].permilles;
                         } 
-                        if (i >= lastNHours-1 ) { // plot the middle point too
+                        if (i >= lastNHours) {
                             permillesPredictNHours[i] = permillesByHour[i].permilles;
                         }
                     }
