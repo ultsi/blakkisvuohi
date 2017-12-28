@@ -64,7 +64,7 @@ function kuvaaja(context, user, msg, words) {
                         }
                         if (i <= lastNHours) {
                             permillesLastNHours[i] = permillesByHour[i].permilles;
-                        } 
+                        }
                         if (i >= lastNHours) {
                             permillesPredictNHours[i] = permillesByHour[i].permilles;
                         }

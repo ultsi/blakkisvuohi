@@ -212,10 +212,10 @@ User.prototype.drinkBoozeLate = function(drinks, hours) {
     let self = this;
     log.debug('Drinking late');
     let queries = [];
-    for(let i in drinks) {
+    for (let i in drinks) {
         log.debug(drinks[i].text, drinks[i].mg);
         let drink = drinks[i];
-        let hoursAgo = utils.getDateMinusHours(hours - hours/Math.max(drinks.length-1, 1)*i);
+        let hoursAgo = utils.getDateMinusHours(hours - hours / Math.max(drinks.length - 1, 1) * i);
         log.debug(hoursAgo);
         queries.push(query('insert into users_drinks (userId, alcohol, description, created) values($1, $2, $3, $4)', [this.userId, drink.mg, drink.text, hoursAgo]));
     }
@@ -242,13 +242,13 @@ User.prototype.updateInfo = function(username, weight, gender) {
     let deferred = when.defer();
     let self = this;
     query('update users set nick=$1, weight=$2, gender=$3 where userId=$4', [username, weight, gender, self.userId])
-    .then(() => {
-        deferred.resolve();
-    }, (err) => {
-        log.error(err);
-        log.debug(err.stack);
-        deferred.reject(err);
-    });
+        .then(() => {
+            deferred.resolve();
+        }, (err) => {
+            log.error(err);
+            log.debug(err.stack);
+            deferred.reject(err);
+        });
 
     return deferred.promise;
 };

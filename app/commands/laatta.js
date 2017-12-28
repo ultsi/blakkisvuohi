@@ -29,7 +29,9 @@ const message = require('../lib/message.js');
 
 let command = {
     [0]: {
-        startMessage: message.PrivateKeyboardMessage('Olet laattaamassa viimeksi juodun juomasi. Oletko varma?', [['Kyllä', 'En']]),
+        startMessage: message.PrivateKeyboardMessage('Olet laattaamassa viimeksi juodun juomasi. Oletko varma?', [
+            ['Kyllä', 'En']
+        ]),
         validateInput: (context, user, msg, words) => {
             let answer = words[0].toLowerCase();
             return answer === 'kyllä' || answer === 'en';

@@ -157,7 +157,7 @@ Group.prototype.getStandardDrinksListing = function() {
                 if (userGrams > 0) {
                     let sum12h = drinkSumsByUser12h[details.userid] && drinkSumsByUser12h[details.userid].sum || 0;
                     let sum24h = drinkSumsByUser24h[details.userid] && drinkSumsByUser24h[details.userid].sum || 0;
-                    drinks.push([user.username, userGrams / (constants.STANDARD_DRINK_GRAMS), sum12h / (constants.STANDARD_DRINK_GRAMS*1000), sum24h / (constants.STANDARD_DRINK_GRAMS*1000)]);
+                    drinks.push([user.username, userGrams / (constants.STANDARD_DRINK_GRAMS), sum12h / (constants.STANDARD_DRINK_GRAMS * 1000), sum24h / (constants.STANDARD_DRINK_GRAMS * 1000)]);
                 }
             }
             drinks = drinks.sort((a, b) => {
@@ -195,7 +195,7 @@ Group.prototype.getPermillesListing = function() {
                 if (userPermilles > 0) {
                     let sum12h = drinkSumsByUser12h[details.userid] && drinkSumsByUser12h[details.userid].sum || 0;
                     let sum24h = drinkSumsByUser24h[details.userid] && drinkSumsByUser24h[details.userid].sum || 0;
-                    permilles.push([user.username, userPermilles, sum12h / (constants.STANDARD_DRINK_GRAMS*1000), sum24h / (constants.STANDARD_DRINK_GRAMS*1000)]);
+                    permilles.push([user.username, userPermilles, sum12h / (constants.STANDARD_DRINK_GRAMS * 1000), sum24h / (constants.STANDARD_DRINK_GRAMS * 1000)]);
                 }
             }
             permilles = permilles.sort((a, b) => {
