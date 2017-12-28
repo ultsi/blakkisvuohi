@@ -25,12 +25,12 @@
 
 let constants = module.exports = {};
 
-constants.ETANOL_GRAMS_PER_LITRE = 789;
-constants.LIQUID_PERCENT = {
-    mies: 0.68,
-    nainen: 0.55
+constants.ETANOL_GRAMS_PER_LITRE = 789.24;
+constants.MEAN_HEIGHT = {
+    mies: 177.9,
+    nainen: 167.2
 };
-constants.MEAN_BODY_WATER = 0.806;
+constants.HOUR_IN_MILLIS = 3600 * 1000;
 
 constants.calcAlcoholMilligrams = function(vol_perc, amount) {
     return Math.round(vol_perc * constants.ETANOL_GRAMS_PER_LITRE * amount * 1000);
@@ -40,7 +40,7 @@ constants.KALJA033 = constants.calcAlcoholMilligrams(0.047, 0.33);
 constants.NELONEN = constants.calcAlcoholMilligrams(0.055, 0.33);
 constants.KALJA05 = constants.calcAlcoholMilligrams(0.047, 0.50);
 constants.SHOTTI40 = constants.calcAlcoholMilligrams(0.4, 0.04);
-constants.STANDARD_DRINK_GRAMS = 10.6;
+constants.STANDARD_DRINK_GRAMS = 12.0;
 
 constants.emoji = {
     beer: '🍺',
