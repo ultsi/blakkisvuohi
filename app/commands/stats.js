@@ -29,7 +29,7 @@ const stats = require('../db/stats.js');
 function printStats(context, user, msg, words)  {
     let deferred = when.defer();
 
-    if(msg.chat.type !== 'private') {
+    if (msg.chat.type !== 'private') {
         stats.getGroupStats(msg.chat.id)
             .then((res) => {
                 let top10text = res.map((stats) => stats.nick + ' - ' + stats.count).join('\n');

@@ -129,22 +129,22 @@ function callCommandFunction(context, cmd, msg, words) {
                         } else if (phase.validateInput(context, user, msg, words)) {
                             try {
                                 phase.onValidInput(context, user, msg, words)
-                                .then(() => {
-                                    phase = cmd.funcs[context.phase];
-                                    if (phase.nextPhase || phase.nextPhase === 0) {
-                                        context.toPhase(phase.nextPhase);
-                                        let newPhase = cmd.funcs[context.phase];
-                                        context.sendMessage(newPhase.startMessage);
-                                    } else {
-                                        context.end();
-                                    }
-                                    log.debug('Executing phase ' + context.phase + ' of usercmd ' + cmd.name);
-                                    log.debug('Words: ' + words);
-                                    log.debug('Phase ' + context.phase + ' of cmd ' + cmd.name + ' executed perfectly.');
-                                }, (err) => {
-                                    log.error('Couldn\'t execute cmd function "' + cmd.name + '" phase ' + context.phase + '! ' + err);
-                                    msg.sendPrivateMessage('Virhe! Ota yhteyttä @ultsi');
-                                });
+                                    .then(() => {
+                                        phase = cmd.funcs[context.phase];
+                                        if (phase.nextPhase ||  phase.nextPhase === 0) {
+                                            context.toPhase(phase.nextPhase);
+                                            let newPhase = cmd.funcs[context.phase];
+                                            context.sendMessage(newPhase.startMessage);
+                                        } else {
+                                            context.end();
+                                        }
+                                        log.debug('Executing phase ' + context.phase + ' of usercmd ' + cmd.name);
+                                        log.debug('Words: ' + words);
+                                        log.debug('Phase ' + context.phase + ' of cmd ' + cmd.name + ' executed perfectly.');
+                                    }, (err) => {
+                                        log.error('Couldn\'t execute cmd function "' + cmd.name + '" phase ' + context.phase + '! ' + err);
+                                        msg.sendPrivateMessage('Virhe! Ota yhteyttä @ultsi');
+                                    });
                             } catch (err) {
                                 log.error('Error executing v2 user cmd function "' + cmd.name + '" phase ' + context.phase + '! ' + err);
                                 log.debug(err.stack);
@@ -183,22 +183,22 @@ function callCommandFunction(context, cmd, msg, words) {
         } else if (phase.validateInput(context, msg, words)) {
             try {
                 phase.onValidInput(context, msg, words)
-                .then(() => {
-                    phase = cmd.funcs[context.phase];
-                    if (phase.nextPhase || phase.nextPhase === 0) {
-                        context.toPhase(phase.nextPhase);
-                        let newPhase = cmd.funcs[context.phase];
-                        context.sendMessage(newPhase.startMessage);
-                    } else {
-                        context.end();
-                    }
-                    log.debug('Executing phase ' + context.phase + ' of cmd ' + cmd.name);
-                    log.debug('Words: ' + words);
-                    log.debug('Phase ' + context.phase + ' of cmd ' + cmd.name + ' executed perfectly.');
-                }, (err) => {
-                    log.error('Couldn\'t execute cmd function "' + cmd.name + '" phase ' + context.phase + '! ' + err);
-                    msg.sendPrivateMessage('Virhe! Ota yhteyttä @ultsi');
-                });
+                    .then(() => {
+                        phase = cmd.funcs[context.phase];
+                        if (phase.nextPhase ||  phase.nextPhase === 0) {
+                            context.toPhase(phase.nextPhase);
+                            let newPhase = cmd.funcs[context.phase];
+                            context.sendMessage(newPhase.startMessage);
+                        } else {
+                            context.end();
+                        }
+                        log.debug('Executing phase ' + context.phase + ' of cmd ' + cmd.name);
+                        log.debug('Words: ' + words);
+                        log.debug('Phase ' + context.phase + ' of cmd ' + cmd.name + ' executed perfectly.');
+                    }, (err) => {
+                        log.error('Couldn\'t execute cmd function "' + cmd.name + '" phase ' + context.phase + '! ' + err);
+                        msg.sendPrivateMessage('Virhe! Ota yhteyttä @ultsi');
+                    });
 
             } catch (err) {
                 log.error('Error executing v2 cmd function "' + cmd.name + '" phase ' + context.phase + '! ' + err);
@@ -226,23 +226,23 @@ Commands.call = function call(firstWord, msg, words) {
 
     // Print start message
     if (firstWord === '/start') {
-        return utils.hookNewRelic('command/start', function(){
+        return utils.hookNewRelic('command/start', function() {
             return msg.sendPrivateMessage(strings.help_text);
         });
     } else if (firstWord === '/komennot') {
-        return utils.hookNewRelic('command/komennot', function(){
+        return utils.hookNewRelic('command/komennot', function() {
             const cmdListStr = listCmdHelp().join('\n');
             return msg.sendPrivateMessage('Komennot:\n\n' + cmdListStr);
         });
     } else if (firstWord === '/help') {
-        return utils.hookNewRelic('command/help', function(){
+        return utils.hookNewRelic('command/help', function() {
             const cmdListStr = listCmdHelp().join('\n');
             return msg.sendPrivateMessage(strings.help_text + '\n\nKomennot:\n\n' + cmdListStr);
         });
     }
 
     if (cmds[firstWord]) {
-        return utils.hookNewRelic('command/'+firstWord, function(){
+        return utils.hookNewRelic('command/' + firstWord, function() {
             const cmd = cmds[firstWord];
 
             // init context for command. Command context is always reinitialised
@@ -254,7 +254,7 @@ Commands.call = function call(firstWord, msg, words) {
                     return context.privateReply('Käytä komentoa vain minun kanssa!');
                 }
 
-                log.info((msg.from.username || msg.from.first_name) + ': ' + firstWord);
+                log.info((msg.from.username ||  msg.from.first_name) + ': ' + firstWord);
                 callCommandFunction(context, cmd, msg, words);
             } catch (err) {
                 log.error('Couldn\'t execute cmd function "' + cmd.name + '" phase ' + context.phase + '! ' + err);
@@ -269,7 +269,7 @@ Commands.call = function call(firstWord, msg, words) {
         }
 
         const cmd = context.cmd;
-        return utils.hookNewRelic('command/'+cmd.name, function(){
+        return utils.hookNewRelic('command/' + cmd.name, function() {
             try {
                 if (!context.isPrivateChat()) {
                     // don't spam chats if not a command this bot recognizes

@@ -53,9 +53,11 @@ drinkCommand.tiukatReply = {
 
 function saveDrink(context, user, milligrams, drinkName) {
     let deferred = when.defer();
-    user.drinkBoozeReturnPermilles(milligrams, drinkName)
-        .then((permilles) => {
-            deferred.resolve(context.privateReply(utils.getRandom(strings.drink_responses) + ' ' + permilles.toFixed(2) + '‰'));
+    user.drinkBoozeReturnEBAC(milligrams, drinkName)
+        .then((ebac) => {
+            const permilles = ebac.permilles;
+            const permilles30Min = ebac.permilles30Min;
+            deferred.resolve(context.privateReply(utils.getRandom(strings.drink_responses) + ' Nyt: ' + permilles.toFixed(2) + '‰, 30min: ' + permilles30Min.toFixed(2) + '‰'));
         }, (err) => {
             log.error(err);
             log.debug(err.stack);
@@ -64,7 +66,7 @@ function saveDrink(context, user, milligrams, drinkName) {
     return deferred.promise;
 }
 
-let command ={
+let command = {
     [0]: {
         startMessage: message.PrivateKeyboardMessage('Valitse juoman kategoria', drinkCommand.startKeyboard),
         validateInput: (context, user, msg, words) => {
@@ -85,7 +87,7 @@ let command ={
             return drinkCommand.miedotReply.keyboard.find((row) => row.find((col) => col.toLowerCase() === msg.text.toLowerCase()));
         },
         onValidInput: (context, user, msg, words) => {
-            if(words[0].toLowerCase() === drinkCommand.toStartText.toLowerCase()){
+            if (words[0].toLowerCase() === drinkCommand.toStartText.toLowerCase()) {
                 let deferred = when.defer();
                 context.toPhase(0);
                 deferred.resolve();
@@ -110,7 +112,7 @@ let command ={
             return drinkCommand.tiukatReply.keyboard.find((row) => row.find((col) => col.toLowerCase() === msg.text.toLowerCase()));
         },
         onValidInput: (context, user, msg, words) => {
-            if(words[0].toLowerCase() === drinkCommand.toStartText.toLowerCase()){
+            if (words[0].toLowerCase() === drinkCommand.toStartText.toLowerCase()) {
                 let deferred = when.defer();
                 context.toPhase(0);
                 deferred.resolve();
@@ -135,7 +137,7 @@ let command ={
         startMessage: message.PrivateMessage('Syötä juoman tilavuusprosentti, esim: 12.5.'),
         validateInput: (context, user, msg, words) => {
             let vol = parseFloat(words[0]);
-            return utils.isValidFloat(vol) && vol > 0 || vol < 100;
+            return utils.isValidFloat(vol) && vol > 0 ||  vol < 100;
         },
         onValidInput: (context, user, msg, words) => {
             let deferred = when.defer();
@@ -151,7 +153,7 @@ let command ={
         startMessage: message.PrivateMessage('Syötä juoman määrä senttilitroissa, esim: 4'),
         validateInput: (context, user, msg, words) => {
             let cl = parseInt(words[0]);
-            return utils.isValidInt(cl) && cl > 0 || cl < 250;
+            return utils.isValidInt(cl) && cl > 0 ||  cl < 250;
         },
         onValidInput: (context, user, msg, words) => {
             let vol = context.fetchVariable('vol');

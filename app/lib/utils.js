@@ -25,11 +25,11 @@
 
 const when = require('when');
 const log = require('loglevel').getLogger('system');
+const constants = require('../constants.js');
 let utils = module.exports = {};
 
 utils.getDateMinusHours = function(hours) {
-    const hourInMillis = 3600 * 1000;
-    const hoursAgo = new Date(Date.now() - hours * hourInMillis);
+    const hoursAgo = new Date(Date.now() - hours * constants.HOUR_IN_MILLIS);
     return hoursAgo;
 };
 

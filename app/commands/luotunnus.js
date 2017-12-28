@@ -65,7 +65,7 @@ let command = {
         ]),
         validateInput: (context, msg, words) => {
             let gender = words[0].toLowerCase();
-            return gender === 'mies' || gender === 'nainen';
+            return gender === 'mies' ||  gender === 'nainen';
         },
         onValidInput: (context, msg, words) => {
             const userId = context.fetchVariable('userId');
@@ -74,27 +74,27 @@ let command = {
             const gender = words[0].toLowerCase();
             let deferred = when.defer();
             users.find(userId)
-            .then((user) => {
-                user.updateInfo(username, weight, gender)
-                .then(() => {
-                    deferred.resolve(context.privateReply('Olet jo rekisteröitynyt. Tiedot päivitetty.'));
-                }, (err) => {
-                    log.error('Error creating new user! ' + err);
-                    log.debug(err.stack);
-                    deferred.resolve(context.privateReply('Olet jo rekisteröitynyt, mutta tietojen päivityksessä tuli ongelma. Ota yhteyttä adminiin.'));
-                });
-            }, () => {
-                // try to create a new user
-                users.new(userId, username, weight, gender)
                 .then((user) => {
-                    deferred.resolve(context.privateReply('Moikka ' + user.username + '! Tunnuksesi luotiin onnistuneesti. Muista, että antamani luvut alkoholista ovat vain arvioita, eikä niihin voi täysin luottaa. Ja eikun juomaan!'));
-                }, (err) => {
-                    log.error('Error creating new user! ' + err);
-                    log.debug(err.stack);
-                    deferred.reject('Isompi ongelma, ota yhteyttä adminiin.');
+                    user.updateInfo(username, weight, gender)
+                        .then(() => {
+                            deferred.resolve(context.privateReply('Olet jo rekisteröitynyt. Tiedot päivitetty.'));
+                        }, (err) => {
+                            log.error('Error creating new user! ' + err);
+                            log.debug(err.stack);
+                            deferred.resolve(context.privateReply('Olet jo rekisteröitynyt, mutta tietojen päivityksessä tuli ongelma. Ota yhteyttä adminiin.'));
+                        });
+                }, () => {
+                    // try to create a new user
+                    users.new(userId, username, weight, gender)
+                        .then((user) => {
+                            deferred.resolve(context.privateReply('Moikka ' + user.username + '! Tunnuksesi luotiin onnistuneesti. Muista, että antamani luvut alkoholista ovat vain arvioita, eikä niihin voi täysin luottaa. Ja eikun juomaan!'));
+                        }, (err) => {
+                            log.error('Error creating new user! ' + err);
+                            log.debug(err.stack);
+                            deferred.reject('Isompi ongelma, ota yhteyttä adminiin.');
+                        });
                 });
-            });
-            
+
             return deferred.promise;
         },
         errorMessage: message.PrivateKeyboardMessage('Syötä joko mies tai nainen:', [

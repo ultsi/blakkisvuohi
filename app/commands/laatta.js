@@ -29,7 +29,9 @@ const message = require('../lib/message.js');
 
 let command = {
     [0]: {
-        startMessage: message.PrivateKeyboardMessage('Olet laattaamassa viimeksi juodun juomasi. Oletko varma?', [['Kyllä', 'En']]),
+        startMessage: message.PrivateKeyboardMessage('Olet laattaamassa viimeksi juodun juomasi. Oletko varma?', [
+            ['Kyllä', 'En']
+        ]),
         validateInput: (context, user, msg, words) => {
             let answer = words[0].toLowerCase();
             return answer === 'kyllä' || answer === 'en';
@@ -41,7 +43,8 @@ let command = {
                     .then(() => {
                         user.getBooze()
                             .then((drinks) => {
-                                let permilles = alcomath.getPermillesFromDrinks(user, drinks);
+                                let ebac = alcomath.calculateEBACFromDrinks(user, drinks);
+                                let permilles = ebac.permilles;
                                 deferred.resolve(context.privateReply('Laatta onnistui. Olet enää ' + permilles.toFixed(2) + '‰ humalassa.'));
                             }, (err) => {
                                 log.error(err);
