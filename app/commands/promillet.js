@@ -42,7 +42,8 @@ function listPermilles(context, user, msg, words) {
                     let grams = ebac.grams;
                     let metabolismRate = alcomath.getUserMetabolismRate(user);
                     console.log(metabolismRate, permilles30Min);
-                    let time = permilles30Min / metabolismRate + 0.5;
+                    let time = permilles30Min / metabolismRate;
+                    time = time > 0 ? time + 0.5 : time;
                     let hours = Math.floor(time);
                     let minutes = ('0' + Math.ceil((time - hours) * 60)).slice(-2);
                     deferred.resolve(context.privateReply('Olet ' + permilles.toFixed(2) + '‰ humalassa nyt, ja ' + permilles30Min.toFixed(2) + '‰ humalassa 30min päästä. Veressäsi on ' + grams.toFixed(2) + ' grammaa alkoholia, joka vastaa ' + (grams / 12.2).toFixed(2) + ' annosta. Olet selvinpäin ' + hours + 'h' + minutes + 'min päästä.'));

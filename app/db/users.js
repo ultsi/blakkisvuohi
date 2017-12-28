@@ -185,15 +185,15 @@ User.prototype.getDrinkCountsByGroup = function() {
     return deferred.promise;
 };
 
-User.prototype.drinkBoozeReturnPermilles = function(amount, description) {
+User.prototype.drinkBoozeReturnEBAC = function(amount, description) {
     let deferred = when.defer();
     let self = this;
     self.drinkBooze(amount, description)
         .then((amount) => {
             self.getBooze()
                 .then((drinks) => {
-                    let permilles = alcomath.calculateEBACFromDrinks(self, drinks).permilles;
-                    deferred.resolve(permilles);
+                    let ebac = alcomath.calculateEBACFromDrinks(self, drinks);
+                    deferred.resolve(ebac);
                 }, (err) => {
                     log.error(err);
                     log.debug(err.stack);
@@ -223,8 +223,8 @@ User.prototype.drinkBoozeLate = function(drinks, hours) {
         .then(() => {
             self.getBooze()
                 .then((drinks) => {
-                    let permilles = alcomath.calculateEBACFromDrinks(self, drinks);
-                    deferred.resolve(permilles);
+                    let ebac = alcomath.calculateEBACFromDrinks(self, drinks);
+                    deferred.resolve(ebac);
                 }, (err) => {
                     log.error(err);
                     log.debug(err.stack);
