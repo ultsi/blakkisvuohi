@@ -105,10 +105,11 @@ alcomath.getWidmarkFactorForUser = (user) => {
 
     TODO: use real height instead of mean height
 */
+const MAGIC_NUMBER = 7.93; // found by trial and error when comparing to Table 1 Seidl et al. data points in the original article
+
 alcomath.estimateBloodAlcoholConcentration = (user, milligrams, drinking_period) => {
     const grams = milligrams / 1000 ;
-    const magic_number = 7.93; // found by trial and error when comparing to Table 1 Seidl et al. data points in the original article
-    const A = grams / magic_number;
+    const A = grams / MAGIC_NUMBER;
     const r = alcomath.getWidmarkFactorForUser(user);
     const half_t = 0.1066; // half life of absorption
     const t = drinking_period;
@@ -121,13 +122,13 @@ alcomath.estimateBloodAlcoholConcentration = (user, milligrams, drinking_period)
 };
 
 alcomath.estimateUnburnedAlcohol = (user, ebac, drinking_period) => {
-    const magic_number = 7.93; // found by trial and error when comparing to Table 1 Seidl et al. data points in the original article
+    const MAGIC_NUMBER = 7.93; // found by trial and error when comparing to Table 1 Seidl et al. data points in the original article
     const r = alcomath.getWidmarkFactorForUser(user);
     const half_t = 0.1066; // half life of absorption
     const t = 0.5;
     const W = user.weight;
 
-    const A = ((ebac/1000)*(r*W))/(1 - Math.exp(-t * Math.log(2)/half_t)) * magic_number;
+    const A = ((ebac/1000)*(r*W))/(1 - Math.exp(-t * Math.log(2)/half_t)) * MAGIC_NUMBER;
 
     return A > 0 ? A : 0;
 };
@@ -135,23 +136,30 @@ alcomath.estimateUnburnedAlcohol = (user, ebac, drinking_period) => {
 alcomath.calculateEBACFromDrinks = (user, drinks) => {
     const now = Date.now();
     const hourInMillis = 3600 * 1000;
+    const in30Mins = now + hourInMillis * 0.5;
 
     let ebacs = [];
+    let ebacs_30min = [];
     let grams = [];
     for (let i in drinks) {
         let drink = drinks[i];
         let drinkTime = Date.parse(drink.created);
         let drinking_period = (now - drinkTime) / hourInMillis;
+        let drinking_period30Mins = (in30Mins - drinkTime) / hourInMillis;
         let ebac = alcomath.estimateBloodAlcoholConcentration(user, drink.alcohol, drinking_period);
+        let ebac30Mins = alcomath.estimateBloodAlcoholConcentration(user, drink.alcohol, drinking_period30Mins);
         let A = alcomath.estimateUnburnedAlcohol(user, ebac, drinking_period);
         ebacs.push(ebac);
+        ebacs_30min.push(ebac30Mins);
         grams.push(A);
     }
 
     let permilles = ebacs.reduce((x,y) => x+y, 0);
+    let permilles30Min = ebacs_30min.reduce((x,y) => x+y, 0);
 
     return {
         permilles: permilles,
+        permilles30Min: permilles30Min,
         grams: grams.reduce((x,y) => x+y, 0)
     };
 };
