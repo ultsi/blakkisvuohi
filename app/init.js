@@ -41,6 +41,8 @@ module.exports = function(bot) {
     syslog.info('Set db log level to ' + settings.log_db_level);
     syslog.info('Set commands log level to ' + settings.log_commands_level);
 
+    syslog.info('Current date and time is ' + new Date().toString());
+
     // Initialize message hook to Command framework
     bot.on('message', (msg) => {
         syslog.debug(msg);

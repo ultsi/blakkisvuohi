@@ -48,27 +48,43 @@ function kuvaaja(context, user, msg, words) {
     group.getDrinkTimes(msg.chat.id)
         .then((drinksByUser) => {
             try  {
+                const lastNHours = 24;
+                const predictNHours = 12;
                 let labels = [];
                 let datasets = [];
-                for (var userId in drinksByUser) {
+                for (let userId in drinksByUser) {
                     let details = drinksByUser[userId];
                     let user = new users.User(details.userid, details.nick, details.weight, details.gender);
-                    let dataByHour = alcomath.getPermillesAndGramsFromDrinksByHour(user, details.drinks);
-                    let permilles = [];
-                    for (var i in dataByHour.permillesByHour) {
-                        if (labels.length < dataByHour.permillesByHour.length) {
-                            labels.push(dataByHour.permillesByHour[i].hour);
+                    let permillesByHour = alcomath.calculateEBACByHourFromDrinks(user, details.drinks, lastNHours, predictNHours);
+                    let permillesLastNHours = [];
+                    let permillesPredictNHours = [];
+                    for (let i in permillesByHour) {
+                        if (labels.length < permillesByHour.length) {
+                            labels.push(permillesByHour[i].hour);
                         }
-                        permilles.push(dataByHour.permillesByHour[i].permilles);
+                        if (i < lastNHours) {
+                            permillesLastNHours[i] = permillesByHour[i].permilles;
+                        } 
+                        if (i >= lastNHours-1 ) { // plot the middle point too
+                            permillesPredictNHours[i] = permillesByHour[i].permilles;
+                        }
                     }
 
                     let color = randomColor();
                     datasets.push({
                         label: details.nick,
-                        data: permilles,
+                        data: permillesLastNHours,
                         fill: false,
                         backgroundColor: color,
                         borderColor: color
+                    });
+                    datasets.push({
+                        label: '',
+                        data: permillesPredictNHours,
+                        fill: false,
+                        backgroundColor: color,
+                        borderColor: color,
+                        borderDash: [5, 15]
                     });
                 }
                 linechart.getLineGraphBuffer({

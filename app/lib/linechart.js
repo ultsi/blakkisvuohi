@@ -38,7 +38,7 @@ const lineChartTemplate = {
     options: {
         elements: {
             line: {
-                tension: 0, // disables bezier curves
+                tension: 0.4
             }
         },
         title: {
