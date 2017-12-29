@@ -175,8 +175,8 @@ alcomath.calculateEBACByHourFromDrinks = (user, drinks, lastNHours, predictNHour
         let time = new Date(startTime + constants.HOUR_IN_MILLIS * i);
         let absorbedAlcoholConcentration = 0;
         let absorptionStartTime = Date.parse(drinks[0].created);
-        for (let i in drinks) {
-            const drink = drinks[i];
+        for (let d in drinks) {
+            const drink = drinks[d];
             const drinkTime = Date.parse(drink.created);
             const burn_time = (drinkTime - absorptionStartTime) / constants.HOUR_IN_MILLIS;
             if (time - drinkTime > 0) {

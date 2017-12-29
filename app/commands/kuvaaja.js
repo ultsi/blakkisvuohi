@@ -52,13 +52,15 @@ function kuvaaja(context, user, msg, words) {
                 const predictNHours = 12;
                 let labels = [];
                 let datasets = [];
+                let trimFromStart = [];
+                let trimFromEnd = [];
                 for (let userId in drinksByUser) {
                     let details = drinksByUser[userId];
                     let user = new users.User(details.userid, details.nick, details.weight, details.gender);
                     let permillesByHour = alcomath.calculateEBACByHourFromDrinks(user, details.drinks, lastNHours, predictNHours);
                     let permillesLastNHours = [];
                     let permillesPredictNHours = [];
-                    for (let i in permillesByHour) {
+                    for (let i = 0; i < permillesByHour.length; i += 1) {
                         if (labels.length < permillesByHour.length) {
                             labels.push(permillesByHour[i].hour);
                         }
@@ -67,6 +69,14 @@ function kuvaaja(context, user, msg, words) {
                         }
                         if (i >= lastNHours) {
                             permillesPredictNHours[i] = permillesByHour[i].permilles;
+                        }
+                        /* Trim start & end if no data (i.e. 0) */
+                        if (permillesByHour[i].permilles === 0) {
+                            if (!trimFromStart[userId] || trimFromStart[userId] === i - 1) {
+                                trimFromStart[userId] = i;
+                            }
+                        } else {
+                            trimFromEnd[userId] = i + 1;
                         }
                     }
 
@@ -87,6 +97,20 @@ function kuvaaja(context, user, msg, words) {
                         borderDash: [5, 15]
                     });
                 }
+                let trimFromStartMin = trimFromStart.reduce((x, y) => x <= y ? x : y);
+                let trimFromEndMax = trimFromEnd.reduce((x, y) => x >= y ? x : y);
+                trimFromStartMin = trimFromStartMin <= 1 ? 0 : trimFromStartMin - 2;
+                trimFromEndMax = trimFromEndMax >= labels.length - 2 ? labels.length - 2 : trimFromEndMax + 2;
+
+                // force trimFromEndMax to current hour
+                trimFromEndMax = trimFromEndMax < lastNHours + 1 ? lastNHours + 1 : trimFromEndMax;
+
+                /* Trim datasets */
+                for (let i = 0; i < datasets.length; i += 1) {
+                    datasets[i].data = datasets[i].data.slice(trimFromStartMin, trimFromEndMax);
+                }
+                labels = labels.slice(trimFromStartMin, trimFromEndMax);
+
                 linechart.getLineGraphBuffer({
                         labels: labels,
                         datasets: datasets
