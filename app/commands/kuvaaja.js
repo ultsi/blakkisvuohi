@@ -56,7 +56,7 @@ function kuvaaja(context, user, msg, words) {
                 let trimFromEnd = [];*/
                 for (let userId in drinksByUser) {
                     let details = drinksByUser[userId];
-                    let user = new users.User(details.userid, details.nick, details.weight, details.gender);
+                    let user = new users.User(details.userid, details.nick, details.weight, details.gender, details.height);
                     let permillesByHour = alcomath.calculateEBACByHourFromDrinks(user, details.drinks, lastNHours, predictNHours);
                     let permillesLastNHours = [];
                     let permillesPredictNHours = [];
