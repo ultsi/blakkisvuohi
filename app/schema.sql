@@ -20,7 +20,8 @@ create table if not exists users (
     userId int not null primary key,
     nick text not null,
     weight int not null,
-    gender text not null
+    gender text not null,
+    height int not null default 175
 );
 
 create table if not exists groups (
