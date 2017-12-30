@@ -35,18 +35,19 @@ function isValidGender(gender) {
     return gender === 'mies' || gender === 'nainen';
 }
 
-function User(userId, username, weight, gender) {
+function User(userId, username, weight, gender, height) {
     this.userId = userId;
     this.username = username;
     this.weight = weight;
     this.gender = gender;
+    this.height = height;
 }
 
 users.User = User;
 
-users.new = function(userId, nick, weight, gender) {
+users.new = function(userId, nick, weight, gender, height) {
     let deferred = when.defer();
-    let params = [parseInt(userId, 10), nick, parseInt(weight, 10), gender];
+    let params = [parseInt(userId, 10), nick, parseInt(weight, 10), gender, parseInt(height, 10)];
     let err = [];
     if (!utils.isValidInt(params[0])) {
         err.push('userid');
@@ -56,9 +57,9 @@ users.new = function(userId, nick, weight, gender) {
         return deferred.promise;
     }
 
-    query('insert into users (userId, nick, weight, gender) values ($1, $2, $3, $4)', params)
+    query('insert into users (userId, nick, weight, gender, height) values ($1, $2, $3, $4, $5)', params)
         .then(() => {
-            deferred.resolve(new User(params[0], nick, params[2], gender));
+            deferred.resolve(new User(params[0], nick, params[2], gender, params[4]));
         }, (err) => {
             log.error(err);
             log.debug(err.stack);
@@ -69,14 +70,14 @@ users.new = function(userId, nick, weight, gender) {
 
 users.find = function find(userId) {
     let deferred = when.defer();
-    query('select userId, nick, weight, gender from users where userId=$1', [userId])
+    query('select userId, nick, weight, gender, height from users where userId=$1', [userId])
         .then((res) => {
             let rows = res[0];
             let info = res[1];
             if (rows.length > 0 && info.rowCount > 0) {
                 try {
                     let found = rows[0];
-                    deferred.resolve(new User(found.userid, found.nick, found.weight, found.gender));
+                    deferred.resolve(new User(found.userid, found.nick, found.weight, found.gender, found.height));
                 } catch (err) {
                     deferred.reject(err);
                 }
@@ -238,10 +239,10 @@ User.prototype.drinkBoozeLate = function(drinks, hours) {
     return deferred.promise;
 };
 
-User.prototype.updateInfo = function(username, weight, gender) {
+User.prototype.updateInfo = function(username, weight, gender, height) {
     let deferred = when.defer();
     let self = this;
-    query('update users set nick=$1, weight=$2, gender=$3 where userId=$4', [username, weight, gender, self.userId])
+    query('update users set nick=$1, weight=$2, gender=$3, height=$4 where userId=$5', [username, weight, gender, height, self.userId])
         .then(() => {
             deferred.resolve();
         }, (err) => {

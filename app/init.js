@@ -66,11 +66,11 @@ module.exports = function(bot) {
     require('./commands/kulutus.js');
     require('./commands/kuvaaja.js');
     require('./commands/laatta.js');
-    require('./commands/luotunnus.js');
     require('./commands/moro.js');
     require('./commands/otinko.js');
     require('./commands/promillet.js');
     require('./commands/stats.js');
+    require('./commands/tunnus.js');
     require('./commands/whoami.js');
 
     // Admin commands

@@ -73,10 +73,6 @@ let alcomath = module.exports = {};
     to start again from the current drink
 */
 
-alcomath.getMeanHeightForUser = (user) => {
-    return constants.MEAN_HEIGHT[user.gender];
-};
-
 /*  
     Seidl et al. (8) gathered height (in centimeters), weight
     (in kilograms), blood water content, and TBW data for 256
@@ -87,7 +83,7 @@ alcomath.getMeanHeightForUser = (user) => {
     r(male) = 0.31608 – 0.004821W + 0.4632H
 */
 alcomath.getWidmarkFactorForUser = (user) => {
-    const H = alcomath.getMeanHeightForUser(user);
+    const H = user.height;
     const W = user.weight;
     return user.gender === 'mies' ?
         0.31608 - 0.004821 * W + 0.4632 * H :
