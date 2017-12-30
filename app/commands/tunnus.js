@@ -17,9 +17,9 @@
 */
 
 /*
-    /luotunnus
+    /tunnus
     3 phased command where the user can sign up to use the bot's functionality
-    Asks for weight and gender for future calculations
+    Asks for weight, height and gender for future calculations
 */
 'use strict';
 
@@ -33,10 +33,10 @@ const message = require('../lib/message.js');
 
 let command = {
     [0]: {
-        startMessage: message.PrivateMessage('Tervetuloa uuden tunnuksen luontiin. Alkoholilaskuria varten tarvitsen tiedot painosta ja sukupuolesta.\n\nSyötä ensimmäiseksi paino kilogrammoissa ja kokonaislukuna:'),
+        startMessage: message.PrivateMessage('Tervetuloa tunnuksen luomiseen tai päivittämiseen. Alkoholilaskuria varten tarvitsen seuraavat tiedot: paino, pituus ja sukupuoli.\n\nSyötä ensimmäiseksi paino kilogrammoissa ja kokonaislukuna:'),
         validateInput: (context, msg, words) => {
             let weight = parseInt(words[0], 10);
-            return utils.isValidInt(words[0]) && weight > 20 && weight < 250;
+            return utils.isValidInt(words[0]) && weight >= 20 && weight <= 250;
         },
         onValidInput: (context, msg, words) => {
             let deferred = when.defer();
@@ -56,11 +56,28 @@ let command = {
 
             return deferred.promise;
         },
-        nextPhase: 'gender',
+        nextPhase: 'height',
         errorMessage: message.PrivateMessage('Syötä paino uudelleen. Painon pitää olla kokonaisluku ja ala- ja ylärajat ovat 20kg ja 250kg.')
     },
+    height: {
+        startMessage: message.PrivateMessage('Paino tallennettu. Syötä seuraavaksi pituus senttimetreissä:'),
+        validateInput: (context, msg, words) => {
+            let height = parseInt(words[0], 10);
+            return utils.isValidInt(words[0]) && height >= 120 && height <= 240;
+        },
+        onValidInput: (context, msg, words) => {
+            let deferred = when.defer();
+            let height = parseInt(words[0], 10);
+            context.storeVariable('height', height);
+            deferred.resolve();
+
+            return deferred.promise;
+        },
+        nextPhase: 'gender',
+        errorMessage: message.PrivateMessage('Syötä pituus uudelleen. Pituuden täytyy olla kokonaisluku ja ala- ja ylärajat ovat 120cm ja 240cm.')
+    },
     gender: {
-        startMessage: message.PrivateKeyboardMessage('Paino tallennettu. Syötä seuraavaksi sukupuoli:', [
+        startMessage: message.PrivateKeyboardMessage('Pituus tallennettu. Syötä seuraavaksi sukupuoli:', [
             ['Mies', 'Nainen']
         ]),
         validateInput: (context, msg, words) => {
@@ -71,11 +88,12 @@ let command = {
             const userId = context.fetchVariable('userId');
             const username = context.fetchVariable('username');
             const weight = context.fetchVariable('weight');
+            const height = context.fetchVariable('height');
             const gender = words[0].toLowerCase();
             let deferred = when.defer();
             users.find(userId)
                 .then((user) => {
-                    user.updateInfo(username, weight, gender)
+                    user.updateInfo(username, weight, gender, height)
                         .then(() => {
                             deferred.resolve(context.privateReply('Olet jo rekisteröitynyt. Tiedot päivitetty.'));
                         }, (err) => {
@@ -85,7 +103,7 @@ let command = {
                         });
                 }, () => {
                     // try to create a new user
-                    users.new(userId, username, weight, gender)
+                    users.new(userId, username, weight, gender, height)
                         .then((user) => {
                             deferred.resolve(context.privateReply('Moikka ' + user.username + '! Tunnuksesi luotiin onnistuneesti. Muista, että antamani luvut alkoholista ovat vain arvioita, eikä niihin voi täysin luottaa. Ja eikun juomaan!'));
                         }, (err) => {
@@ -105,7 +123,7 @@ let command = {
 
 // Register the command
 Commands.register(
-    '/luotunnus',
-    '/luotunnus - Luo itsellesi tunnus botin käyttöä varten.',
+    '/tunnus',
+    '/tunnus - Luo itsellesi uusi tunnus tai muokkaa tunnustasi.',
     Commands.TYPE_PRIVATE, command
 );
