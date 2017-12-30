@@ -63,3 +63,7 @@ Set the next env variables:
 - `BOT_MODE` = 'webhook'
 
 Bot runs automatically when pushed to the Heroku remote.
+
+## Migrations
+
+BläkkisVuohi uses (https://github.com/salsita/node-pg-migrate)[node-pg-migrate] for database migrations. To run database migrations, do `./node_modules/node-pg-migrate/bin/node-pg-migrate up`
