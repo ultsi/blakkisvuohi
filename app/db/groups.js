@@ -49,7 +49,7 @@ function groupDrinksByUser(drinks) {
                 nick: drink.nick,
                 weight: drink.weight,
                 gender: drink.gender,
-                height: drink.height
+                height: drink.height,
                 drinks: []
             };
         }
