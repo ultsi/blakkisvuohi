@@ -108,7 +108,7 @@ let command = {
         onValidInput: (context, msg, words) => {
             let deferred = when.defer();
             let read = words[0].toLowerCase();
-            if(read === 'en') {
+            if (read === 'en') {
                 deferred.resolve(context.privateReply('Lue käyttöehdot ja hyväksy ne, ennen kuin voit käyttää muita komentoja.'));
                 context.end();
                 return deferred.promise;

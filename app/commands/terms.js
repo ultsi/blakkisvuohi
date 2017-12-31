@@ -29,7 +29,9 @@ const strings = require('../strings.js');
 
 function termsCommand(context, user, msg, words) {
     context.end();
-    return context.sendMessage(Message.PrivateMessage(strings.terms, {'parse_mode': 'Markdown'}));
+    return context.sendMessage(Message.PrivateMessage(strings.terms, {
+        'parse_mode': 'Markdown'
+    }));
 }
 
 Commands.registerUserCommand(
