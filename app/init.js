@@ -70,6 +70,7 @@ module.exports = function(bot) {
     require('./commands/otinko.js');
     require('./commands/promillet.js');
     require('./commands/stats.js');
+    require('./commands/terms.js');
     require('./commands/tunnus.js');
     require('./commands/whoami.js');
 
