@@ -111,6 +111,10 @@ function callCommandFunction(context, cmd, msg, words) {
     if (cmd.userCommand) {
         return users.find(msg.from.id)
             .then((user) => {
+                if(!user.read_terms) {
+                    msg.sendPrivateMessage('Please use /tunnus again to update your info.');
+                    return;
+                }
                 try {
                     log.debug('Executing phase ' + context.phase + ' of usercmd ' + cmd.name);
                     log.debug('Words: ' + words);
