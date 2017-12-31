@@ -153,12 +153,10 @@ const wadsPalette = [
     [255, 146, 51], // Orange 
     [255, 238, 51], // Yellow 
     [233, 222, 187], // Tan 
-    [255, 205, 243], // Pink 
-    [255, 255, 255] // White 
+    [255, 205, 243] // Pink 
+    // [255, 255, 255] // White 
 ];
 
-utils.getRandomColor = function() {
-    // HSV values in [0..1[
-    // returns [r, g, b] values from 0 to 255
-    return utils.getRandom(wadsPalette);
+utils.getColorSet = function() {
+    return [].concat(wadsPalette); // return a copy
 };

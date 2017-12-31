@@ -32,11 +32,6 @@ const users = require('../db/users.js');
 const linechart = require('../lib/linechart.js');
 
 
-function randomColor() {
-    let color = utils.getRandomColor();
-    return 'rgb(' + color[0] + ',' + color[1] + ',' + color[2] + ')';
-}
-
 function kuvaaja(context, user, msg, words) {
     let deferred = when.defer();
     log.debug('Trying to form graph image');
@@ -53,6 +48,7 @@ function kuvaaja(context, user, msg, words) {
                 let datasets = [];
                 /*let trimFromStart = [];
                 let trimFromEnd = [];*/
+                let colors = utils.getColorSet(drinksByUser.length);
                 for (let userId in drinksByUser) {
                     let details = drinksByUser[userId];
                     let user = new users.User(details.userid, details.nick, details.weight, details.gender, details.height);
@@ -80,7 +76,9 @@ function kuvaaja(context, user, msg, words) {
                         }*/
                     }
 
-                    let color = randomColor();
+                    let randomColorI = Math.floor(Math.random() * colors.length);
+                    let color = colors.splice(randomColorI, 1);
+                    color = 'rgb(' + color[0] + ',' + color[1] + ',' + color[2] + ')';
                     datasets.push({
                         label: details.nick,
                         data: permillesLastNHours,
