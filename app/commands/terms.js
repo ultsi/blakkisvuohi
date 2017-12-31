@@ -22,26 +22,28 @@
 */
 'use strict';
 
-const log = require('loglevel').getLogger('commands');
 const Commands = require('../lib/commands.js');
 const Message = require('../lib/message.js');
 const strings = require('../strings.js');
 
-function termsCommand(context, user, msg, words) {
-    context.end();
-    return context.sendMessage(Message.PrivateMessage(strings.terms, {
-        'parse_mode': 'Markdown'
-    }));
-}
+const termsCommand = {
+    [0]: {
+        startMessage: Message.PrivateMessage(strings.terms, {
+            'parse_mode': 'Markdown'
+        }),
+        validateInput: () => {return true;},
+        onValidInput: (context) => {return context.end();}
+    }
+};
 
-Commands.registerUserCommand(
+Commands.register(
     '/terms',
     '/terms - Terms of Service',
-    Commands.TYPE_PRIVATE, [termsCommand]
+    Commands.TYPE_PRIVATE, termsCommand
 );
 
-Commands.registerUserCommand(
+Commands.register(
     '/privacy',
     '/privacy - Privacy Policy',
-    Commands.TYPE_PRIVATE, [termsCommand]
+    Commands.TYPE_PRIVATE, termsCommand
 );

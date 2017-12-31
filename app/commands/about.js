@@ -26,15 +26,18 @@ const Commands = require('../lib/commands.js');
 const Message = require('../lib/message.js');
 const strings = require('../strings.js');
 
-function aboutCommand(context, user, msg, words) {
-    context.end();
-    return context.sendMessage(Message.PrivateMessage(strings.about, {
-        'parse_mode': 'Markdown'
-    }));
-}
+const aboutCommand = {
+    [0]: {
+        startMessage: Message.PrivateMessage(strings.about, {
+            'parse_mode': 'Markdown'
+        }),
+        validateInput: () => {return true;},
+        onValidInput: (context) => {return context.end();}
+    }
+};
 
-Commands.registerUserCommand(
+Commands.register(
     '/about',
     '/about - About the bot',
-    Commands.TYPE_PRIVATE, [aboutCommand]
+    Commands.TYPE_PRIVATE, aboutCommand
 );

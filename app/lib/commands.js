@@ -112,7 +112,7 @@ function callCommandFunction(context, cmd, msg, words) {
         return users.find(msg.from.id)
             .then((user) => {
                 if (!user.read_terms) {
-                    msg.sendPrivateMessage('Please use /tunnus again to update your info.');
+                    msg.sendPrivateMessage('Päivitä käyttäjätietosi käyttämällä komentoa /tunnus.');
                     return;
                 }
                 try {

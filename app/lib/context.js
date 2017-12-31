@@ -173,6 +173,9 @@ contexts.Context.prototype.previousPhase = function() {
 contexts.Context.prototype.end = function() {
     this.phase = -1;
     this.variables = 0;
+    let deferred = when.defer();
+    deferred.resolve();
+    return deferred.promise;
 };
 
 contexts.Context.prototype.isPrivateChat = function() {
