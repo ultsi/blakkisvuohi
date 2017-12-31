@@ -133,3 +133,32 @@ utils.isValidInt = function(num) {
 utils.isValidFloat = function(num) {
     return !!parseFloat(num);
 };
+
+/*
+    Wad's 16 color palette
+    http://alumni.media.mit.edu/~wad/color/numbers.html
+*/
+const wadsPalette = [
+    [0, 0, 0], // Black 
+    [87, 87, 87], // Dk. Gray 
+    [173, 35, 35], // Red 
+    [42, 75, 215], // Blue 
+    [29, 105, 20], // Green 
+    [129, 74, 25], // Brown 
+    [129, 38, 192], // Purple 
+    [160, 160, 160], // Lt. Gray 
+    [129, 197, 122], // Lt. Green 
+    [157, 175, 255], // Lt. Blue 
+    [41, 208, 208], // Cyan 
+    [255, 146, 51], // Orange 
+    [255, 238, 51], // Yellow 
+    [233, 222, 187], // Tan 
+    [255, 205, 243], // Pink 
+    [255, 255, 255] // White 
+];
+
+utils.getRandomColor = function() {
+    // HSV values in [0..1[
+    // returns [r, g, b] values from 0 to 255
+    return utils.getRandom(wadsPalette);
+};
