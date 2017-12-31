@@ -85,15 +85,43 @@ let command = {
             return gender === 'mies' ||  gender === 'nainen';
         },
         onValidInput: (context, msg, words) => {
+            let deferred = when.defer();
+            const gender = words[0].toLowerCase();
+            context.storeVariable('gender', gender);
+            deferred.resolve();
+
+            return deferred.promise;
+        },
+        nextPhase: 'terms',
+        errorMessage: message.PrivateKeyboardMessage('Syötä joko mies tai nainen:', [
+            ['Mies', 'Nainen']
+        ])
+    },
+    terms: {
+        startMessage: message.PrivateKeyboardMessage('Sukupuoli tallennettu. Oletko lukenut ja hyväksynyt käyttöehdot? Saat ne esille komennolla /terms, mutta nykyinen komento keskeytyy.', [
+            ['Kyllä', 'En']
+        ]),
+        validateInput: (context, msg, words) => {
+            let read = words[0].toLowerCase();
+            return read === 'kyllä' || read === 'en';
+        },
+        onValidInput: (context, msg, words) => {
+            let deferred = when.defer();
+            let read = words[0].toLowerCase();
+            if(read === 'en') {
+                deferred.resolve(context.privateReply('Lue käyttöehdot ja hyväksy ne, ennen kuin voit käyttää muita komentoja.'));
+                context.end();
+                return deferred.promise;
+            }
+
             const userId = context.fetchVariable('userId');
             const username = context.fetchVariable('username');
             const weight = context.fetchVariable('weight');
             const height = context.fetchVariable('height');
-            const gender = words[0].toLowerCase();
-            let deferred = when.defer();
+            const gender = context.fetchVariable('gender');
             users.find(userId)
                 .then((user) => {
-                    user.updateInfo(username, weight, gender, height)
+                    user.updateInfo(username, weight, gender, height, true)
                         .then(() => {
                             deferred.resolve(context.privateReply('Olet jo rekisteröitynyt. Tiedot päivitetty.'));
                         }, (err) => {
@@ -103,9 +131,9 @@ let command = {
                         });
                 }, () => {
                     // try to create a new user
-                    users.new(userId, username, weight, gender, height)
+                    users.new(userId, username, weight, gender, height, true)
                         .then((user) => {
-                            deferred.resolve(context.privateReply('Moikka ' + user.username + '! Tunnuksesi luotiin onnistuneesti. Muista, että antamani luvut alkoholista ovat vain arvioita, eikä niihin voi täysin luottaa. Ja eikun juomaan!'));
+                            deferred.resolve(context.privateReply('Moikka ' + user.username + '! Tunnuksesi luotiin onnistuneesti. Muista, että kaikki antamani luvut ovat vain arvioita, eikä niihin voi täysin luottaa. Ja eikun juomaan!'));
                         }, (err) => {
                             log.error('Error creating new user! ' + err);
                             log.debug(err.stack);
@@ -115,8 +143,8 @@ let command = {
 
             return deferred.promise;
         },
-        errorMessage: message.PrivateKeyboardMessage('Syötä joko mies tai nainen:', [
-            ['Mies', 'Nainen']
+        errorMessage: message.PrivateKeyboardMessage('Oletko lukenut ja hyväksynyt käyttöehdot?', [
+            ['Kyllä', 'En']
         ])
     }
 };
