@@ -26,16 +26,15 @@ const when = require('when');
 const log = require('loglevel').getLogger('commands');
 const Commands = require('../lib/commands.js');
 const alcomath = require('../lib/alcomath.js');
+const utils = require('../lib/utils.js');
 const groups = require('../db/groups.js');
 const users = require('../db/users.js');
 const linechart = require('../lib/linechart.js');
 
 
 function randomColor() {
-    var r = Math.round(Math.random() * 255);
-    var g = Math.round(Math.random() * 255);
-    var b = Math.round(Math.random() * 255);
-    return 'rgb(' + r + ',' + g + ',' + b + ')';
+    let color = utils.getRandomColor();
+    return 'rgb(' + color[0] + ',' + color[1] + ',' + color[2] + ')';
 }
 
 function kuvaaja(context, user, msg, words) {
