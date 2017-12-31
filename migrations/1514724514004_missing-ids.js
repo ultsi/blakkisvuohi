@@ -22,11 +22,11 @@ exports.up = (pgm) => {
     pgm.addColumns('users_drinks', {
         id: {
             type: 'serial',
-            notNull: true
+            notNull: true,
+            unique: true
         }
     });
     pgm.dropConstraint('users_drinks', 'users_drinks_pkey');
-    pgm.addConstraint('users_drinks', 'users_drinks_pkey', {primaryKey: 'id'});
 };
 
 exports.down = (pgm) => {
