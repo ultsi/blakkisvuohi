@@ -19,15 +19,16 @@
 'use strict';
 
 exports.up = (pgm) => {
-    pgm.addColumns('users', {
-        height: {
-            type: 'int',
+    pgm.addColumns('users_drinks', {
+        id: {
+            type: 'serial',
             notNull: true,
-            default: 175
+            unique: true
         }
     });
+    pgm.dropConstraint('users_drinks', 'users_drinks_pkey');
 };
 
 exports.down = (pgm) => {
-    pgm.dropColumns('users', ['height']);
+    pgm.dropColumns('users_drinks', ['id']);
 };
