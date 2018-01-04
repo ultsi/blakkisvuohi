@@ -122,6 +122,11 @@ utils.attachMethods = function attachMethods(msg, bot) {
     msg.sendPhoto = createSendPhotoFunction(msg, bot);
 };
 
+utils.roundTo = (n, t) => {
+    t = t || 0;
+    return Math.round(n*(Math.pow(10, t))) / Math.pow(10, t);
+};
+
 utils.getRandom = function(arr) {
     return arr[Math.floor(Math.random() * arr.length)];
 };

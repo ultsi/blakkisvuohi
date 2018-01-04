@@ -29,11 +29,36 @@ const log = require('loglevel').getLogger('commands');
 const Commands = require('../lib/commands.js');
 const alcomath = require('../lib/alcomath.js');
 const groups = require('../db/groups.js');
+const constants = require('../constants.js');
+
+function makeDrinksString(drinks) {
+    let list = [];
+    let day = null;
+    for (var i in drinks) {
+        let drink = drinks[i];
+        let drinkTime = new Date(Date.parse(drink.created));
+        let drinkShortDate = drinkTime.getDate() + '.' + (drinkTime.getMonth() + 1) + '.';
+        if (day !== drinkShortDate)  {
+            day = drinkShortDate;
+            list.push(day);
+        }
+        let drinkHours = drinkTime.getHours() + '';
+        if (drinkHours.length === 1) {
+            drinkHours = '0' + drinkHours;
+        }
+        let drinkMinutes = drinkTime.getMinutes() + '';
+        if (drinkMinutes.length === 1) {
+            drinkMinutes = '0' + drinkMinutes;
+        }
+        list.push(drinkHours + ':' + drinkMinutes + ' ' + drink.description);
+    }
+    return list.join('\n');
+}
 
 function listPermilles(context, user, msg, words) {
     let deferred = when.defer();
     if (msg.chat.type === 'private') {
-        user.getBooze()
+        user.getBoozeForLastHours(72)
             .then((drinks) => {
                 try {
                     let ebac = alcomath.calculateEBACFromDrinks(user, drinks);
@@ -46,7 +71,8 @@ function listPermilles(context, user, msg, words) {
                     time = time > 0 ? time + 0.5 : time;
                     let hours = Math.floor(time);
                     let minutes = ('0' + Math.ceil((time - hours) * 60)).slice(-2);
-                    deferred.resolve(context.privateReply('Olet ' + permilles.toFixed(2) + '‰ humalassa nyt, ja ' + permilles30Min.toFixed(2) + '‰ humalassa 30min päästä. Veressäsi on ' + grams.toFixed(2) + ' grammaa alkoholia, joka vastaa ' + (grams / 12.2).toFixed(2) + ' annosta. Olet selvinpäin ' + hours + 'h' + minutes + 'min päästä.'));
+                    let drinkList = makeDrinksString(drinks);
+                    deferred.resolve(context.privateReply('Nyt: ' + permilles.toFixed(2) + '‰, 30min: ' + permilles30Min.toFixed(2) + '‰.\nVeressäsi on ' + grams.toFixed(2) + ' grammaa alkoholia, joka vastaa ' + (grams / constants.STANDARD_DRINK_GRAMS).toFixed(2) + ' annosta. Olet selvinpäin ' + hours + 'h' + minutes + 'min päästä.\n\nViimeisen kolmen päivän tapahtumat:\n' + drinkList));
                 } catch (err) {
                     log.error(err);
                     log.debug(err.stack);
@@ -75,4 +101,4 @@ function listPermilles(context, user, msg, words) {
     return deferred.promise;
 }
 
-Commands.registerUserCommand('/promillet', '/promillet - listaa kuinka paljon promilleja sinulla tai chatissa olevilla suunnilleen on.', Commands.TYPE_ALL, [listPermilles]);
+Commands.registerUserCommand('/promillet', '/promillet - näytä sinun tai ryhmän promillet. Yksityisviestinä käytettynä listaa myös viimeisen 3pv tapahtumat.', Commands.TYPE_ALL, [listPermilles]);
