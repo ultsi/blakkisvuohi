@@ -58,31 +58,33 @@ function makeDrinksString(drinks) {
 function listPermilles(context, user, msg, words) {
     let deferred = when.defer();
     if (msg.chat.type === 'private') {
-        user.getBoozeForLastHours(72)
-            .then((drinks) => {
-                try {
-                    let ebac = alcomath.calculateEBACFromDrinks(user, drinks);
-                    let permilles = ebac.permilles;
-                    let permilles30Min = ebac.permilles30Min;
-                    let grams = ebac.grams;
-                    let metabolismRate = alcomath.getUserMetabolismRate(user);
-                    console.log(metabolismRate, permilles30Min);
-                    let time = permilles30Min / metabolismRate;
-                    time = time > 0 ? time + 0.5 : time;
-                    let hours = Math.floor(time);
-                    let minutes = ('0' + Math.ceil((time - hours) * 60)).slice(-2);
-                    let drinkList = makeDrinksString(drinks);
-                    deferred.resolve(context.privateReply('Nyt: ' + permilles.toFixed(2) + '‰, 30min: ' + permilles30Min.toFixed(2) + '‰.\nVeressäsi on ' + grams.toFixed(2) + ' grammaa alkoholia, joka vastaa ' + (grams / constants.STANDARD_DRINK_GRAMS).toFixed(2) + ' annosta. Olet selvinpäin ' + hours + 'h' + minutes + 'min päästä.\n\nViimeisen kolmen päivän tapahtumat:\n' + drinkList));
-                } catch (err) {
-                    log.error(err);
-                    log.debug(err.stack);
-                    deferred.reject('Isompi ongelma, ota yhteyttä adminiin.');
-                }
-            }, (err) => {
+        when.all([
+            user.getBooze(),
+            user.getBoozeForLastHours(72)
+        ]).spread((drinks, drinks72h) => {
+            try {
+                let ebac = alcomath.calculateEBACFromDrinks(user, drinks);
+                let permilles = ebac.permilles;
+                let permilles30Min = ebac.permilles30Min;
+                let grams = ebac.grams;
+                let metabolismRate = alcomath.getUserMetabolismRate(user);
+                console.log(metabolismRate, permilles30Min);
+                let time = permilles30Min / metabolismRate;
+                time = time > 0 ? time + 0.5 : time;
+                let hours = Math.floor(time);
+                let minutes = ('0' + Math.ceil((time - hours) * 60)).slice(-2);
+                let drinkList = makeDrinksString(drinks72h);
+                deferred.resolve(context.privateReply('Nyt: ' + permilles.toFixed(2) + '‰, 30min: ' + permilles30Min.toFixed(2) + '‰.\nVeressäsi on ' + grams.toFixed(2) + ' grammaa alkoholia, joka vastaa ' + (grams / constants.STANDARD_DRINK_GRAMS).toFixed(2) + ' annosta. Olet selvinpäin ' + hours + 'h' + minutes + 'min päästä.\n\nViimeisen kolmen päivän tapahtumat:\n' + drinkList));
+            } catch (err) {
                 log.error(err);
                 log.debug(err.stack);
                 deferred.reject('Isompi ongelma, ota yhteyttä adminiin.');
-            });
+            }
+        }, (err) => {
+            log.error(err);
+            log.debug(err.stack);
+            deferred.reject('Isompi ongelma, ota yhteyttä adminiin.');
+        });
     } else {
         let group = new groups.Group(msg.chat.id);
         group.getPermillesListing()
