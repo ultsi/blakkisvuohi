@@ -64,11 +64,9 @@ module.exports = function(bot) {
     require('./commands/juoma.js');
     require('./commands/kalja033.js');
     require('./commands/kalja05.js');
-    require('./commands/kulutus.js');
     require('./commands/kuvaaja.js');
     require('./commands/laatta.js');
     require('./commands/moro.js');
-    require('./commands/otinko.js');
     require('./commands/promillet.js');
     require('./commands/stats.js');
     require('./commands/terms.js');
