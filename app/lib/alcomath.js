@@ -132,6 +132,14 @@ alcomath.calculateEBACFromDrinks = (user, drinks) => {
     const in30Mins = now + constants.HOUR_IN_MILLIS * 0.5;
     const MR = alcomath.getUserMetabolismRate(user);
 
+    if (!drinks || drinks.length === 0) {
+        return {
+            permilles: 0,
+            permilles30Min: 0,
+            grams: 0
+        };
+    }
+
     let absorbedAlcoholConcentration = 0;
     let absorbedAlcoholConcentrationIn30 = 0;
     let startTime = Date.parse(drinks[0].created);
