@@ -30,6 +30,7 @@ const Commands = require('../lib/commands.js');
 const utils = require('../lib/utils.js');
 const users = require('../db/users.js');
 const message = require('../lib/message.js');
+const strings = require('../strings.js');
 
 let command = {
     [0]: {
@@ -98,7 +99,7 @@ let command = {
         ])
     },
     terms: {
-        startMessage: message.PrivateKeyboardMessage('Sukupuoli tallennettu. Oletko lukenut ja hyväksynyt käyttöehdot? Saat ne esille komennolla /terms, mutta nykyinen komento keskeytyy.', [
+        startMessage: message.PrivateKeyboardMessage('Sukupuoli tallennettu. \n\n' + strings.terms + '\n\nOletko lukenut ja hyväksynyt käyttöehdot?', [
             ['Kyllä', 'En']
         ]),
         validateInput: (context, msg, words) => {
