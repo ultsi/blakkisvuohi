@@ -48,11 +48,11 @@ users.User = User;
 
 users.new = function(userId, nick, weight, gender, height, read_terms) {
     let deferred = when.defer();
-    let params = [utils.hashSha256(parseInt(userId, 10)), nick, parseInt(weight, 10), gender, parseInt(height, 10), read_terms];
+    let params = [utils.hashSha256(parseInt(userId, 10)), utils.encrypt(nick), parseInt(weight, 10), gender, parseInt(height, 10), read_terms];
 
     query('insert into users (userId, nick, weight, gender, height, read_terms) values ($1, $2, $3, $4, $5, $6)', params)
         .then(() => {
-            deferred.resolve(new User(params[0], nick, params[2], gender, params[4], params[5]));
+            deferred.resolve(new User(params[0], utils.decrypt(params[1]), params[2], gender, params[4], params[5]));
         }, (err) => {
             log.error(err);
             log.debug(err.stack);
@@ -71,7 +71,8 @@ users.find = function find(userId) {
             if (rows.length > 0 && info.rowCount > 0) {
                 try {
                     let found = rows[0];
-                    deferred.resolve(new User(found.userid, found.nick, found.weight, found.gender, found.height, found.read_terms));
+                    let nick = utils.decrypt(found.nick);
+                    deferred.resolve(new User(found.userid, nick, found.weight, found.gender, found.height, found.read_terms));
                 } catch (err) {
                     deferred.reject(err);
                 }
@@ -236,6 +237,7 @@ User.prototype.drinkBoozeLate = function(drinks, hours) {
 User.prototype.updateInfo = function(username, weight, gender, height, read_terms) {
     let deferred = when.defer();
     let self = this;
+    username = utils.encrypt(username);
     query('update users set nick=$1, weight=$2, gender=$3, height=$4, read_terms=$5 where userId=$6', [username, weight, gender, height, read_terms, self.userId])
         .then(() => {
             deferred.resolve();

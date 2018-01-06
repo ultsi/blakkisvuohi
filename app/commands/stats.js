@@ -50,7 +50,7 @@ function printStats(context, user, msg, words)  {
             .then((res) => {
                 console.log(res);
                 const top10Stats = res.top10UserStats;
-                const top10text = top10Stats.map((stats) => stats.nick + ' - ' + stats.count).join('\n');
+                const top10text = top10Stats.map((stats) => utils.decrypt(stats.nick) + ' - ' + stats.count).join('\n');
                 const groupDrinkSum = res.groupDrinkSum;
                 const firstDrinkCreated = new Date(groupDrinkSum.created);
                 const oneDay = 24 * 60 * 60 * 1000; // hours*minutes*seconds*milliseconds

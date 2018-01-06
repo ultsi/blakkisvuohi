@@ -27,6 +27,7 @@ const when = require('when');
 const log = require('loglevel').getLogger('system');
 const constants = require('../constants.js');
 const crypto = require('crypto');
+const _secret_ = process.env.SECRET;
 let utils = module.exports = {};
 
 utils.getDateMinusHours = function(hours) {
@@ -124,8 +125,8 @@ utils.attachMethods = function attachMethods(msg, bot) {
 };
 
 utils.roundTo = (n, t) => {
-    t = t || 0;
-    return Math.round(n*(Math.pow(10, t))) / Math.pow(10, t);
+    t = t ||  0;
+    return Math.round(n * (Math.pow(10, t))) / Math.pow(10, t);
 };
 
 utils.getRandom = function(arr) {
@@ -169,6 +170,20 @@ utils.getColorSet = function() {
 
 utils.hashSha256 = function(data) {
     const hash = crypto.createHash('sha256');
-    hash.update(''+data); // tostring
+    hash.update('' + data); // tostring
     return hash.digest('hex');
+};
+
+utils.encrypt = function(data) {
+    const cipher = crypto.createCipher('aes192', _secret_);
+    let encrypted = cipher.update(data, 'utf8', 'hex');
+    encrypted += cipher.final('hex');
+    return encrypted;
+};
+
+utils.decrypt = function(data) {
+    const cipher = crypto.createDecipher('aes192', _secret_);
+    let encrypted = cipher.update(data, 'hex', 'utf8');
+    encrypted += cipher.final('utf8');
+    return encrypted;
 };
