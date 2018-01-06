@@ -26,6 +26,7 @@ const query = require('pg-query');
 const when = require('when');
 const log = require('loglevel').getLogger('db');
 const utils = require('../lib/utils.js');
+const groups = require('../db/groups.js');
 query.connectionParameters = process.env.DATABASE_URL;
 
 let stats = module.exports = {};
@@ -63,11 +64,12 @@ stats.getGlobalStats = function() {
 
 stats.getGroupStats = function(groupId, hours) {
     let deferred = when.defer();
+    const group = new groups.Group(groupId);
     const hoursAgo = utils.getDateMinusHours(hours);
     log.debug('Fetching group stats from database');
     when.all([
-        query('select drinks.userid, nick, count from (select userid, count(*) as count from users_drinks where users_drinks.created >= $2 group by userid) as drinks join users on users.userid=drinks.userid join users_in_groups on users_in_groups.userid=users.userid where users_in_groups.groupid=$1 order by count desc limit 10', [groupId, hoursAgo]),
-        query('select sum(alcohol) as sum, min(created) as created from users_in_groups left outer join users_drinks on users_drinks.userid=users_in_groups.userid and users_in_groups.groupid=$1 and users_drinks.created >= $2', [groupId, hoursAgo])
+        query('select drinks.userid, nick, count from (select userid, count(*) as count from users_drinks where users_drinks.created >= $2 group by userid) as drinks join users on users.userid=drinks.userid join users_in_groups on users_in_groups.userid=users.userid where users_in_groups.groupid=$1 order by count desc limit 10', [group.groupId, hoursAgo]),
+        query('select sum(alcohol) as sum, min(created) as created from users_in_groups left outer join users_drinks on users_drinks.userid=users_in_groups.userid and users_in_groups.groupid=$1 and users_drinks.created >= $2', [group.groupId, hoursAgo])
     ]).spread((top10UserStats, groupDrinkSum) => {
         deferred.resolve({
             top10UserStats: top10UserStats[0],

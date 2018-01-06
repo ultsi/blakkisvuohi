@@ -34,7 +34,7 @@ query.connectionParameters = process.env.DATABASE_URL;
 let groups = module.exports = {};
 
 function Group(groupId) {
-    this.groupId = groupId;
+    this.groupId = utils.hashSha256(groupId);
 }
 
 groups.Group = Group;
@@ -214,4 +214,4 @@ Group.prototype.getPermillesListing = function() {
         deferred.reject('Isompi ongelma, ota yhteyttä adminiin.');
     });
     return deferred.promise;
-}
+};

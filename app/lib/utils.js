@@ -26,6 +26,7 @@
 const when = require('when');
 const log = require('loglevel').getLogger('system');
 const constants = require('../constants.js');
+const crypto = require('crypto');
 let utils = module.exports = {};
 
 utils.getDateMinusHours = function(hours) {
@@ -164,4 +165,10 @@ const wadsPalette = [
 
 utils.getColorSet = function() {
     return [].concat(wadsPalette); // return a copy
+};
+
+utils.hashSha256 = function(data) {
+    const hash = crypto.createHash('sha256');
+    hash.update(''+data); // tostring
+    return hash.digest('hex');
 };

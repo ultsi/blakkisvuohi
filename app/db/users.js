@@ -48,15 +48,7 @@ users.User = User;
 
 users.new = function(userId, nick, weight, gender, height, read_terms) {
     let deferred = when.defer();
-    let params = [parseInt(userId, 10), nick, parseInt(weight, 10), gender, parseInt(height, 10), read_terms];
-    let err = [];
-    if (!utils.isValidInt(params[0])) {
-        err.push('userid');
-    }
-    if (err.length > 0) {
-        deferred.reject(err);
-        return deferred.promise;
-    }
+    let params = [utils.hashSha256(parseInt(userId, 10)), nick, parseInt(weight, 10), gender, parseInt(height, 10), read_terms];
 
     query('insert into users (userId, nick, weight, gender, height, read_terms) values ($1, $2, $3, $4, $5, $6)', params)
         .then(() => {
@@ -71,6 +63,7 @@ users.new = function(userId, nick, weight, gender, height, read_terms) {
 
 users.find = function find(userId) {
     let deferred = when.defer();
+    userId = utils.hashSha256(userId);
     query('select userId, nick, weight, gender, height, read_terms from users where userId=$1', [userId])
         .then((res) => {
             let rows = res[0];
