@@ -46,7 +46,7 @@ function groupDrinksByUser(drinks) {
         if (!drinksByUser[drink.userid]) {
             drinksByUser[drink.userid] = {
                 userid: drink.userid,
-                nick: drink.nick,
+                nick: utils.decrypt(drink.nick),
                 weight: drink.weight,
                 gender: drink.gender,
                 height: drink.height,
@@ -152,7 +152,7 @@ Group.prototype.getStandardDrinksListing = function() {
             let drinks = [];
             for (var userId in drinksByUser) {
                 let details = drinksByUser[userId];
-                let user = new users.User(details.userid, utils.decrypt(details.nick), details.weight, details.gender, details.height);
+                let user = new users.User(details.userid, details.nick, details.weight, details.gender, details.height);
                 let userEBAC = alcomath.calculateEBACFromDrinks(user, details.drinks);
                 let userGrams = userEBAC.grams;
                 if (userGrams > 0) {
@@ -190,7 +190,7 @@ Group.prototype.getPermillesListing = function() {
             let permilles = [];
             for (var userId in drinksByUser) {
                 let details = drinksByUser[userId];
-                let user = new users.User(details.userid, utils.decrypt(details.nick), details.weight, details.gender, details.height);
+                let user = new users.User(details.userid, details.nick, details.weight, details.gender, details.height);
                 let ebac = alcomath.calculateEBACFromDrinks(user, details.drinks);
                 let userPermilles = ebac.permilles;
                 if (userPermilles > 0) {
