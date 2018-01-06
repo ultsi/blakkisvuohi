@@ -51,7 +51,7 @@ function kuvaaja(context, user, msg, words) {
                 let colors = utils.getColorSet(drinksByUser.length);
                 for (let userId in drinksByUser) {
                     let details = drinksByUser[userId];
-                    let user = new users.User(details.userid, utils.decrypt(details.nick), details.weight, details.gender, details.height);
+                    let user = new users.User(details.userid, details.nick, details.weight, details.gender, details.height);
                     let permillesByHour = alcomath.calculateEBACByHourFromDrinks(user, details.drinks, lastNHours, predictNHours);
                     let permillesLastNHours = [];
                     let permillesPredictNHours = [];
