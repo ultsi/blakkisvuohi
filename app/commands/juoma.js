@@ -31,12 +31,12 @@ const strings = require('../strings.js');
 const message = require('../lib/message.js');
 
 let drinkCommand = {};
-drinkCommand.toStartText = 'Alkuun';
+drinkCommand.toStartText = strings.commands.juoma.to_start;
 drinkCommand.startKeyboard = [
-    ['Miedot', 'Tiukat', 'Oma']
+    [strings.commands.juoma.milds, strings.commands.juoma.booze, strings.commands.juoma.self_define]
 ];
 drinkCommand.miedotReply = {
-    text: 'Valitse mieto',
+    text: strings.commands.juoma.choose_mild,
     keyboard: [
         [constants.milds.beercan.print, constants.milds.beer4.print, constants.milds.beer05.print],
         [constants.milds.beer04.print, constants.milds.beerpint.print, constants.milds.lonkero.print],
@@ -45,7 +45,7 @@ drinkCommand.miedotReply = {
 };
 
 drinkCommand.tiukatReply = {
-    text: 'Valitse tiukka',
+    text: strings.commands.juoma.choose_booze,
     keyboard: [
         [constants.booze.mild.print, constants.booze.medium.print, constants.booze.basic.print, drinkCommand.toStartText]
     ]
@@ -57,7 +57,11 @@ function saveDrink(context, user, milligrams, drinkName) {
         .then((ebac) => {
             const permilles = ebac.permilles;
             const permilles30Min = ebac.permilles30Min;
-            deferred.resolve(context.privateReply(utils.getRandom(strings.drink_responses) + ' Nyt: ' + permilles.toFixed(2) + '‰, 30min: ' + permilles30Min.toFixed(2) + '‰'));
+            const text = utils.getRandom(strings.drink_responses) + ' ' + strings.short_permilles_text.format({
+                permilles: utils.roundTo(permilles, 2),
+                permilles30Min: utils.roundTo(permilles30Min, 2)
+            });
+            deferred.resolve(context.privateReply(text));
         }, (err) => {
             log.error(err);
             log.debug(err.stack);
@@ -68,7 +72,7 @@ function saveDrink(context, user, milligrams, drinkName) {
 
 let command = {
     [0]: {
-        startMessage: message.PrivateKeyboardMessage('Valitse juoman kategoria', drinkCommand.startKeyboard),
+        startMessage: message.PrivateKeyboardMessage(strings.commands.juoma.start, drinkCommand.startKeyboard),
         validateInput: (context, user, msg, words) => {
             return drinkCommand.startKeyboard[0].find((x) => x.toLowerCase() === msg.text.toLowerCase());
         },
@@ -79,7 +83,7 @@ let command = {
             return deferred.promise;
         },
         nextPhase: 0,
-        errorMessage: message.PrivateKeyboardMessage('Valitse juoman kategoria', drinkCommand.startKeyboard)
+        errorMessage: message.PrivateKeyboardMessage(strings.commands.juoma.start, drinkCommand.startKeyboard)
     },
     miedot: {
         startMessage: message.PrivateKeyboardMessage(drinkCommand.miedotReply.text, drinkCommand.miedotReply.keyboard),
@@ -134,7 +138,7 @@ let command = {
         errorMessage: message.PrivateKeyboardMessage(drinkCommand.tiukatReply.text, drinkCommand.tiukatReply.keyboard)
     },
     oma: {
-        startMessage: message.PrivateMessage('Syötä juoman tilavuusprosentti, esim: 12.5.'),
+        startMessage: message.PrivateMessage(strings.commands.juoma.self_define_vol),
         validateInput: (context, user, msg, words) => {
             let vol = parseFloat(words[0]);
             return utils.isValidFloat(vol) && vol > 0 ||  vol < 100;
@@ -147,10 +151,10 @@ let command = {
             return deferred.promise;
         },
         nextPhase: 'oma',
-        errorMessage: message.PrivateMessage('Syötä juoman tilavuusprosentti, esim: 12.5.')
+        errorMessage: message.PrivateMessage(strings.commands.juoma.self_define_vol)
     },
     omacl: {
-        startMessage: message.PrivateMessage('Syötä juoman määrä senttilitroissa, esim: 4'),
+        startMessage: message.PrivateMessage(strings.commands.juoma.self_define_cl),
         validateInput: (context, user, msg, words) => {
             let cl = parseInt(words[0]);
             return utils.isValidInt(cl) && cl > 0 ||  cl < 250;
@@ -163,7 +167,7 @@ let command = {
             return saveDrink(context, user, mg, 'Oma juoma - ' + cl + 'cl ' + vol + '%');
         },
         nextPhase: 'omacl',
-        errorMessage: message.PrivateMessage('Syötä juoman määrä senttilitroissa, esim: 4')
+        errorMessage: message.PrivateMessage(strings.commands.juoma.self_define_cl)
     },
     END: {
         /* empty for ending the command */
@@ -172,7 +176,7 @@ let command = {
 
 Commands.registerUserCommandV2(
     '/juoma',
-    '/juoma - lisää yksi juoma tilastoihin',
+    strings.commands.juoma.cmd_text,
     Commands.TYPE_PRIVATE,
     command
 );

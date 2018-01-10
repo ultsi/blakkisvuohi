@@ -28,7 +28,7 @@ const strings = require('../strings.js');
 
 const aboutCommand = {
     [0]: {
-        startMessage: Message.PrivateMessage(strings.about, {
+        startMessage: Message.PrivateMessage(strings.commands.about.text, {
             'parse_mode': 'Markdown'
         }),
         validateInput: () => {return true;},
@@ -38,6 +38,6 @@ const aboutCommand = {
 
 Commands.register(
     '/about',
-    '/about - About the bot',
+    strings.commands.about.cmd_text,
     Commands.TYPE_PRIVATE, aboutCommand
 );

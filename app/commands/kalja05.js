@@ -18,7 +18,7 @@
 
 /*
     /kalja05
-    Drink one 0.5l 4.7% beer 
+    Drink one 0.5l 4.7% beer
 */
 'use strict';
 const when = require('when');
@@ -34,7 +34,11 @@ function kalja05Command(context, user, msg, words) {
         .then((ebac) => {
             const permilles = ebac.permilles;
             const permilles30Min = ebac.permilles30Min;
-            deferred.resolve(context.privateReply(utils.getRandom(strings.drink_responses) + ' Nyt: ' + permilles.toFixed(2) + '‰, 30min: ' + permilles30Min.toFixed(2) + '‰'));
+            const text = utils.getRandom(strings.drink_responses) + ' ' + strings.short_permilles_text.format({
+                permilles: utils.roundTo(permilles, 2),
+                permilles30Min: utils.roundTo(permilles30Min, 2)
+            });
+            deferred.resolve(context.privateReply(text));
         }, (err) => {
             log.error(err);
             log.debug(err.stack);
@@ -46,6 +50,6 @@ function kalja05Command(context, user, msg, words) {
 
 Commands.registerUserCommand(
     '/kalja05',
-    '/kalja05 - pikanäppäin yhdelle kappaleelle 0.5l olutta. Ammattilaiskäyttöön.',
+    strings.commands.kalja05.cmd_text,
     Commands.TYPE_PRIVATE, [kalja05Command]
 );
