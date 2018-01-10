@@ -30,7 +30,7 @@ const settings = require('../settings.js');
 const strings = require('../strings.js');
 const utils = require('./utils.js');
 const log = require('loglevel').getLogger('system');
-
+const announcements = require('../announcements.js');
 
 let Commands = module.exports = {};
 let cmds = {};
@@ -114,6 +114,11 @@ function callCommandFunction(context, cmd, msg, words) {
                 if (!user.read_terms) {
                     msg.sendPrivateMessage('Päivitä käyttäjätietosi käyttämällä komentoa /tunnus.');
                     return;
+                }
+                if (user.read_announcements < announcements.length) {
+                    const unread_announcements = announcements.slice(user.read_announcements, announcements.length);
+                    msg.sendPrivateMessage('Ilmoituksia:\n\n' + unread_announcements.join('\n\n'));
+                    user.updateReadAnnouncements(announcements.length);
                 }
                 try {
                     log.debug('Executing phase ' + context.phase + ' of usercmd ' + cmd.name);
