@@ -27,6 +27,7 @@ const when = require('when');
 const log = require('loglevel').getLogger('db');
 const utils = require('../lib/utils.js');
 const alcomath = require('../lib/alcomath.js');
+const announcements = require('../announcements.js');
 query.connectionParameters = process.env.DATABASE_URL;
 
 let users = module.exports = {};
@@ -35,22 +36,23 @@ function isValidGender(gender) {
     return gender === 'mies' || gender === 'nainen';
 }
 
-function User(userId, username, weight, gender, height, read_terms) {
+function User(userId, username, weight, gender, height, read_terms, read_announcements) {
     this.userId = userId;
     this.username = username;
     this.weight = weight;
     this.gender = gender;
     this.height = height;
     this.read_terms = read_terms;
+    this.read_announcements = read_announcements;
 }
 
 users.User = User;
 
 users.new = function(userId, nick, weight, gender, height, read_terms) {
     let deferred = when.defer();
-    let params = [utils.hashSha256(parseInt(userId, 10)), utils.encrypt(nick), parseInt(weight, 10), gender, parseInt(height, 10), read_terms];
+    const params = [utils.hashSha256(parseInt(userId, 10)), utils.encrypt(nick), parseInt(weight, 10), gender, parseInt(height, 10), read_terms, announcements.length];
 
-    query('insert into users (userId, nick, weight, gender, height, read_terms) values ($1, $2, $3, $4, $5, $6)', params)
+    query('insert into users (userId, nick, weight, gender, height, read_terms, read_announcements) values ($1, $2, $3, $4, $5, $6, $7)', params)
         .then(() => {
             deferred.resolve(new User(params[0], utils.decrypt(params[1]), params[2], gender, params[4], params[5]));
         }, (err) => {
@@ -64,7 +66,7 @@ users.new = function(userId, nick, weight, gender, height, read_terms) {
 users.find = function find(userId) {
     let deferred = when.defer();
     userId = utils.hashSha256(userId);
-    query('select userId, nick, weight, gender, height, read_terms from users where userId=$1', [userId])
+    query('select userId, nick, weight, gender, height, read_terms, read_announcements from users where userId=$1', [userId])
         .then((res) => {
             let rows = res[0];
             let info = res[1];
@@ -72,7 +74,7 @@ users.find = function find(userId) {
                 try {
                     let found = rows[0];
                     let nick = utils.decrypt(found.nick);
-                    deferred.resolve(new User(found.userid, nick, found.weight, found.gender, found.height, found.read_terms));
+                    deferred.resolve(new User(found.userid, nick, found.weight, found.gender, found.height, found.read_terms, found.read_announcements));
                 } catch (err) {
                     deferred.reject(err);
                 }
@@ -239,6 +241,21 @@ User.prototype.updateInfo = function(username, weight, gender, height, read_term
     let self = this;
     username = utils.encrypt(username);
     query('update users set nick=$1, weight=$2, gender=$3, height=$4, read_terms=$5 where userId=$6', [username, weight, gender, height, read_terms, self.userId])
+        .then(() => {
+            deferred.resolve();
+        }, (err) => {
+            log.error(err);
+            log.debug(err.stack);
+            deferred.reject(err);
+        });
+
+    return deferred.promise;
+};
+
+User.prototype.updateReadAnnouncements = function(read_announcements_count) {
+    const deferred = when.defer();
+    const self = this;
+    query('update users set read_announcements=$1 where userId=$2', [read_announcements_count, self.userId])
         .then(() => {
             deferred.resolve();
         }, (err) => {
