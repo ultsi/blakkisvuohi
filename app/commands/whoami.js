@@ -25,7 +25,7 @@
 const Commands = require('../lib/commands.js');
 
 function whoAmI(context, user, msg, words) {
-    return context.privateReply('Käyttäjä ' + user.username + ', id: ' + user.userId + ', paino: ' + user.weight + 'kg, pituus: ' + user.height + 'cm, sukupuoli: ' + user.gender);
+    return context.privateReply('Käyttäjä ' + user.username + '\nID: ' + user.userId + '\nPaino: ' + user.weight + 'kg\nPituus: ' + user.height + 'cm\nSukupuoli: ' + user.gender + '\nKäyttäjä luotu: ' + user.created.toString());
 }
 
 Commands.registerUserCommand(

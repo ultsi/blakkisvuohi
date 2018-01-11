@@ -44,7 +44,7 @@ function User(userId, username, weight, gender, height, read_terms, read_announc
     this.height = height;
     this.read_terms = read_terms;
     this.read_announcements = read_announcements;
-    this.created = Date.parse(created);
+    this.created = new Date(created);
 }
 
 users.User = User;
