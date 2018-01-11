@@ -36,7 +36,7 @@ function isValidGender(gender) {
     return gender === 'mies' || gender === 'nainen';
 }
 
-function User(userId, username, weight, gender, height, read_terms, read_announcements) {
+function User(userId, username, weight, gender, height, read_terms, read_announcements, created) {
     this.userId = userId;
     this.username = username;
     this.weight = weight;
@@ -44,6 +44,7 @@ function User(userId, username, weight, gender, height, read_terms, read_announc
     this.height = height;
     this.read_terms = read_terms;
     this.read_announcements = read_announcements;
+    this.created = new Date(created);
 }
 
 users.User = User;
@@ -54,7 +55,7 @@ users.new = function(userId, nick, weight, gender, height, read_terms) {
 
     query('insert into users (userId, nick, weight, gender, height, read_terms, read_announcements) values ($1, $2, $3, $4, $5, $6, $7)', params)
         .then(() => {
-            deferred.resolve(new User(params[0], utils.decrypt(params[1]), params[2], gender, params[4], params[5]));
+            deferred.resolve(new User(params[0], utils.decrypt(params[1]), params[2], gender, params[4], params[5], Date.now()));
         }, (err) => {
             log.error(err);
             log.debug(err.stack);
@@ -66,7 +67,7 @@ users.new = function(userId, nick, weight, gender, height, read_terms) {
 users.find = function find(userId) {
     let deferred = when.defer();
     userId = utils.hashSha256(userId);
-    query('select userId, nick, weight, gender, height, read_terms, read_announcements from users where userId=$1', [userId])
+    query('select userId, nick, weight, gender, height, read_terms, read_announcements, created from users where userId=$1', [userId])
         .then((res) => {
             let rows = res[0];
             let info = res[1];
@@ -74,7 +75,7 @@ users.find = function find(userId) {
                 try {
                     let found = rows[0];
                     let nick = utils.decrypt(found.nick);
-                    deferred.resolve(new User(found.userid, nick, found.weight, found.gender, found.height, found.read_terms, found.read_announcements));
+                    deferred.resolve(new User(found.userid, nick, found.weight, found.gender, found.height, found.read_terms, found.read_announcements, found.created));
                 } catch (err) {
                     deferred.reject(err);
                 }

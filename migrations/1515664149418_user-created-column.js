@@ -16,20 +16,18 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-/*
-    /whoami
-    If registered with the bot, tells about yourself
-*/
 'use strict';
 
-const Commands = require('../lib/commands.js');
+exports.up = (pgm) => {
+    pgm.addColumns('users', {
+        created: {
+            type: 'timestamp',
+            notNull: true,
+            default: 'now()'
+        }
+    });
+};
 
-function whoAmI(context, user, msg, words) {
-    return context.privateReply('Käyttäjä ' + user.username + '\nID: ' + user.userId + '\nPaino: ' + user.weight + 'kg\nPituus: ' + user.height + 'cm\nSukupuoli: ' + user.gender + '\nKäyttäjä luotu: ' + user.created.toString());
-}
-
-Commands.registerUserCommand(
-    '/whoami',
-    '/whoami - tulosta omat tietosi.',
-    Commands.TYPE_PRIVATE, [whoAmI]
-);
+exports.down = (pgm) => {
+    pgm.dropColumns('users', ['created']);
+};
