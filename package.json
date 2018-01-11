@@ -11,12 +11,11 @@
     "switch_to_dev": "export $(cat .env | xargs) && wget --spider https://api.telegram.org/bot$TOKEN/setWebhook?url= --delete-after && node index.js"
   },
   "engines": {
-    "node": "6.11.1"
+    "node": "8.9.4"
   },
   "author": "Joonas Ulmanen",
   "license": "GPL-3.0",
   "dependencies": {
-    "aws-sdk": "^2.61.0",
     "body-parser": "^1.15.0",
     "chart.js": "<=2.6.x",
     "chartjs-node": "^1.6.0",
