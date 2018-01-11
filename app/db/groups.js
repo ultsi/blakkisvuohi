@@ -60,7 +60,7 @@ function groupDrinksByUser(drinks) {
 
 Group.prototype.getDrinkSum = function() {
     let deferred = when.defer();
-    query('select sum(alcohol) as sum, min(created) as created from users_in_groups left outer join users_drinks on users_drinks.userid=users_in_groups.userid and users_in_groups.groupid=$1', [this.groupId])
+    query('select sum(alcohol) as sum, min(users_drinks.created) as created from users_in_groups left outer join users_drinks on users_drinks.userid=users_in_groups.userid and users_in_groups.groupid=$1', [this.groupId])
         .then((res) => {
             deferred.resolve(res[0][0]);
         }, (err) => {
@@ -74,7 +74,7 @@ Group.prototype.getDrinkSum = function() {
 Group.prototype.getDrinkSumForXHours = function(hours) {
     let deferred = when.defer();
     let hoursAgo = utils.getDateMinusHours(hours);
-    query('select sum(alcohol) as sum, min(created) as created from users_in_groups left outer join users_drinks on users_drinks.userid=users_in_groups.userid and users_in_groups.groupid=$1 and users_drinks.created >= $2', [this.groupId, hoursAgo])
+    query('select sum(alcohol) as sum, min(users_drinks.created) as created from users_in_groups left outer join users_drinks on users_drinks.userid=users_in_groups.userid and users_in_groups.groupid=$1 and users_drinks.created >= $2', [this.groupId, hoursAgo])
         .then((res) => {
             deferred.resolve(res[0][0]);
         }, (err) => {
@@ -113,7 +113,7 @@ Group.prototype.getDrinkSumsByUser = function(hours) {
 
 Group.prototype.getDrinkTimes = function() {
     let deferred = when.defer();
-    query('select users.userId, users.nick, users.weight, users.gender, users.height, coalesce(alcohol, 0) as alcohol, description, created from users_in_groups left outer join users_drinks on users_in_groups.userId=users_drinks.userId join users on users.userId=users_in_groups.userId where users_in_groups.groupId=$1 and created >= NOW() - \'2 day\'::INTERVAL order by created asc', [this.groupId])
+    query('select users.userId, users.nick, users.weight, users.gender, users.height, coalesce(alcohol, 0) as alcohol, description, users_drinks.created from users_in_groups left outer join users_drinks on users_in_groups.userId=users_drinks.userId join users on users.userId=users_in_groups.userId where users_in_groups.groupId=$1 and users_drinks.created >= NOW() - \'2 day\'::INTERVAL order by users_drinks.created asc', [this.groupId])
         .then((res) => {
             let drinksByUser = groupDrinksByUser(res[0]);
             deferred.resolve(drinksByUser);
@@ -128,7 +128,7 @@ Group.prototype.getDrinkTimes = function() {
 
 Group.prototype.getBoozeByHour = function() {
     let deferred = when.defer();
-    query('select users.userId, users.nick, users.weight, users.gender, users.height, (sum(sum(alcohol)) OVER (ORDER BY to_char(created, \'HH24:00\'))) as sum, to_char(created, \'HH24:00\') as time, to_char(created, \'YYYY-MM-DD HH24:00:00.000000+00\') as created_hour from users_drinks join users_in_groups on users_drinks.userid=users_in_groups.userid join users on users.userid=users_drinks.userid where groupid=$1 and created >= NOW() - \'1 day\'::INTERVAL group by time, users.userid, users.nick, users.weight, users.gender, users_drinks.alcohol, created_hour order by created_hour', [this.groupId])
+    query('select users.userId, users.nick, users.weight, users.gender, users.height, (sum(sum(alcohol)) OVER (ORDER BY to_char(users_drinks.created, \'HH24:00\'))) as sum, to_char(users_drinks.created, \'HH24:00\') as time, to_char(users_drinks.created, \'YYYY-MM-DD HH24:00:00.000000+00\') as created_hour from users_drinks join users_in_groups on users_drinks.userid=users_in_groups.userid join users on users.userid=users_drinks.userid where groupid=$1 and users_drinks.created >= NOW() - \'1 day\'::INTERVAL group by time, users.userid, users.nick, users.weight, users.gender, users_drinks.alcohol, created_hour order by created_hour', [this.groupId])
         .then((res) => {
             deferred.resolve(res[0]);
         }, (err) => {
