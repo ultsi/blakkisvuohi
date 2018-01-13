@@ -51,6 +51,6 @@ function kaljaCommand(context, user, msg, words) {
 
 Commands.registerUserCommand(
     '/kalja033',
-    strings.commands.kalja033.cmd_text,
+    strings.commands.kalja033.cmd_description,
     Commands.TYPE_PRIVATE, [kaljaCommand]
 );

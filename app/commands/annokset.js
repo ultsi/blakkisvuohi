@@ -121,6 +121,6 @@ function annokset(context, user, msg, words) {
 
 Commands.registerUserCommand(
     '/annokset',
-    strings.commands.annokset.cmd_text,
+    strings.commands.annokset.cmd_description,
     Commands.TYPE_ALL, [annokset]
 );

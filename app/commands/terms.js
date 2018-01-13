@@ -28,22 +28,20 @@ const strings = require('../strings.js');
 
 const termsCommand = {
     [0]: {
-        startMessage: Message.PrivateMessage(strings.terms, {
+        startMessage: Message.PrivateMessage(strings.commands.terms.reply, {
             'parse_mode': 'Markdown'
         }),
-        validateInput: () => {return true;},
-        onValidInput: (context) => {return context.end();}
+        validateInput: () => {
+            return true;
+        },
+        onValidInput: (context) => {
+            return context.end();
+        }
     }
 };
 
 Commands.register(
     '/terms',
-    '/terms - Terms of Service',
-    Commands.TYPE_PRIVATE, termsCommand
-);
-
-Commands.register(
-    '/privacy',
-    '/privacy - Privacy Policy',
+    strings.commands.terms.cmd_description,
     Commands.TYPE_PRIVATE, termsCommand
 );

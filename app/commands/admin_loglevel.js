@@ -24,8 +24,9 @@
 const when = require('when');
 const log = require('loglevel');
 const Commands = require('../lib/commands.js');
+const strings = require('../strings.js');
 
-function loglevel(context, user, msg, words)  {
+function loglevel(context, user, msg, words) {
     let deferred = when.defer();
     log.getLogger('commands').debug(log.getLoggers());
 
@@ -41,7 +42,10 @@ function loglevel(context, user, msg, words)  {
 
     log.getLogger(what).setLevel(level);
 
-    deferred.resolve(context.privateReply('Asetettu \'' + what + '\' tasoksi \'' + level + '\''));
+    deferred.resolve(context.privateReply(strings.commands.admin_loglevel.level_set_text.format({
+        logger: what,
+        level: level
+    })));
 
     context.end();
     return deferred.promise;
@@ -49,6 +53,6 @@ function loglevel(context, user, msg, words)  {
 
 Commands.registerAdminCommand(
     '/loglevel',
-    '/loglevel <system|commands> <debug|info|error> - säädä logauksen määrää.',
+    strings.commands.admin_loglevel.cmd_description,
     Commands.TYPE_PRIVATE, [loglevel]
 );

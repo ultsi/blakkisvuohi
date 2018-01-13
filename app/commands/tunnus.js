@@ -34,7 +34,7 @@ const strings = require('../strings.js');
 
 let command = {
     [0]: {
-        startMessage: message.PrivateMessage('Tervetuloa tunnuksen luomiseen tai päivittämiseen. Alkoholilaskuria varten tarvitsen seuraavat tiedot: paino, pituus ja sukupuoli.\n\nSyötä ensimmäiseksi paino kilogrammoissa ja kokonaislukuna:'),
+        startMessage: message.PrivateMessage(strings.commands.tunnus.start),
         validateInput: (context, msg, words) => {
             let weight = parseInt(words[0], 10);
             return utils.isValidInt(words[0]) && weight >= 20 && weight <= 250;
@@ -58,10 +58,10 @@ let command = {
             return deferred.promise;
         },
         nextPhase: 'height',
-        errorMessage: message.PrivateMessage('Syötä paino uudelleen. Painon pitää olla kokonaisluku ja ala- ja ylärajat ovat 20kg ja 250kg.')
+        errorMessage: message.PrivateMessage(strings.commands.tunnus.start_error)
     },
     height: {
-        startMessage: message.PrivateMessage('Paino tallennettu. Syötä seuraavaksi pituus senttimetreissä:'),
+        startMessage: message.PrivateMessage(strings.commands.tunnus.height),
         validateInput: (context, msg, words) => {
             let height = parseInt(words[0], 10);
             return utils.isValidInt(words[0]) && height >= 120 && height <= 240;
@@ -75,15 +75,15 @@ let command = {
             return deferred.promise;
         },
         nextPhase: 'gender',
-        errorMessage: message.PrivateMessage('Syötä pituus uudelleen. Pituuden täytyy olla kokonaisluku ja ala- ja ylärajat ovat 120cm ja 240cm.')
+        errorMessage: message.PrivateMessage(strings.commands.tunnus.height_error)
     },
     gender: {
-        startMessage: message.PrivateKeyboardMessage('Pituus tallennettu. Syötä seuraavaksi sukupuoli:', [
-            ['Mies', 'Nainen']
+        startMessage: message.PrivateKeyboardMessage(strings.commands.tunnus.gender, [
+            [strings.gender.male, strings.gender.female]
         ]),
         validateInput: (context, msg, words) => {
             let gender = words[0].toLowerCase();
-            return gender === 'mies' ||  gender === 'nainen';
+            return gender === strings.gender.male.toLowerCase() || gender === strings.gender.female.toLowerCase();
         },
         onValidInput: (context, msg, words) => {
             let deferred = when.defer();
@@ -94,23 +94,25 @@ let command = {
             return deferred.promise;
         },
         nextPhase: 'terms',
-        errorMessage: message.PrivateKeyboardMessage('Syötä joko mies tai nainen:', [
-            ['Mies', 'Nainen']
+        errorMessage: message.PrivateKeyboardMessage(strings.commands.tunnus.gender_error, [
+            [strings.gender.male, strings.gender.female]
         ])
     },
     terms: {
-        startMessage: message.PrivateKeyboardMessage('Sukupuoli tallennettu. \n\n' + strings.terms + '\n\nOletko lukenut ja hyväksynyt käyttöehdot?', [
-            ['Kyllä', 'En']
+        startMessage: message.PrivateKeyboardMessage(strings.commands.tunnus.terms.format({
+            terms: strings.commands.terms.reply
+        }), [
+            [strings.commands.tunnus.terms_answer_yes, strings.commands.tunnus.terms_answer_no]
         ]),
         validateInput: (context, msg, words) => {
             let read = words[0].toLowerCase();
-            return read === 'kyllä' || read === 'en';
+            return read === strings.commands.tunnus.terms_answer_yes.toLowerCase() || read === strings.commands.tunnus.terms_answer_no.toLowerCase();
         },
         onValidInput: (context, msg, words) => {
             let deferred = when.defer();
             let read = words[0].toLowerCase();
-            if (read === 'en') {
-                deferred.resolve(context.privateReply('Lue käyttöehdot ja hyväksy ne, ennen kuin voit käyttää muita komentoja.'));
+            if (read === strings.commands.tunnus.terms_answer_no.toLowerCase()) {
+                deferred.resolve(context.privateReply(strings.commands.tunnus.terms_on_reject));
                 context.end();
                 return deferred.promise;
             }
@@ -124,17 +126,19 @@ let command = {
                 .then((user) => {
                     user.updateInfo(username, weight, gender, height, true)
                         .then(() => {
-                            deferred.resolve(context.privateReply('Olet jo rekisteröitynyt. Tiedot päivitetty.'));
+                            deferred.resolve(context.privateReply(strings.commands.tunnus.update));
                         }, (err) => {
                             log.error('Error creating new user! ' + err);
                             log.debug(err.stack);
-                            deferred.resolve(context.privateReply('Olet jo rekisteröitynyt, mutta tietojen päivityksessä tuli ongelma. Ota yhteyttä adminiin.'));
+                            deferred.resolve(context.privateReply(strings.commands.tunnus.update_error));
                         });
                 }, () => {
                     // try to create a new user
                     users.new(userId, username, weight, gender, height, true)
                         .then((user) => {
-                            deferred.resolve(context.privateReply('Moikka ' + user.username + '! Tunnuksesi luotiin onnistuneesti. Muista, että kaikki antamani luvut ovat vain arvioita, eikä niihin voi täysin luottaa. Ja eikun juomaan!'));
+                            deferred.resolve(context.privateReply(strings.commands.tunnus.new_user.format({
+                                username: user.username
+                            })));
                         }, (err) => {
                             log.error('Error creating new user! ' + err);
                             log.debug(err.stack);
@@ -144,8 +148,8 @@ let command = {
 
             return deferred.promise;
         },
-        errorMessage: message.PrivateKeyboardMessage('Oletko lukenut ja hyväksynyt käyttöehdot?', [
-            ['Kyllä', 'En']
+        errorMessage: message.PrivateKeyboardMessage(strings.commands.tunnus.terms_error, [
+            [strings.commands.tunnus.terms_answer_yes, strings.commands.tunnus.terms_answer_no]
         ])
     }
 };
@@ -153,6 +157,6 @@ let command = {
 // Register the command
 Commands.register(
     '/tunnus',
-    '/tunnus - Luo itsellesi uusi tunnus tai muokkaa tunnustasi.',
+    strings.commands.tunnus.cmd_description,
     Commands.TYPE_PRIVATE, command
 );

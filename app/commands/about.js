@@ -31,13 +31,17 @@ const aboutCommand = {
         startMessage: Message.PrivateMessage(strings.commands.about.text, {
             'parse_mode': 'Markdown'
         }),
-        validateInput: () => {return true;},
-        onValidInput: (context) => {return context.end();}
+        validateInput: () => {
+            return true;
+        },
+        onValidInput: (context) => {
+            return context.end();
+        }
     }
 };
 
 Commands.register(
     '/about',
-    strings.commands.about.cmd_text,
+    strings.commands.about.cmd_description,
     Commands.TYPE_PRIVATE, aboutCommand
 );

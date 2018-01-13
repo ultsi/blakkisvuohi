@@ -176,7 +176,7 @@ let command = {
 
 Commands.registerUserCommandV2(
     '/juoma',
-    strings.commands.juoma.cmd_text,
+    strings.commands.juoma.cmd_description,
     Commands.TYPE_PRIVATE,
     command
 );

@@ -24,8 +24,9 @@
 const when = require('when');
 const log = require('loglevel').getLogger('commands');
 const Commands = require('../lib/commands.js');
+const strings = require('../strings.js');
 
-function moro(context, user, msg, words)  {
+function moro(context, user, msg, words) {
     let deferred = when.defer();
     if (msg.chat.type === 'private') {
         deferred.reject('Käytä tätä komentoa ryhmässä!');
@@ -33,11 +34,15 @@ function moro(context, user, msg, words)  {
     }
     user.joinGroup(msg)
         .then(() => {
-            deferred.resolve(context.chatReply('Rippaa rauhassa kera ' + msg.chat.title + ' -kavereiden.'));
+            deferred.resolve(context.chatReply(strings.commands.moro.join_text.format({
+                chat_title: msg.chat.title
+            })));
         }, (err) => {
             log.error(err);
             log.debug(err.stack);
-            deferred.resolve(context.chatReply('Rippaa rauhassa kera ' + msg.chat.title + ' -kavereiden.'));
+            deferred.resolve(context.chatReply(strings.commands.moro.join_text.format({
+                chat_title: msg.chat.title
+            })));
         });
     context.end();
     return deferred.promise;
@@ -45,6 +50,6 @@ function moro(context, user, msg, words)  {
 
 Commands.registerUserCommand(
     '/moro',
-    '/moro - Lisää sinut ryhmään mukaan.',
+    strings.commands.moro.cmd_description,
     Commands.TYPE_ALL, [moro]
 );

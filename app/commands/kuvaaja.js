@@ -30,18 +30,21 @@ const utils = require('../lib/utils.js');
 const groups = require('../db/groups.js');
 const users = require('../db/users.js');
 const linechart = require('../lib/linechart.js');
+const strings = require('../strings.js');
 
 
 function kuvaaja(context, user, msg, words) {
     let deferred = when.defer();
     log.debug('Trying to form graph image');
 
-    let graphTitle = 'Promillekuvaaja feat. ' + msg.chat.title;
+    let graphTitle = strings.commands.kuvaaja.graph_title.format({
+        chat_title: msg.chat.title
+    });
 
     let group = new groups.Group(msg.chat.id);
     group.getDrinkTimes(msg.chat.id)
         .then((drinksByUser) => {
-            try  {
+            try {
                 const lastNHours = 24;
                 const predictNHours = 12;
                 let labels = [];
@@ -66,7 +69,7 @@ function kuvaaja(context, user, msg, words) {
                             permillesPredictNHours[i] = permillesByHour[i].permilles;
                         }
                         /*
-                        // Trim start & end if no data (i.e. 0) 
+                        // Trim start & end if no data (i.e. 0)
                         if (permillesByHour[i].permilles === 0) {
                             if (!trimFromStart[userId] || trimFromStart[userId] === i - 1) {
                                 trimFromStart[userId] = i;
@@ -103,7 +106,7 @@ function kuvaaja(context, user, msg, words) {
                 // force trimFromEndMax to current hour
                 trimFromEndMax = trimFromEndMax < lastNHours + 1 ? lastNHours + 1 : trimFromEndMax;
 
-                // Trim datasets 
+                // Trim datasets
                 for (let i = 0; i < datasets.length; i += 1) {
                     datasets[i].data = datasets[i].data.slice(trimFromStartMin, trimFromEndMax);
                 }
@@ -118,9 +121,9 @@ function kuvaaja(context, user, msg, words) {
                     }, (err) => {
                         log.error(err);
                         log.debug(err.stack);
-                        deferred.resolve(context.chatReply('Kuvan muodostus epäonnistui!'));
+                        deferred.resolve(context.chatReply(strings.commands.kuvaaja.img_failed));
                     });
-            } catch (err)  {
+            } catch (err) {
                 log.error(err);
                 log.debug(err.stack);
                 deferred.reject('Isompi ongelma, ota yhteyttä adminiin.');
@@ -137,6 +140,6 @@ function kuvaaja(context, user, msg, words) {
 
 Commands.registerUserCommand(
     '/kuvaaja',
-    '/kuvaaja - Näyttää ryhmän 24h tapahtumat kuvaajana.',
+    strings.commands.kuvaaja.cmd_description,
     Commands.TYPE_ALL, [kuvaaja]
 );

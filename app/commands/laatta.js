@@ -26,26 +26,31 @@ const log = require('loglevel').getLogger('commands');
 const Commands = require('../lib/commands.js');
 const alcomath = require('../lib/alcomath.js');
 const message = require('../lib/message.js');
+const strings = require('../strings.js');
 
 let command = {
     [0]: {
-        startMessage: message.PrivateKeyboardMessage('Olet laattaamassa viimeksi juodun juomasi. Oletko varma?', [
-            ['Kyllä', 'En']
+        startMessage: message.PrivateKeyboardMessage(strings.commands.laatta.start_text, [
+            [strings.commands.laatta.start_answer_yes, strings.commands.laatta.start_answer_no]
         ]),
         validateInput: (context, user, msg, words) => {
             let answer = words[0].toLowerCase();
-            return answer === 'kyllä' || answer === 'en';
+            return answer === strings.commands.laatta.start_answer_yes.toLowerCase() || answer === strings.commands.laatta.start_answer_no.toLowerCase();
         },
         onValidInput: (context, user, msg, words) => {
             let deferred = when.defer();
-            if (words[0].toLowerCase() === 'kyllä') {
+            if (words[0].toLowerCase() === strings.commands.laatta.start_answer_yes.toLowerCase()) {
                 user.undoDrink()
                     .then(() => {
                         user.getBooze()
                             .then((drinks) => {
                                 let ebac = alcomath.calculateEBACFromDrinks(user, drinks);
                                 let permilles = ebac.permilles;
-                                deferred.resolve(context.privateReply('Laatta onnistui. Olet enää ' + permilles.toFixed(2) + '‰ humalassa.'));
+                                let permilles30Min = ebac.permilles30Min;
+                                deferred.resolve(context.privateReply(strings.commands.laatta.success.format({
+                                    permilles: permilles,
+                                    permilles30Min: permilles30Min
+                                })));
                             }, (err) => {
                                 log.error(err);
                                 log.debug(err.stack);
@@ -57,16 +62,16 @@ let command = {
                         deferred.reject(err);
                     });
             } else {
-                deferred.resolve(context.privateReply('Laatta peruttu.'));
+                deferred.resolve(context.privateReply(strings.commands.laatta.cancel));
             }
             return deferred.promise;
         },
-        errorMessage: message.PrivateMessage('Kirjoita kyllä tai en')
+        errorMessage: message.PrivateMessage(strings.commands.laatta.error_text)
     }
 };
 
 Commands.registerUserCommandV2(
     '/laatta',
-    '/laatta - kumoaa edellisen lisätyn juoman',
+    strings.commands.laatta.cmd_description,
     Commands.TYPE_PRIVATE, command
 );

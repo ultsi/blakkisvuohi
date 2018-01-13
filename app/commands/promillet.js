@@ -118,4 +118,4 @@ function listPermilles(context, user, msg, words) {
     return deferred.promise;
 }
 
-Commands.registerUserCommand('/promillet', '/promillet - näytä sinun tai ryhmän promillet. Yksityisviestinä käytettynä listaa myös viimeisen 3pv tapahtumat.', Commands.TYPE_ALL, [listPermilles]);
+Commands.registerUserCommand('/promillet', strings.commands.promillet.cmd_description, Commands.TYPE_ALL, [listPermilles]);

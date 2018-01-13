@@ -129,7 +129,7 @@ let command = {
 
 Commands.registerUserCommandV2(
     '/jalkikellotus',
-    strings.commands.jalkikellotus.cmd_text,
+    strings.commands.jalkikellotus.cmd_description,
     Commands.TYPE_PRIVATE,
     command
 );
