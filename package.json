@@ -8,7 +8,8 @@
     "set_env": "export $(cat .env | xargs)",
     "start_win": "node index.js",
     "set_env_win": "env.cmd",
-    "switch_to_dev": "export $(cat .env | xargs) && wget --spider https://api.telegram.org/bot$TOKEN/setWebhook?url= --delete-after && node index.js"
+    "switch_to_dev": "export $(cat .env | xargs) && wget --spider https://api.telegram.org/bot$TOKEN/setWebhook?url= --delete-after && node index.js",
+    "test:": "mocha"
   },
   "engines": {
     "node": "6.11.1"
