@@ -52,9 +52,8 @@ let alcomath = module.exports = {};
     where BAC[n] is the same equation as BAC above, but elimination rate is excluded
 
     Ethanol grams per litre = 0.789g/cm^3
-    Ethanol grams in a serving 
+    Ethanol grams in a serving
     Pure alcohol mass = volume * (alcohol by volume * volumetric mass density)
-     
     where,  volume (litres)
             alcohol by volume = reported vol percentage (for example 4.7%)
             volumetric mass density = 789.24g/l
@@ -67,13 +66,13 @@ let alcomath = module.exports = {};
 */
 
 /*
-    Sum the milligrams of drinks over time from 
+    Sum the milligrams of drinks over time from
     first drink's start time to current time
-    Calculate EBAC every time, if x<0, set time 
+    Calculate EBAC every time, if x<0, set time
     to start again from the current drink
 */
 
-/*  
+/*
     Seidl et al. (8) gathered height (in centimeters), weight
     (in kilograms), blood water content, and TBW data for 256
     women and 273 men and used the data to fine tune the Widmark
@@ -91,8 +90,8 @@ alcomath.getWidmarkFactorForUser = (user) => {
 };
 
 // TODO: maybe mean+-0.01 based on drinking habits
-alcomath.getUserMetabolismRate = function(user) {
-    return 0.17; // mean MR is usually between 0.15-0.20 
+alcomath.getUserMetabolismRate = function() {
+    return constants.METABOLISM_RATE; // mean MR is usually between 0.15-0.20
 };
 
 
@@ -132,7 +131,7 @@ alcomath.calculateEBACFromDrinks = (user, drinks) => {
     const in30Mins = now + constants.HOUR_IN_MILLIS * 0.5;
     const MR = alcomath.getUserMetabolismRate(user);
 
-    if (!drinks || drinks.length === 0) {
+    if (!drinks || drinks.length === 0) {
         return {
             permilles: 0,
             permilles30Min: 0,
