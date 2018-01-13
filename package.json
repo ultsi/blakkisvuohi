@@ -9,7 +9,8 @@
     "start_win": "node index.js",
     "set_env_win": "env.cmd",
     "switch_to_dev": "export $(cat .env | xargs) && wget --spider https://api.telegram.org/bot$TOKEN/setWebhook?url= --delete-after && node index.js",
-    "test": "./node_modules/mocha/bin/mocha -w test/*"
+    "migrate": "export $(cat .env) && ./node_modules/node-pg-migrate/bin/node-pg-migrate up",
+    "test": "export $(cat .env) && ./node_modules/mocha/bin/mocha -w test/*"
   },
   "engines": {
     "node": "6.11.1"
