@@ -114,7 +114,7 @@ contexts.Context.prototype.photoReply = function(stream, caption) {
 };
 
 contexts.Context.prototype.sendMessage = function(message) {
-    if (!message.type ||  !message.text) {
+    if (!message.type || !message.text) {
         log.error('sendMessage: invalid message object! ' + message);
         return;
     }
