@@ -53,7 +53,7 @@ stats.getGlobalStats = function() {
                 groupsCount: groupsCount[0][0].count,
                 top10UserStats: top10UserStats[0]
             });
-        }, (err) => {
+        }).catch((err) => {
             log.error(err);
             log.debug(err.stack);
             deferred.reject(err);

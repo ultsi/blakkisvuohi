@@ -51,7 +51,7 @@ describe('users.js', function() {
 
     describe('users.new()', function() {
         it('should insert a user to database', function(done) {
-            users.new('id', 'nick', 90, 'mies', 190, 'asd', 1, Date.now())
+            users.new('id', 'nick', 90, 'mies', 190, true, 1, Date.now())
                 .then(() => {
                     done();
                 }, (err) => {
