@@ -26,52 +26,14 @@
 'use strict';
 
 const assert = require('assert');
+const blakkistest = require('../blakkistest.js');
 const stats = require('../../app/db/stats.js');
-const utils = require('../../app/lib/utils.js');
 const query = require('pg-query');
-const when = require('when');
 query.connectionParameters = process.env.DATABASE_URL;
 
-let testUsers = [{}, {}, {}, {}, {}, {}, {}, {}, {}, {}]; // 10 users
-testUsers = testUsers.map((user, i) => {
-    user.userid = i + '';
-    user.username = utils.encrypt(i + '');
-    user.weight = 80 + i;
-    user.height = 180 + i;
-    user.gender = 'mies';
-    user.read_terms = true;
-    user.read_announcements = 1;
-    return user;
-});
-
-let testGroups = [{
-    id: utils.hashSha256('1'),
-    users: testUsers.map(user => user.userid)
-}];
-
-let userInsertValuesStr = testUsers.map(user => {
-    return `('${user.userid}', '${user.username}', ${user.weight}, '${user.gender}', ${user.height}, ${user.read_terms}, ${user.read_announcements})`;
-});
-let userInGroupsValuesStr = testGroups.map(group => {
-    return group.users.map(userid => `('${group.id}', '${userid}')`).join(', ');
-});
 
 describe('stats.js', function() {
-    beforeEach(function(done) {
-        when.all([
-            query('delete from users'),
-            query('delete from users_drinks'),
-            query('delete from users_in_groups')
-        ]).spread(() => {
-            when.all([
-                    query('insert into users (userid, nick, weight, gender, height, read_terms, read_announcements) values ' + userInsertValuesStr.join(', ')),
-                    query('insert into users_in_groups (groupid, userid) values ' + userInGroupsValuesStr.join(', '))
-                ])
-                .spread(() => done()).catch((err) => done(new Error(err)));
-        }, (err) => {
-            done(new Error(err));
-        });
-    });
+    beforeEach(blakkistest.resetDbWithTestUsersAndGroupsAndDrinks);
 
     describe('stats.getGlobalStats()', function() {
         it('should return an object with 7 fields', function(done) {
@@ -95,26 +57,21 @@ describe('stats.js', function() {
         });
 
         it('should count active users and groups correctly and list top10 in correct order', function(done) {
-            query(`insert into users_drinks (userId, alcohol, description) values (${testUsers[0].userid}, 12347, 'kalja'), (${testUsers[0].userid}, 12347, 'kalja'), (${testUsers[1].userid}, 12347, 'kalja')`)
-                .then(() => {
-                    stats.getGlobalStats()
-                        .then((res) => {
-                            try {
-                                assert.equal(res.usersCount, 10);
-                                assert.equal(res.activeUsers14DaysCount, 2);
-                                assert.equal(res.activeUsers7DaysCount, 2);
-                                assert.equal(res.activeGroups14DaysCount, 1);
-                                assert.equal(res.activeGroups7DaysCount, 1);
-                                assert.equal(res.top10UserStats.length, 2);
-                                assert.equal(res.top10UserStats[0].userid, testUsers[0].userid);
-                                assert.equal(res.top10UserStats[1].userid, testUsers[1].userid);
-                                done();
-                            } catch (err) {
-                                done(err);
-                            }
-                        }, (err) => {
-                            done(err);
-                        });
+            stats.getGlobalStats()
+                .then((res) => {
+                    try {
+                        assert.equal(res.usersCount, 10);
+                        assert.equal(res.activeUsers14DaysCount, 2);
+                        assert.equal(res.activeUsers7DaysCount, 2);
+                        assert.equal(res.activeGroups14DaysCount, 1);
+                        assert.equal(res.activeGroups7DaysCount, 1);
+                        assert.equal(res.top10UserStats.length, 2);
+                        assert.equal(res.top10UserStats[0].userid, blakkistest.users[0].userid);
+                        assert.equal(res.top10UserStats[1].userid, blakkistest.users[1].userid);
+                        done();
+                    } catch (err) {
+                        done(err);
+                    }
                 }, (err) => {
                     done(err);
                 });
@@ -138,23 +95,18 @@ describe('stats.js', function() {
         });
 
         it('should list top10 in correct order and sum alcohol correctly', function(done) {
-            query(`insert into users_drinks (userId, alcohol, description) values (${testUsers[0].userid}, 12347, 'kalja'), (${testUsers[0].userid}, 12347, 'kalja'), (${testUsers[1].userid}, 12347, 'kalja')`)
-                .then(() => {
-                    stats.getGroupStats('1', 100)
-                        .then((res) => {
-                            try {
-                                assert.equal(res.top10UserStats.length, 2);
-                                assert.equal(res.top10UserStats[0].userid, testUsers[0].userid);
-                                assert.equal(res.top10UserStats[1].userid, testUsers[1].userid);
-                                assert.equal(res.top10UserStats[1].userid, testUsers[1].userid);
-                                assert.equal(res.groupDrinkSum.sum, 12347*3);
-                                done();
-                            } catch (err) {
-                                done(err);
-                            }
-                        }, (err) => {
-                            done(err);
-                        });
+            stats.getGroupStats('1', 100)
+                .then((res) => {
+                    try {
+                        assert.equal(res.top10UserStats.length, 2);
+                        assert.equal(res.top10UserStats[0].userid, blakkistest.users[0].userid);
+                        assert.equal(res.top10UserStats[1].userid, blakkistest.users[1].userid);
+                        assert.equal(res.top10UserStats[1].userid, blakkistest.users[1].userid);
+                        assert.equal(res.groupDrinkSum.sum, 12347*3);
+                        done();
+                    } catch (err) {
+                        done(err);
+                    }
                 }, (err) => {
                     done(err);
                 });
