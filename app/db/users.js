@@ -80,7 +80,7 @@ users.find = function find(userId) {
                     deferred.reject(err);
                 }
             } else {
-                deferred.reject('user not found');
+                deferred.resolve();
             }
         }, (err) => {
             log.error(err);
