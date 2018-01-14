@@ -24,6 +24,7 @@
 'use strict';
 
 const utils = require('../app/lib/utils.js');
+const users = require('../app/db/users.js');
 const when = require('when');
 const query = require('pg-query');
 query.connectionParameters = process.env.DATABASE_URL;
@@ -31,27 +32,19 @@ query.connectionParameters = process.env.DATABASE_URL;
 const blakkistest = module.exports = {};
 
 blakkistest.users = [{}, {}, {}, {}, {}, {}, {}, {}, {}, {}]; // 10 users
-blakkistest.users = blakkistest.users.map((user, i) => {
-    user.userid = utils.hashSha256(100+i);
-    user.username = utils.encrypt(i + '');
-    user.weight = 80 + i;
-    user.height = 180 + i;
-    user.gender = 'mies';
-    user.read_terms = true;
-    user.read_announcements = 1;
-    return user;
-});
+blakkistest.users = blakkistest.users.map((user, i) => new users.User(utils.hashSha256(100+i), i + '', 80 + i, 'mies', 180 + i, true, 1, Date.now())
+);
 
 blakkistest.groups = [{
     id: utils.hashSha256('1'),
-    users: blakkistest.users.map(user => user.userid)
+    users: blakkistest.users.map(user => user.userId)
 }];
 
 let userInsertValuesStr = blakkistest.users.map(user => {
-    return `('${user.userid}', '${user.username}', ${user.weight}, '${user.gender}', ${user.height}, ${user.read_terms}, ${user.read_announcements})`;
+    return `('${user.userId}', '${utils.encrypt(user.username)}', ${user.weight}, '${user.gender}', ${user.height}, ${user.read_terms}, ${user.read_announcements})`;
 });
 let userInGroupsValuesStr = blakkistest.groups.map(group => {
-    return group.users.map(userid => `('${group.id}', '${userid}')`).join(', ');
+    return group.users.map(userId => `('${group.id}', '${userId}')`).join(', ');
 });
 
 /*
@@ -94,7 +87,7 @@ blakkistest.resetDbWithTestUsersAndGroupsAndDrinks = function(done) {
         when.all([
                 query('insert into users (userid, nick, weight, gender, height, read_terms, read_announcements) values ' + userInsertValuesStr.join(', ')),
                 query('insert into users_in_groups (groupid, userid) values ' + userInGroupsValuesStr.join(', ')),
-                query(`insert into users_drinks (userid, alcohol, description) values ('${blakkistest.users[0].userid}', 12347, 'kalja'), ('${blakkistest.users[0].userid}', 12347, 'kalja'), ('${blakkistest.users[1].userid}', 12347, 'kalja')`)
+                query(`insert into users_drinks (userid, alcohol, description) values ('${blakkistest.users[0].userId}', 12347, 'kalja'), ('${blakkistest.users[0].userId}', 12347, 'kalja'), ('${blakkistest.users[1].userId}', 12347, 'kalja')`)
             ])
             .spread(() => done()).catch((err) => done(new Error(err)));
     }, (err) => {

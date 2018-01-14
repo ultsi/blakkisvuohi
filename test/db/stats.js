@@ -66,8 +66,8 @@ describe('stats.js', function() {
                         assert.equal(res.activeGroups14DaysCount, 1);
                         assert.equal(res.activeGroups7DaysCount, 1);
                         assert.equal(res.top10UserStats.length, 2);
-                        assert.equal(res.top10UserStats[0].userid, blakkistest.users[0].userid);
-                        assert.equal(res.top10UserStats[1].userid, blakkistest.users[1].userid);
+                        assert.equal(res.top10UserStats[0].userid, blakkistest.users[0].userId);
+                        assert.equal(res.top10UserStats[1].userid, blakkistest.users[1].userId);
                         done();
                     } catch (err) {
                         done(err);
@@ -99,9 +99,9 @@ describe('stats.js', function() {
                 .then((res) => {
                     try {
                         assert.equal(res.top10UserStats.length, 2);
-                        assert.equal(res.top10UserStats[0].userid, blakkistest.users[0].userid);
-                        assert.equal(res.top10UserStats[1].userid, blakkistest.users[1].userid);
-                        assert.equal(res.top10UserStats[1].userid, blakkistest.users[1].userid);
+                        assert.equal(res.top10UserStats[0].userid, blakkistest.users[0].userId);
+                        assert.equal(res.top10UserStats[1].userid, blakkistest.users[1].userId);
+                        assert.equal(res.top10UserStats[1].userid, blakkistest.users[1].userId);
                         assert.equal(res.groupDrinkSum.sum, 12347*3);
                         done();
                     } catch (err) {
