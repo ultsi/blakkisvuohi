@@ -19,6 +19,6 @@
 'use strict';
 
 module.exports = [
-    ['Lisätty ilmoitukset. Ilmoituksia tulee BläkkisVuohen päivityksien yhteydessä, ja ne näkee ekaa kertaa päivityksen jälkeen jotain komentoa käytettäessä.',
-    '15.1.2018 - korjattu /moro bugi, joka aiheutti sen, ettei uusiin ryhmiin voinut liittyä.']
+    'Lisätty ilmoitukset. Ilmoituksia tulee BläkkisVuohen päivityksien yhteydessä, ja ne näkee ekaa kertaa päivityksen jälkeen jotain komentoa käytettäessä.',
+    '15.1.2018 - korjattu /moro bugi, joka aiheutti sen, ettei uusiin ryhmiin voinut liittyä.'
 ];
