@@ -157,9 +157,10 @@ User.prototype.getBoozeForLastHours = function(hours) {
     return deferred.promise;
 };
 
-User.prototype.joinGroup = function(msg) {
+User.prototype.joinGroup = function(groupId) {
     let deferred = when.defer();
-    query('insert into users_in_groups (userId, groupId) values ($1, $2)', [this.userId, msg.chat.id])
+    let groupIdHash = utils.hashSha256(groupId);
+    query('insert into users_in_groups (userId, groupId) values ($1, $2)', [this.userId, groupIdHash])
         .then((res) => {
             deferred.resolve(res[0]);
         }, (err) => {

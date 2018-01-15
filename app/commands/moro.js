@@ -25,13 +25,13 @@ const when = require('when');
 const log = require('loglevel').getLogger('commands');
 const Commands = require('../lib/commands.js');
 
-function moro(context, user, msg, words)  {
+function moro(context, user, msg, words) {
     let deferred = when.defer();
     if (msg.chat.type === 'private') {
         deferred.reject('Käytä tätä komentoa ryhmässä!');
         return deferred.promise;
     }
-    user.joinGroup(msg)
+    user.joinGroup(msg.chat.id)
         .then(() => {
             deferred.resolve(context.chatReply('Rippaa rauhassa kera ' + msg.chat.title + ' -kavereiden.'));
         }, (err) => {
