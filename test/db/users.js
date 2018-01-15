@@ -58,19 +58,37 @@ describe('users.js', function() {
                     } catch (err) {
                         done(err);
                     }
-                    query('select * from users')
-                        .then(
-                            (res) => {
-                                try {
-                                    assert.notEqual(res[0].find(x => x.userid === utils.hashSha256('1')), undefined);
-                                    done();
-                                } catch (err) {
-                                    done(err);
-                                }
-                            }, (err) => {
-                                done(err);
-                            });
-                }, (err) => {
+                    return query('select * from users');
+                })
+                .then((res) => {
+                    try {
+                        assert.notEqual(res[0].find(x => x.userid === utils.hashSha256('1')), undefined);
+                        done();
+                    } catch (err) {
+                        done(err);
+                    }
+                })
+                .catch((err) => {
+                    done(err);
+                });
+        });
+
+        it('should hash user id and encrypt user nick', function(done) {
+            users.new('1', 'nick', 90, 'mies', 190, true, 1, Date.now())
+                .then((user) => query('select * from users where userid=$1', [user.userId]))
+                .then((res) => {
+                    const found = res[0][0];
+                    try {
+                        assert.notEqual(found.userid, '1');
+                        assert.notEqual(found.nick, 'nick');
+                        assert.equal(found.userid, utils.hashSha256('1'));
+                        assert.equal(found.nick, utils.encrypt('nick'));
+                        done();
+                    } catch (err) {
+                        done(err);
+                    }
+                })
+                .catch((err) => {
                     done(err);
                 });
         });
@@ -85,21 +103,17 @@ describe('users.js', function() {
                     } catch (err) {
                         done(err);
                     }
-                    users.find('1')
-                        .then(
-                            (res) => {
-                                try {
-                                    assert.equal(res.username, 'nick');
-                                    done();
-                                } catch (err) {
-                                    done(err);
-                                }
-                            }, (err) => {
-                                done(err);
-                            });
-                }, (err) => {
-                    done(err);
-                });
+                    return users.find('1');
+                })
+                .then((res) => {
+                    try {
+                        assert.equal(res.username, 'nick');
+                        done();
+                    } catch (err) {
+                        done(err);
+                    }
+                })
+                .catch((err) => done(err));
         });
 
         it('should return undefined when not found', function(done) {
@@ -110,19 +124,17 @@ describe('users.js', function() {
                     } catch (err) {
                         done(err);
                     }
-                    users.find('2')
-                        .then(
-                            (res) => {
-                                try {
-                                    assert.equal(res, undefined);
-                                    done();
-                                } catch (err) {
-                                    done(err);
-                                }
-                            }, (err) => {
-                                done(err);
-                            });
-                }, (err) => {
+                    return users.find('2');
+                })
+                .then((res) => {
+                    try {
+                        assert.equal(res, undefined);
+                        done();
+                    } catch (err) {
+                        done(err);
+                    }
+                })
+                .catch((err) => {
                     done(err);
                 });
         });
@@ -137,23 +149,129 @@ describe('users.js', function() {
                     if (rows.length > 0) {
                         done(new Error('user doesn\'t have 0 drinks in db'));
                     }
-                    user.drinkBooze(12347, 'kalja')
-                        .then(() => {
-                            query('select * from users_drinks where userId=$1', [user.userId])
-                                .then((res) => {
-                                    const rows = res[0];
-                                    if (rows.length !== 1) {
-                                        done(new Error('user doesn\'t have 1 drinks in db'));
-                                    }
-                                    if (rows[0].alcohol !== 12347) {
-                                        done(new Error('invalid amount of alcohol in db'));
-                                    }
-                                    done();
-                                }, (err) => {
-                                    done(err);
-                                });
-                        });
-                }, (err) => {
+                    return user.drinkBooze(12347, 'kalja');
+                })
+                .then(() => query('select * from users_drinks where userId=$1', [user.userId]))
+                .then((res) => {
+                    const rows = res[0];
+                    if (rows.length !== 1) {
+                        done(new Error('user doesn\'t have 1 drinks in db'));
+                    }
+                    if (rows[0].alcohol !== 12347) {
+                        done(new Error('invalid amount of alcohol in db'));
+                    }
+                    done();
+                })
+                .catch((err) => {
+                    done(err);
+                });
+        });
+    });
+
+    describe('User.getBooze()', function() {
+        it('should return correct amount of booze', function(done) {
+            const user = blakkistest.users[0];
+            user.getBooze()
+                .then((rows) => {
+                    try {
+                        assert.equal(rows.length, 2);
+                        assert.equal(rows[0].alcohol, 12347);
+                        done();
+                    } catch (err) {
+                        done(err);
+                    }
+                })
+                .catch((err) => {
+                    done(err);
+                });
+        });
+    });
+
+    describe('User.getBooze()', function() {
+        it('should return correct amount of booze', function(done) {
+            const user = blakkistest.users[0];
+            user.getBooze()
+                .then((rows) => {
+                    try {
+                        assert.equal(rows.length, 2);
+                        assert.equal(rows[0].alcohol, 12347);
+                        done();
+                    } catch (err) {
+                        done(err);
+                    }
+                })
+                .catch((err) => {
+                    done(err);
+                });
+        });
+    });
+
+    describe('User.getDrinkSumForXHours()', function() {
+        it('should return correct sum of booze', function(done) {
+            const user = blakkistest.users[0];
+            user.getDrinkSumForXHours(24)
+                .then((res) => {
+                    try {
+                        assert.equal(res.sum, 12347*2);
+                        done();
+                    } catch (err) {
+                        done(err);
+                    }
+                }).catch((err) => {
+                    done(err);
+                });
+        });
+    });
+
+    describe('User.undoDrink()', function() {
+        it('should remove last drink from db', function(done) {
+            const user = blakkistest.users[0];
+            user.drinkBooze(12347, 'testUndo')
+                .then(() => user.getBooze())
+                .then((rows) => {
+                    try {
+                        assert.equal(rows.length, 3);
+                        assert(rows.find(x => x.description === 'testUndo'));
+                    } catch (err) {
+                        done(err);
+                    }
+                    return user.undoDrink();
+                })
+                .then(() => user.getBooze())
+                .then((rows) => {
+                    try {
+                        assert.equal(rows.length, 2);
+                        assert(!rows.find(x => x.description === 'testUndo'));
+                        done();
+                    } catch (err) {
+                        done(err);
+                    }
+                })
+                .catch((err) => {
+                    console.log(err);
+                    done(err);
+                });
+        });
+    });
+
+    describe('User.joinGroup()', function() {
+        it('should insert user to a group in db', function(done) {
+            const user = blakkistest.users[0];
+            user.joinGroup(12347)
+                .then(() => query('select * from users_in_groups where userid=$1', [user.userId]))
+                .then((res) => {
+                    let rows = res[0];
+                    console.log(rows);
+                    try {
+                        assert(rows.find(x => x.userid === user.userId && x.groupid === utils.hashSha256(12347)));
+                        done();
+                    } catch (err) {
+                        done(err);
+                    }
+                    return user.undoDrink();
+                })
+                .catch((err) => {
+                    console.log(err);
                     done(err);
                 });
         });
