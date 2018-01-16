@@ -64,7 +64,6 @@ stats.getGlobalStats = function() {
 
 stats.getGroupStats = function(group, hours) {
     let deferred = when.defer();
-    console.log(group);
     const hoursAgo = utils.getDateMinusHours(hours);
     log.debug('Fetching group stats from database');
     when.all([

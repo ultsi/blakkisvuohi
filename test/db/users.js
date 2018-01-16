@@ -56,7 +56,8 @@ describe('users.js', function() {
                     try {
                         assert.equal(user.username, 'nick');
                     } catch (err) {
-                        return done(err);
+                        done(err);
+                        return Promise.reject(err);
                     }
                     return query('select * from users');
                 })
@@ -65,7 +66,8 @@ describe('users.js', function() {
                         assert.notEqual(res[0].find(x => x.userid === utils.hashSha256('1')), undefined);
                         done();
                     } catch (err) {
-                        return done(err);
+                        done(err);
+                        return Promise.reject(err);
                     }
                 })
                 .catch((err) => {
@@ -85,7 +87,8 @@ describe('users.js', function() {
                         assert.equal(found.nick, utils.encrypt('nick'));
                         done();
                     } catch (err) {
-                        return done(err);
+                        done(err);
+                        return Promise.reject(err);
                     }
                 })
                 .catch((err) => {
@@ -101,7 +104,8 @@ describe('users.js', function() {
                     try {
                         assert.equal(user.username, 'nick');
                     } catch (err) {
-                        return done(err);
+                        done(err);
+                        return Promise.reject(err);
                     }
                     return users.find('1');
                 })
@@ -110,7 +114,8 @@ describe('users.js', function() {
                         assert.equal(res.username, 'nick');
                         done();
                     } catch (err) {
-                        return done(err);
+                        done(err);
+                        return Promise.reject(err);
                     }
                 })
                 .catch((err) => done(err));
@@ -122,7 +127,8 @@ describe('users.js', function() {
                     try {
                         assert.equal(user.username, 'nick');
                     } catch (err) {
-                        return done(err);
+                        done(err);
+                        return Promise.reject(err);
                     }
                     return users.find('2');
                 })
@@ -131,7 +137,8 @@ describe('users.js', function() {
                         assert.equal(res, undefined);
                         done();
                     } catch (err) {
-                        return done(err);
+                        done(err);
+                        return Promise.reject(err);
                     }
                 })
                 .catch((err) => {
@@ -147,7 +154,9 @@ describe('users.js', function() {
                 .then((res) => {
                     const rows = res[0];
                     if (rows.length > 0) {
-                        return done(new Error('user doesn\'t have 0 drinks in db'));
+                        const err = new Error('user doesn\'t have 0 drinks in db');
+                        done(err);
+                        return Promise.reject(err);
                     }
                     return user.drinkBooze(12347, 'kalja');
                 })
@@ -155,11 +164,14 @@ describe('users.js', function() {
                 .then((res) => {
                     const rows = res[0];
                     if (rows.length !== 1) {
-                        return done(new Error('user doesn\'t have 1 drinks in db'));
+                        const err = new Error('user doesn\'t have 1 drinks in db');
+                        done(err);
+                        return Promise.reject(err);
                     }
                     if (rows[0].alcohol !== 12347) {
-                        return done(new Error('invalid amount of alcohol in db'));
-                    }
+                        const err = new Error('invalid amount of alcohol in db');
+                        done(err);
+                        return Promise.reject(err);                    }
                     done();
                 })
                 .catch((err) => {
