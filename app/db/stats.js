@@ -62,9 +62,9 @@ stats.getGlobalStats = function() {
     return deferred.promise;
 };
 
-stats.getGroupStats = function(groupId, hours) {
+stats.getGroupStats = function(group, hours) {
     let deferred = when.defer();
-    const group = new groups.Group(groupId);
+    console.log(group);
     const hoursAgo = utils.getDateMinusHours(hours);
     log.debug('Fetching group stats from database');
     when.all([

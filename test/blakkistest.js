@@ -25,6 +25,7 @@
 
 const utils = require('../app/lib/utils.js');
 const users = require('../app/db/users.js');
+const groups = require('../app/db/groups.js');
 const when = require('when');
 const query = require('pg-query');
 query.connectionParameters = process.env.DATABASE_URL;
@@ -34,9 +35,10 @@ const blakkistest = module.exports = {};
 blakkistest.users = [{}, {}, {}, {}, {}, {}, {}, {}, {}, {}]; // 10 users
 blakkistest.users = blakkistest.users.map((user, i) => new users.User(utils.hashSha256(100+i), i + '', 80 + i, 'mies', 180 + i, true, 1, Date.now())
 );
+const group = new groups.Group(1);
 
 blakkistest.groups = [{
-    id: utils.hashSha256('1'),
+    group: group,
     users: blakkistest.users.map(user => user.userId)
 }];
 
@@ -44,7 +46,7 @@ let userInsertValuesStr = blakkistest.users.map(user => {
     return `('${user.userId}', '${utils.encrypt(user.username)}', ${user.weight}, '${user.gender}', ${user.height}, ${user.read_terms}, ${user.read_announcements})`;
 });
 let userInGroupsValuesStr = blakkistest.groups.map(group => {
-    return group.users.map(userId => `('${group.id}', '${userId}')`).join(', ');
+    return group.users.map(userId => `('${group.group.groupId}', '${userId}')`).join(', ');
 });
 
 /*

@@ -80,7 +80,7 @@ describe('stats.js', function() {
 
     describe('stats.getGroupStats()', function() {
         it('should return an object with 2 fields', function(done) {
-            stats.getGroupStats('1', 24)
+            stats.getGroupStats(blakkistest.groups[0].group, 24)
                 .then((res) => {
                     try {
                         assert.notEqual(res.top10UserStats, undefined);
@@ -95,7 +95,7 @@ describe('stats.js', function() {
         });
 
         it('should list top10 in correct order and sum alcohol correctly', function(done) {
-            stats.getGroupStats('1', 100)
+            stats.getGroupStats(blakkistest.groups[0].group, 100)
                 .then((res) => {
                     try {
                         assert.equal(res.top10UserStats.length, 2);
