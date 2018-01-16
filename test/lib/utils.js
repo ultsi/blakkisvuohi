@@ -55,6 +55,128 @@ describe('utils', function() {
         });
     });
 
+    // impossible to test randomness. Going to fail some time in the future
+    describe('getRandomFromArray()', function() {
+        it('should get a random value from an array', function() {
+            const a = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15];
+            let b = a.slice();
+            let c = [];
+            while (c.length !== a.length) {
+                const randomValue = utils.getRandomFromArray(b);
+                c.push(randomValue);
+                b.splice(b.indexOf(randomValue), 1);
+            }
+            assert.equal(c.length, a.length);
+            assert.equal(b.length, 0);
+            c.forEach((v) => {
+                assert(a.find((av) => av === v));
+            });
+            assert(c.some((v, i) => a[i] !== v));
+        });
+    });
+
+    describe('hookNewRelic()', function() {
+        let newRelicStart = false,
+            newRelicEnd = false;
+
+        function startWebTransaction(url, func) {
+            newRelicStart = true;
+            func();
+        }
+
+        function getTransaction() {
+            return {
+                end: function() {
+                    newRelicEnd = true;
+                }
+            };
+        }
+
+        it('should not hook newrelic if global.newrelic is not set', function() {
+            newRelicStart = false;
+            newRelicEnd = false;
+            utils.hookNewRelic('lol', () => {});
+            assert.equal(newRelicStart, false);
+            assert.equal(newRelicEnd, false);
+        });
+
+        it('should hook newrelic if global.newrelic is set', function() {
+            newRelicStart = false;
+            newRelicEnd = false;
+            global.newrelic = {
+                startWebTransaction: startWebTransaction,
+                getTransaction: getTransaction
+            };
+            utils.hookNewRelic('lol', () => {});
+            assert.equal(newRelicStart, true);
+            assert.equal(newRelicEnd, true);
+        });
+    });
+
+    describe('attachMethods', function() {
+        let sentChatId = 0;
+        const bot = {
+            sendMessage: (chatId) => {
+                sentChatId = chatId;
+                return Promise.resolve();
+            },
+            sendPhoto: (chatId) => {
+                sentChatId = chatId;
+                return Promise.resolve();
+            }
+        };
+        const msg_with_ids = {
+            chat: {
+                id: 10
+            },
+            from: {
+                id: 99
+            }
+        };
+
+        it('should attach functions to msg object', function() {
+            let msg = Object.assign(msg_with_ids);
+            utils.attachMethods(msg, bot);
+            assert.equal(typeof msg.sendPrivateMessage, 'function');
+            assert.equal(typeof msg.sendMessage, 'function');
+            assert.equal(typeof msg.sendChatMessage, 'function');
+            assert.equal(typeof msg.sendPhoto, 'function');
+        });
+
+        it('attached function sendMessage should sent the message to provided chatId', function() {
+            let msg = Object.assign(msg_with_ids);
+            sentChatId = 0;
+            utils.attachMethods(msg, bot);
+            msg.sendMessage(1, 'text');
+            assert.equal(sentChatId, 1);
+        });
+
+        it('attached function sendPrivateMessage should sent the message to msg.from.id', function() {
+            let msg = Object.assign(msg_with_ids);
+            sentChatId = 0;
+            utils.attachMethods(msg, bot);
+            msg.sendPrivateMessage('text');
+            assert.equal(sentChatId, msg_with_ids.from.id);
+        });
+
+        it('attached function sendChatMessage should sent the message to msg.chat.id', function() {
+            let msg = Object.assign(msg_with_ids);
+            sentChatId = 0;
+            utils.attachMethods(msg, bot);
+            msg.sendChatMessage('text');
+            assert.equal(sentChatId, msg_with_ids.chat.id);
+        });
+
+        it('attached function sendMessage should sent the message to provided chatId', function() {
+            let msg = Object.assign(msg_with_ids);
+            sentChatId = 0;
+            utils.attachMethods(msg, bot);
+            msg.sendPhoto(5, 'text');
+            assert.equal(sentChatId, 5);
+        });
+    });
+
+
     describe('isValidInt()', function() {
         it('should return true with 0, -140, 4, 100, \'0\'', function() {
             assert(utils.isValidInt(0));
@@ -105,9 +227,9 @@ describe('utils', function() {
     describe('hashSha256()', function() {
         it('should return correct sha256 digest for 1, \'test\', \'reallylongstring\'', function() {
             // sha256 sums from online generator
-            const   sha256_1 = '6b86b273ff34fce19d6b804eff5a3f5747ada4eaa22f1d49c01e52ddb7875b4b',
-                    sha256_test = '9f86d081884c7d659a2feaa0c55ad015a3bf4f1b2b0b822cd15d6c15b0f00a08',
-                    sha256_reallylongstring = '116d9490a1b498ab3eebf92e1c6c42569f8c46f1c4dcfac332f1652875b156f2';
+            const sha256_1 = '6b86b273ff34fce19d6b804eff5a3f5747ada4eaa22f1d49c01e52ddb7875b4b',
+                sha256_test = '9f86d081884c7d659a2feaa0c55ad015a3bf4f1b2b0b822cd15d6c15b0f00a08',
+                sha256_reallylongstring = '116d9490a1b498ab3eebf92e1c6c42569f8c46f1c4dcfac332f1652875b156f2';
 
             assert(utils.hashSha256(1) === sha256_1);
             assert(utils.hashSha256('test') === sha256_test);
