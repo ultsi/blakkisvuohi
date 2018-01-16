@@ -114,7 +114,7 @@ contexts.Context.prototype.photoReply = function(stream, caption) {
 };
 
 contexts.Context.prototype.sendMessage = function(message) {
-    if (!message.type || !message.text) {
+    if (!message || !message.type || !message.text ) {
         log.error('sendMessage: invalid message object! ' + message);
         return;
     }
@@ -154,20 +154,8 @@ contexts.Context.prototype.fetchVariable = function(key) {
     return this.variables[key];
 };
 
-contexts.Context.prototype.forgetVariables = function() {
-    this.variables = {};
-};
-
-contexts.Context.prototype.nextPhase = function() {
-    this.phase += 1;
-};
-
 contexts.Context.prototype.toPhase = function(phase) {
     this.phase = phase;
-};
-
-contexts.Context.prototype.previousPhase = function() {
-    this.phase -= 1;
 };
 
 contexts.Context.prototype.end = function() {

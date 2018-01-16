@@ -57,29 +57,39 @@ let userInGroupsValuesStr = blakkistest.groups.map(group => {
 blakkistest.mockMsgAndBot = () => {
     let mock = {
         internals: {
-            sentChatId: 0,
-            sentText: ''
+            sentChatId: false,
+            sentText: false,
+            sentOptions: false,
+            sentStream: false
         }
     };
+    mock.privateId = 99;
+    mock.chatId = 10;
+    mock.messageId = 3;
     mock.bot = {
-        sendMessage: (chatId, text) => {
+        sendMessage: (chatId, text, options) => {
             mock.internals.sentChatId = chatId;
             mock.internals.sentText = text;
+            mock.internals.sentOptions = options;
             return Promise.resolve();
         },
-        sendPhoto: (chatId) => {
+        sendPhoto: (chatId, stream, options) => {
             mock.internals.sentChatId = chatId;
+            mock.internals.sentStream = stream;
+            mock.internals.sentOptions = options;
             return Promise.resolve();
         }
     };
     mock.msg = {
         chat: {
-            id: 10,
+            id: mock.chatId,
             type: 'private'
         },
         from: {
-            id: 99
-        }
+            id: mock.privateId
+        },
+        text: 'mock_text',
+        message_id: mock.messageId
     };
     utils.attachMethods(mock.msg, mock.bot);
     return mock;

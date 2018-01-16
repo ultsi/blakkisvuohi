@@ -68,7 +68,7 @@ message.Photo = (buffer, caption) => {
     let options = {
         caption: caption
     };
-    let msg = new Message('', options);
+    let msg = new Message('photo', options);
     msg.type = 'photo';
     msg.buffer = buffer;
     return msg;
