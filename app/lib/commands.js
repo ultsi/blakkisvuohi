@@ -263,7 +263,7 @@ Commands.call = function call(firstWord, msg, words) {
                     return context.privateReply('Käytä komentoa vain minun kanssa!');
                 }
 
-                log.info((msg.from.username ||  msg.from.first_name) + ': ' + firstWord);
+                log.info((msg.from.username || msg.from.first_name) + ': ' + firstWord);
                 callCommandFunction(context, cmd, msg, words);
             } catch (err) {
                 log.error('Couldn\'t execute cmd function "' + cmd.name + '" phase ' + context.phase + '! ' + err);

@@ -25,3 +25,17 @@
 
 'use strict';
 require('../../app/commands/terms.js');
+
+const assert = require('assert');
+const blakkistest = require('../blakkistest.js');
+const Commands = require('../../app/lib/commands.js');
+const strings = require('../../app/strings.js');
+
+describe('terms.js', function() {
+    it('Calling /terms should print terms text', function() {
+        const mocked = blakkistest.mockMsgAndBot();
+        Commands.call('/terms', mocked.msg, ['/terms']);
+        assert.equal(mocked.internals.sentChatId, mocked.privateId);
+        assert.equal(mocked.internals.sentText, strings.terms);
+    });
+});

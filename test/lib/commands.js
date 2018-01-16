@@ -30,6 +30,7 @@ const blakkistest = require('../blakkistest.js');
 const mocked = blakkistest.mockMsgAndBot();
 const Commands = require('../../app/lib/commands.js');
 const Message = require('../../app/lib/message.js');
+const strings = require('../../app/strings.js');
 
 const testCommand = {
     [0]: {
@@ -80,15 +81,46 @@ describe('commands.js', function() {
 
         it('a private user command should not be able to be called in a chat', function(done) {
             this.slow(200);
-            let msg = Object.assign(mocked.msg); // copy
-            msg.from.id = blakkistest.realIds[0];
-            msg.chat.type = 'chat';
+            const mocked = blakkistest.mockMsgAndBot();
+            mocked.msg.from.id = blakkistest.realIds[0];
+            mocked.msg.chat.type = 'chat';
             Commands.registerUserCommand('/testusercommand2', 'help', Commands.TYPE_PRIVATE, [() => {
                 done(new Error('private command used in chat'));
                 return Promise.resolve();
             }]);
-            Commands.call('/testusercommand2', msg, ['/testusercommand2']);
+            Commands.call('/testusercommand2', mocked.msg, ['/testusercommand2']);
             setTimeout(() => done(), 50);
+        });
+    });
+
+    describe('Commands.call()', function() {
+        it('should send help string msg privately with /start', function() {
+            const mocked = blakkistest.mockMsgAndBot();
+            Commands.call('/start', mocked.msg, ['/start']);
+            assert.equal(mocked.internals.sentChatId, mocked.privateId);
+            assert.equal(mocked.internals.sentText, strings.help_text);
+        });
+
+        it('should send cmds string msg privately with /komennot', function() {
+            const mocked = blakkistest.mockMsgAndBot();
+            Commands.call('/komennot', mocked.msg, ['/komennot']);
+            assert.equal(mocked.internals.sentChatId, mocked.privateId);
+            assert.equal(mocked.internals.sentText.split('\n')[0], 'Komennot:');
+        });
+
+        it('should send help string and cmds string msg privately with /help', function() {
+            const mocked = blakkistest.mockMsgAndBot();
+            Commands.call('/help', mocked.msg, ['/help']);
+            assert.equal(mocked.internals.sentChatId, mocked.privateId);
+            assert(mocked.internals.sentText.split('\n').length > strings.help_text.split('\n').length);
+        });
+
+        it('a private command should not be able to called from a chat and a msg is sent to the initiating user', function() {
+            const mocked = blakkistest.mockMsgAndBot();
+            mocked.msg.chat.type = 'chat';
+            Commands.register('/private_command', 'help', Commands.TYPE_PRIVATE,[() => {}]);
+            Commands.call('/private_command', mocked.msg, ['/private_command']);
+            assert.equal(mocked.internals.sentChatId, mocked.privateId);
         });
     });
 });
