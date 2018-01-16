@@ -178,9 +178,9 @@ describe('alcomath.js', function() {
                 Y = 12;
             const ebacByHour = alcomath.calculateEBACByHourFromDrinks(testUsers.male, drinks.now, X, Y);
             for (let i in ebacByHour) {
-                assert(ebacByHour[i].permilles || ebacByHour[i].permilles === 0);
-                assert(ebacByHour[i].hour || ebacByHour[i].permilles === 0);
-                assert(ebacByHour[i].time);
+                assert.notEqual(ebacByHour[i].permilles, undefined);
+                assert.notEqual(ebacByHour[i].hour, undefined);
+                assert.notEqual(ebacByHour[i].time, undefined);
             }
         });
 
