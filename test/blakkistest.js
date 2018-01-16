@@ -33,8 +33,13 @@ query.connectionParameters = process.env.DATABASE_URL;
 const blakkistest = module.exports = {};
 
 blakkistest.users = [{}, {}, {}, {}, {}, {}, {}, {}, {}, {}]; // 10 users
-blakkistest.users = blakkistest.users.map((user, i) => new users.User(utils.hashSha256(100+i), i + '', 80 + i, 'mies', 180 + i, true, 1, Date.now())
-);
+blakkistest.realIds = [];
+blakkistest.users = blakkistest.users.map((_, i) => {
+    const id = 100 + i;
+    const user = new users.User(utils.hashSha256(id), i + '', 80 + i, 'mies', 180 + i, true, 1, Date.now());
+    blakkistest.realIds[i] = id;
+    return user;
+});
 const group = new groups.Group(1);
 
 blakkistest.groups = [{
@@ -49,6 +54,37 @@ let userInGroupsValuesStr = blakkistest.groups.map(group => {
     return group.users.map(userId => `('${group.group.groupId}', '${userId}')`).join(', ');
 });
 
+blakkistest.mockMsgAndBot = () => {
+    let mock = {
+        internals: {
+            sentChatId: 0,
+            sentText: ''
+        }
+    };
+    mock.bot = {
+        sendMessage: (chatId, text) => {
+            mock.internals.sentChatId = chatId;
+            mock.internals.sentText = text;
+            return Promise.resolve();
+        },
+        sendPhoto: (chatId) => {
+            mock.internals.sentChatId = chatId;
+            return Promise.resolve();
+        }
+    };
+    mock.msg = {
+        chat: {
+            id: 10,
+            type: 'private'
+        },
+        from: {
+            id: 99
+        }
+    };
+    utils.attachMethods(mock.msg, mock.bot);
+    return mock;
+};
+
 /*
     for use as a beforeEach function
 */
@@ -59,7 +95,7 @@ blakkistest.clearDb = function(done) {
         query('delete from users_in_groups')
     ]).spread(() => {
         done();
-    }, (err) => {
+    }).catch((err) => {
         done(new Error(err));
     });
 };
@@ -92,7 +128,7 @@ blakkistest.resetDbWithTestUsersAndGroupsAndDrinks = function(done) {
                 query(`insert into users_drinks (userid, alcohol, description) values ('${blakkistest.users[0].userId}', 12347, 'kalja'), ('${blakkistest.users[0].userId}', 12347, 'kalja'), ('${blakkistest.users[1].userId}', 12347, 'kalja')`)
             ])
             .spread(() => done()).catch((err) => done(new Error(err)));
-    }, (err) => {
+    }).catch((err) => {
         done(new Error(err));
     });
 };

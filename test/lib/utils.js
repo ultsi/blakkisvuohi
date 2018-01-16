@@ -26,6 +26,7 @@
 'use strict';
 
 const assert = require('assert');
+const blakkistest = require('../blakkistest.js');
 const utils = require('../../app/lib/utils.js');
 
 describe('utils', function() {
@@ -114,29 +115,11 @@ describe('utils', function() {
     });
 
     describe('attachMethods', function() {
-        let sentChatId = 0;
-        const bot = {
-            sendMessage: (chatId) => {
-                sentChatId = chatId;
-                return Promise.resolve();
-            },
-            sendPhoto: (chatId) => {
-                sentChatId = chatId;
-                return Promise.resolve();
-            }
-        };
-        const msg_with_ids = {
-            chat: {
-                id: 10
-            },
-            from: {
-                id: 99
-            }
-        };
+        let mocked = blakkistest.mockMsgAndBot();
 
         it('should attach functions to msg object', function() {
-            let msg = Object.assign(msg_with_ids);
-            utils.attachMethods(msg, bot);
+            let msg = Object.assign(mocked.msg);
+            utils.attachMethods(msg, mocked.bot);
             assert.equal(typeof msg.sendPrivateMessage, 'function');
             assert.equal(typeof msg.sendMessage, 'function');
             assert.equal(typeof msg.sendChatMessage, 'function');
@@ -144,35 +127,31 @@ describe('utils', function() {
         });
 
         it('attached function sendMessage should sent the message to provided chatId', function() {
-            let msg = Object.assign(msg_with_ids);
-            sentChatId = 0;
-            utils.attachMethods(msg, bot);
+            let msg = Object.assign(mocked.msg);
+            utils.attachMethods(msg, mocked.bot);
             msg.sendMessage(1, 'text');
-            assert.equal(sentChatId, 1);
+            assert.equal(mocked.internals.sentChatId, 1);
         });
 
         it('attached function sendPrivateMessage should sent the message to msg.from.id', function() {
-            let msg = Object.assign(msg_with_ids);
-            sentChatId = 0;
-            utils.attachMethods(msg, bot);
+            let msg = Object.assign(mocked.msg);
+            utils.attachMethods(msg, mocked.bot);
             msg.sendPrivateMessage('text');
-            assert.equal(sentChatId, msg_with_ids.from.id);
+            assert.equal(mocked.internals.sentChatId, msg.from.id);
         });
 
         it('attached function sendChatMessage should sent the message to msg.chat.id', function() {
-            let msg = Object.assign(msg_with_ids);
-            sentChatId = 0;
-            utils.attachMethods(msg, bot);
+            let msg = Object.assign(mocked.msg);
+            utils.attachMethods(msg, mocked.bot);
             msg.sendChatMessage('text');
-            assert.equal(sentChatId, msg_with_ids.chat.id);
+            assert.equal(mocked.internals.sentChatId, msg.chat.id);
         });
 
         it('attached function sendMessage should sent the message to provided chatId', function() {
-            let msg = Object.assign(msg_with_ids);
-            sentChatId = 0;
-            utils.attachMethods(msg, bot);
+            let msg = Object.assign(mocked.msg);
+            utils.attachMethods(msg, mocked.bot);
             msg.sendPhoto(5, 'text');
-            assert.equal(sentChatId, 5);
+            assert.equal(mocked.internals.sentChatId, 5);
         });
     });
 
