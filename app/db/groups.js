@@ -18,7 +18,7 @@
 
 /*
     groups.js
-    All group related database actions 
+    All group related database actions
 */
 
 'use strict';
