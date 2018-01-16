@@ -151,6 +151,13 @@ describe('alcomath.js', function() {
             const ebacFemale = alcomath.calculateEBACFromDrinks(testUsers.female, drinks.halfHourAgo);
             assert(ebacFemale.permilles > ebacMale.permilles);
         });
+
+        it('should 0 with empty drinks array', function() {
+            const ebac = alcomath.calculateEBACFromDrinks(testUsers.male, []);
+            assert.equal(ebac.permilles, 0);
+            assert.equal(ebac.permilles30Min, 0);
+            assert.equal(ebac.grams, 0);
+        });
     });
 
     describe('calculateEBACByHourFromDrinks', function() {
