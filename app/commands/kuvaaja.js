@@ -39,7 +39,7 @@ function kuvaaja(context, user, msg, words) {
     let graphTitle = 'Promillekuvaaja feat. ' + msg.chat.title;
 
     let group = new groups.Group(msg.chat.id);
-    group.getDrinkTimes(msg.chat.id)
+    group.getDrinkTimesByUser(msg.chat.id)
         .then((drinksByUser) => {
             try  {
                 const lastNHours = 24;
