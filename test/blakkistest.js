@@ -40,9 +40,11 @@ blakkistest.users = blakkistest.users.map((_, i) => {
     blakkistest.realIds[i] = id;
     return user;
 });
-const group = new groups.Group(1);
+const groupId = 1;
+const group = new groups.Group(groupId);
 
 blakkistest.groups = [{
+    realId: groupId,
     group: group,
     users: blakkistest.users.map(user => user.userId)
 }];
