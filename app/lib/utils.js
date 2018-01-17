@@ -99,12 +99,6 @@ function createSendPhotoFunction(msg, bot) {
     };
 }
 
-function createUserToStringFunction(msg) {
-    return function() {
-        return 'user: {id: ' + msg.from.id + ', name: ' + msg.from.first_name + ' ' + msg.from.last_name + ', username: ' + msg.from.username + '}';
-    };
-}
-
 utils.hookNewRelic = function(url, func) {
     if (global.newrelic && global.newrelic.startWebTransaction) {
         global.newrelic.startWebTransaction(url, function() {
@@ -120,7 +114,6 @@ utils.attachMethods = function attachMethods(msg, bot) {
     msg.sendPrivateMessage = createSendPrivateMsgFunction(msg, bot);
     msg.sendChatMessage = createSendChatMsgFunction(msg, bot);
     msg.sendMessage = createSendMsgToFunction(msg, bot);
-    msg.userToString = createUserToStringFunction(msg, bot);
     msg.sendPhoto = createSendPhotoFunction(msg, bot);
 };
 
@@ -129,16 +122,20 @@ utils.roundTo = (n, t) => {
     return Math.round(n * (Math.pow(10, t))) / Math.pow(10, t);
 };
 
-utils.getRandom = function(arr) {
+utils.getRandomFromArray = function(arr) {
     return arr[Math.floor(Math.random() * arr.length)];
 };
 
 utils.isValidInt = function(num) {
-    return !!parseInt(num, 10);
+    const n = Number(num);
+    const int = parseInt(num, 10);
+    return !isNaN(int) && (typeof int === 'number' || int instanceof Number) && int === n;
 };
 
 utils.isValidFloat = function(num) {
-    return !!parseFloat(num);
+    const n = Number(num);
+    const float = parseFloat(num);
+    return !isNaN(float) && (typeof float === 'number' || float instanceof Number) && float === n;
 };
 
 /*

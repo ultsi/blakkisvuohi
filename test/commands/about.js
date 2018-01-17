@@ -16,10 +16,26 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-'use strict';
+/*
+    about.js
+    unit tests for about.js functions
+*/
 
-module.exports = [
-    'Lisätty ilmoitukset. Ilmoituksia tulee BläkkisVuohen päivityksien yhteydessä, ja ne näkee ekaa kertaa päivityksen jälkeen jotain komentoa käytettäessä.',
-    '15.1.2018 - korjattu /moro bugi, joka aiheutti sen, ettei uusiin ryhmiin voinut liittyä.',
-    '17.1.2018 - korjattu /tunnus bugi, jolloin uusia käyttäjiä ei pystynyt tekemään.'
-];
+/* globals describe, it */
+
+'use strict';
+require('../../app/commands/about.js');
+
+const assert = require('assert');
+const blakkistest = require('../blakkistest.js');
+const Commands = require('../../app/lib/commands.js');
+const strings = require('../../app/strings.js');
+
+describe('about.js', function() {
+    it('Calling /about should print about text', function() {
+        const mocked = blakkistest.mockMsgAndBot();
+        Commands.call('/about', mocked.msg, ['/about']);
+        assert.equal(mocked.internals.sentChatId, mocked.privateId);
+        assert.equal(mocked.internals.sentText, strings.about);
+    });
+});

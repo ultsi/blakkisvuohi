@@ -16,10 +16,12 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-'use strict';
+/*
+    admin_stats.js
+    unit tests for admin_stats.js functions
+*/
 
-module.exports = [
-    'Lisätty ilmoitukset. Ilmoituksia tulee BläkkisVuohen päivityksien yhteydessä, ja ne näkee ekaa kertaa päivityksen jälkeen jotain komentoa käytettäessä.',
-    '15.1.2018 - korjattu /moro bugi, joka aiheutti sen, ettei uusiin ryhmiin voinut liittyä.',
-    '17.1.2018 - korjattu /tunnus bugi, jolloin uusia käyttäjiä ei pystynyt tekemään.'
-];
+/* globals describe, it */
+
+'use strict';
+require('../../app/commands/admin_stats.js');

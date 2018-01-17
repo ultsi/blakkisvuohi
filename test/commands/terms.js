@@ -16,10 +16,26 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-'use strict';
+/*
+    terms.js
+    unit tests for terms.js functions
+*/
 
-module.exports = [
-    'Lisätty ilmoitukset. Ilmoituksia tulee BläkkisVuohen päivityksien yhteydessä, ja ne näkee ekaa kertaa päivityksen jälkeen jotain komentoa käytettäessä.',
-    '15.1.2018 - korjattu /moro bugi, joka aiheutti sen, ettei uusiin ryhmiin voinut liittyä.',
-    '17.1.2018 - korjattu /tunnus bugi, jolloin uusia käyttäjiä ei pystynyt tekemään.'
-];
+/* globals describe, it */
+
+'use strict';
+require('../../app/commands/terms.js');
+
+const assert = require('assert');
+const blakkistest = require('../blakkistest.js');
+const Commands = require('../../app/lib/commands.js');
+const strings = require('../../app/strings.js');
+
+describe('terms.js', function() {
+    it('Calling /terms should print terms text', function() {
+        const mocked = blakkistest.mockMsgAndBot();
+        Commands.call('/terms', mocked.msg, ['/terms']);
+        assert.equal(mocked.internals.sentChatId, mocked.privateId);
+        assert.equal(mocked.internals.sentText, strings.terms);
+    });
+});

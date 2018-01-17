@@ -57,7 +57,7 @@ function saveDrink(context, user, milligrams, drinkName) {
         .then((ebac) => {
             const permilles = ebac.permilles;
             const permilles30Min = ebac.permilles30Min;
-            const text = utils.getRandom(strings.drink_responses) + ' ' + strings.short_permilles_text.format({
+            const text = utils.getRandomFromArray(strings.drink_responses) + ' ' + strings.short_permilles_text.format({
                 permilles: utils.roundTo(permilles, 2),
                 permilles30Min: utils.roundTo(permilles30Min, 2)
             });

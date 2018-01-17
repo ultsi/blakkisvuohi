@@ -116,7 +116,7 @@ function callCommandFunction(context, cmd, msg, words) {
                     return;
                 }
                 if (user.read_announcements < announcements.length) {
-                    const unread_announcements = announcements.slice(user.read_announcements, announcements.length);
+                    const unread_announcements = announcements.slice(user.read_announcements, announcements.length+1);
                     msg.sendPrivateMessage(strings.commands.blakkis.announcements.format({
                         announcements: unread_announcements.join('\n\n')
                     }));

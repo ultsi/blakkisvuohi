@@ -32,7 +32,7 @@ function moro(context, user, msg, words) {
         deferred.reject('Käytä tätä komentoa ryhmässä!');
         return deferred.promise;
     }
-    user.joinGroup(msg)
+    user.joinGroup(msg.chat.id)
         .then(() => {
             deferred.resolve(context.chatReply(strings.commands.moro.join_text.format({
                 chat_title: msg.chat.title
