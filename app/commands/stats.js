@@ -26,9 +26,10 @@ const log = require('loglevel');
 const Commands = require('../lib/commands.js');
 const utils = require('../lib/utils.js');
 const stats = require('../db/stats.js');
+const groups = require('../db/groups.js');
 const STANDARD_DRINK_GRAMS = require('../constants.js').STANDARD_DRINK_GRAMS;
 
-function printStats(context, user, msg, words)  {
+function printStats(context, user, msg, words) {
     let deferred = when.defer();
     const hours = (words[1] && parseInt(words[1])) ? parseInt(words[1]) * 24 : 4 * 365 * 24;
     if (context.isPrivateChat()) {
@@ -46,9 +47,9 @@ function printStats(context, user, msg, words)  {
                 deferred.reject('Isompi ongelma, ota yhteyttä adminiin.');
             });
     } else {
-        stats.getGroupStats(msg.chat.id, hours)
+        const group = new groups.Group(msg.chat.id);
+        stats.getGroupStats(group, hours)
             .then((res) => {
-                console.log(res);
                 const top10Stats = res.top10UserStats;
                 const top10text = top10Stats.map((stats) => utils.decrypt(stats.nick) + ' - ' + stats.count).join('\n');
                 const groupDrinkSum = res.groupDrinkSum;
