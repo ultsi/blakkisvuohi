@@ -21,7 +21,48 @@
     unit tests for kalja033.js functions
 */
 
-/* globals describe, it */
+/* globals describe, it, beforeEach */
 
 'use strict';
 require('../../app/commands/kalja033.js');
+
+const assert = require('assert');
+const blakkistest = require('../blakkistest.js');
+const Commands = require('../../app/lib/commands.js');
+
+describe('kalja033.js', function() {
+    beforeEach(blakkistest.resetDbWithTestUsersAndGroupsAndDrinks);
+    it('Calling /kalja033 should add a drink to db for the user and return ebac', function(done) {
+        const mocked = blakkistest.mockMsgAndBot();
+        const user = blakkistest.users[0];
+        mocked.msg.from.id = blakkistest.realIds[0];
+
+        user.getBooze()
+            .then((rows) => {
+                try {
+                    assert.equal(rows.length, 2);
+                    assert(!rows.find(x => x.description === '/kalja033'));
+                } catch (err) {
+                    return Promise.reject(err);
+                }
+                Commands.call('/kalja033', mocked.msg, ['/kalja033']);
+                let p = new Promise((resolve) => {
+                    setTimeout(() => {
+                        resolve(user.getBooze());
+                    }, 50);
+                });
+                return p;
+            })
+            .then((rows) => {
+                try {
+                    assert.equal(rows.length, 3);
+                    assert(rows.find(x => x.description === '/kalja033'));
+                    assert.notEqual(mocked.internals.sentText.match('‰'), null);
+                } catch (err) {
+                    return Promise.reject(err);
+                }
+                done();
+            })
+            .catch((err) => done(err));
+    });
+});
