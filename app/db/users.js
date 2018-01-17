@@ -32,10 +32,6 @@ query.connectionParameters = process.env.DATABASE_URL;
 
 let users = module.exports = {};
 
-function isValidGender(gender) {
-    return gender === 'mies' || gender === 'nainen';
-}
-
 function User(userId, username, weight, gender, height, read_terms, read_announcements, created) {
     this.userId = userId;
     this.username = username;
@@ -80,7 +76,7 @@ users.find = function find(userId) {
                     deferred.reject(err);
                 }
             } else {
-                deferred.reject('user not found');
+                deferred.resolve();
             }
         }, (err) => {
             log.error(err);
@@ -163,20 +159,6 @@ User.prototype.joinGroup = function(groupId) {
     query('insert into users_in_groups (userId, groupId) values ($1, $2)', [this.userId, groupIdHash])
         .then((res) => {
             deferred.resolve(res[0]);
-        }, (err) => {
-            log.error(err);
-            log.debug(err.stack);
-            deferred.reject('Ota adminiin yhteyttä.');
-        });
-    return deferred.promise;
-};
-
-User.prototype.getDrinkCountsByGroup = function() {
-    let deferred = when.defer();
-    query('select count(*) as count, groupid from users_drinks join users_in_groups on users_drinks.userid=users_in_groups.userid where groupId IN (select groupId from users_in_groups where userid=$1) group by groupId', [this.userId])
-        .then((res) => {
-            let rows = res[0];
-            deferred.resolve(rows);
         }, (err) => {
             log.error(err);
             log.debug(err.stack);

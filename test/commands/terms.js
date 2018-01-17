@@ -16,29 +16,26 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-create table if not exists users (
-    userId int not null primary key,
-    nick text not null,
-    weight int not null,
-    gender text not null
-);
+/*
+    terms.js
+    unit tests for terms.js functions
+*/
 
-create table if not exists groups (
-    groupId bigint not null,
-    title text not null,
-    primary key (groupId)
-);
+/* globals describe, it */
 
-create table if not exists users_in_groups (
-    userId int not null,
-    groupId bigint not null,
-    primary key (userId, groupId)
-);
+'use strict';
+require('../../app/commands/terms.js');
 
-create table if not exists users_drinks (
-    userId int not null,
-    alcohol int not null, /* in milligrams */
-    description text,
-    created timestamp with time zone not null default now(),
-    primary key (created)
-);
+const assert = require('assert');
+const blakkistest = require('../blakkistest.js');
+const Commands = require('../../app/lib/commands.js');
+const strings = require('../../app/strings.js');
+
+describe('terms.js', function() {
+    it('Calling /terms should print terms text', function() {
+        const mocked = blakkistest.mockMsgAndBot();
+        Commands.call('/terms', mocked.msg, ['/terms']);
+        assert.equal(mocked.internals.sentChatId, mocked.privateId);
+        assert.equal(mocked.internals.sentText, strings.terms);
+    });
+});

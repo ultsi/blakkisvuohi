@@ -24,7 +24,7 @@
 
 let message = module.exports = {};
 
-/* 
+/*
     Types available
     chat_message
     private_message
@@ -37,6 +37,8 @@ function Message(text, options) {
     this.options = options;
     this.type = 'message';
 }
+
+message.Message = Message;
 
 message.ChatMessage = (text, options) => {
     let msg = new Message(text, options);
@@ -62,18 +64,11 @@ message.PrivateKeyboardMessage = (text, keyboardButtons) => {
     return message.PrivateMessage(text, options);
 };
 
-message.Reply = (text, options) => {
-    this.text = text;
-    this.options = options;
-    this.type = 'reply';
-    return this;
-};
-
 message.Photo = (buffer, caption) => {
     let options = {
         caption: caption
     };
-    let msg = new Message('', options);
+    let msg = new Message('photo', options);
     msg.type = 'photo';
     msg.buffer = buffer;
     return msg;

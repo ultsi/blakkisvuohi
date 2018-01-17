@@ -32,6 +32,8 @@ constants.MEAN_HEIGHT = {
 };
 constants.HOUR_IN_MILLIS = 3600 * 1000;
 
+constants.METABOLISM_RATE = 0.17;
+
 constants.calcAlcoholMilligrams = function(vol_perc, amount) {
     return Math.round(vol_perc * constants.ETANOL_GRAMS_PER_LITRE * amount * 1000);
 };

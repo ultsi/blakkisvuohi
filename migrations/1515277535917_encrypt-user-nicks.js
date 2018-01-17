@@ -28,22 +28,25 @@ exports.up = () => {
         .then((res) => {
             try {
                 const rows = res[0];
-                console.log(rows[0]);
-                const valuePairs = rows.map((u, key) => '($' + (2 * key + 1) + ', $' + (2 * key + 2) + ')');
-                const params = rows.reduce((arr, u) => {
-                    arr.push(u.userid);
-                    arr.push(utils.encrypt(u.nick));
-                    return arr;
-                }, []);
-                const queryStr = 'UPDATE users set nick = u.value from (VALUES ' + valuePairs.join(', ') + ') as u(id, value) WHERE u.id = users.userid';
-                console.log(params);
-                query(queryStr, params)
-                    .then(() => {
-                        deferred.resolve();
-                    }, (err) => {
-                        console.log(err);
-                        deferred.reject(err);
-                    });
+                if (rows.length > 0) {
+                    const valuePairs = rows.map((u, key) => '($' + (2 * key + 1) + ', $' + (2 * key + 2) + ')');
+                    const params = rows.reduce((arr, u) => {
+                        arr.push(u.userid);
+                        arr.push(utils.encrypt(u.nick));
+                        return arr;
+                    }, []);
+                    const queryStr = 'UPDATE users set nick = u.value from (VALUES ' + valuePairs.join(', ') + ') as u(id, value) WHERE u.id = users.userid';
+                    console.log(params);
+                    query(queryStr, params)
+                        .then(() => {
+                            deferred.resolve();
+                        }, (err) => {
+                            console.log(err);
+                            deferred.reject(err);
+                        });
+                } else {
+                    deferred.resolve();
+                }
             } catch (err) {
                 console.log(err);
                 deferred.reject(err);

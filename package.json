@@ -8,7 +8,10 @@
     "set_env": "export $(cat .env | xargs)",
     "start_win": "node index.js",
     "set_env_win": "env.cmd",
-    "switch_to_dev": "export $(cat .env | xargs) && wget --spider https://api.telegram.org/bot$TOKEN/setWebhook?url= --delete-after && node index.js"
+    "switch_to_dev": "export $(cat .env | xargs) && wget --spider https://api.telegram.org/bot$TOKEN/setWebhook?url= --delete-after && node index.js",
+    "migrate": "export $(cat .env) && ./node_modules/node-pg-migrate/bin/node-pg-migrate up",
+    "test": "export $(cat .env) && ./node_modules/mocha/bin/mocha -w test/*",
+    "test-with-coverage": "export $(cat .env) && nyc --reporter=text mocha --exit test/*"
   },
   "engines": {
     "node": "6.11.1"
@@ -16,7 +19,6 @@
   "author": "Joonas Ulmanen",
   "license": "GPL-3.0",
   "dependencies": {
-    "aws-sdk": "^2.61.0",
     "body-parser": "^1.15.0",
     "chart.js": "<=2.6.x",
     "chartjs-node": "^1.6.0",
@@ -27,5 +29,9 @@
     "node-telegram-bot-api": "^0.27.1",
     "pg": "^6.2.3",
     "pg-query": "^0.11.0"
+  },
+  "devDependencies": {
+    "mocha": "^4.1.0",
+    "nyc": "^11.4.1"
   }
 }
