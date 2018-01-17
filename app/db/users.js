@@ -68,6 +68,7 @@ users.find = function find(userId) {
     userId = utils.hashSha256(userId);
     query('select userId, nick, weight, gender, height, read_terms, read_announcements, created from users where userId=$1', [userId])
         .then((res) => {
+            log.debug('Finding user... ' + userId);
             let rows = res[0];
             let info = res[1];
             if (rows.length > 0 && info.rowCount > 0) {
