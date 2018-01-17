@@ -61,7 +61,9 @@ let command = {
             }
             return deferred.promise;
         },
-        errorMessage: message.PrivateMessage('Kirjoita kyllä tai en')
+        errorMessage: message.PrivateKeyboardMessage('Olet laattaamassa viimeksi juodun juomasi. Oletko varma?', [
+            ['Kyllä', 'En']
+        ])
     }
 };
 

@@ -136,7 +136,7 @@ blakkistest.resetDbWithTestUsersAndGroupsAndDrinks = function(done) {
         when.all([
                 query('insert into users (userid, nick, weight, gender, height, read_terms, read_announcements) values ' + userInsertValuesStr.join(', ')),
                 query('insert into users_in_groups (groupid, userid) values ' + userInGroupsValuesStr.join(', ')),
-                query(`insert into users_drinks (userid, alcohol, description) values ('${blakkistest.users[0].userId}', 12347, 'kalja'), ('${blakkistest.users[0].userId}', 12347, 'kalja'), ('${blakkistest.users[1].userId}', 12347, 'kalja')`)
+                query(`insert into users_drinks (userid, alcohol, description, created) values ('${blakkistest.users[0].userId}', 12347, 'kalja', now()), ('${blakkistest.users[0].userId}', 12347, 'kalja', now() - interval '1 second'), ('${blakkistest.users[1].userId}', 12347, 'kalja', now())`)
             ])
             .spread(() => done()).catch((err) => done(new Error(err)));
     }).catch((err) => {
