@@ -49,8 +49,11 @@ users.new = function(userId, nick, weight, gender, height, read_terms) {
     let deferred = when.defer();
     const params = [utils.hashSha256(parseInt(userId, 10)), utils.encrypt(nick), parseInt(weight, 10), gender, parseInt(height, 10), read_terms, announcements.length];
 
+    log.debug('Creating user... params:');
+    log.debug(params);
     query('insert into users (userId, nick, weight, gender, height, read_terms, read_announcements) values ($1, $2, $3, $4, $5, $6, $7)', params)
         .then(() => {
+            log.debug('created new user');
             deferred.resolve(new User(params[0], utils.decrypt(params[1]), params[2], gender, params[4], params[5], Date.now()));
         }, (err) => {
             log.error(err);

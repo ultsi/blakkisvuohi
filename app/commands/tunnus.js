@@ -115,32 +115,38 @@ let command = {
                 return deferred.promise;
             }
 
-            const userId = context.fetchVariable('userId');
-            const username = context.fetchVariable('username');
-            const weight = context.fetchVariable('weight');
-            const height = context.fetchVariable('height');
-            const gender = context.fetchVariable('gender');
-            users.find(userId)
-                .then((user) => {
-                    user.updateInfo(username, weight, gender, height, true)
-                        .then(() => {
-                            deferred.resolve(context.privateReply('Olet jo rekisteröitynyt. Tiedot päivitetty.'));
-                        }, (err) => {
-                            log.error('Error creating new user! ' + err);
-                            log.debug(err.stack);
-                            deferred.resolve(context.privateReply('Olet jo rekisteröitynyt, mutta tietojen päivityksessä tuli ongelma. Ota yhteyttä adminiin.'));
-                        });
-                }, () => {
-                    // try to create a new user
-                    users.new(userId, username, weight, gender, height, true)
-                        .then((user) => {
-                            deferred.resolve(context.privateReply('Moikka ' + user.username + '! Tunnuksesi luotiin onnistuneesti. Muista, että kaikki antamani luvut ovat vain arvioita, eikä niihin voi täysin luottaa. Ja eikun juomaan!'));
-                        }, (err) => {
-                            log.error('Error creating new user! ' + err);
-                            log.debug(err.stack);
-                            deferred.reject('Isompi ongelma, ota yhteyttä adminiin.');
-                        });
-                });
+            try {
+                const userId = context.fetchVariable('userId');
+                const username = context.fetchVariable('username');
+                const weight = context.fetchVariable('weight');
+                const height = context.fetchVariable('height');
+                const gender = context.fetchVariable('gender');
+                users.find(userId)
+                    .then((user) => {
+                        user.updateInfo(username, weight, gender, height, true)
+                            .then(() => {
+                                deferred.resolve(context.privateReply('Olet jo rekisteröitynyt. Tiedot päivitetty.'));
+                            }, (err) => {
+                                log.error('Error creating new user! ' + err);
+                                log.debug(err.stack);
+                                deferred.resolve(context.privateReply('Olet jo rekisteröitynyt, mutta tietojen päivityksessä tuli ongelma. Ota yhteyttä adminiin.'));
+                            });
+                    }, () => {
+                        // try to create a new user
+                        users.new(userId, username, weight, gender, height, true)
+                            .then((user) => {
+                                deferred.resolve(context.privateReply('Moikka ' + user.username + '! Tunnuksesi luotiin onnistuneesti. Muista, että kaikki antamani luvut ovat vain arvioita, eikä niihin voi täysin luottaa. Ja eikun juomaan!'));
+                            }, (err) => {
+                                log.error('Error creating new user! ' + err);
+                                log.debug(err.stack);
+                                deferred.reject('Isompi ongelma, ota yhteyttä adminiin.');
+                            });
+                    });
+            } catch (err) {
+                log.error(err);
+                log.debug(err.stack);
+                deferred.reject(err);
+            }
 
             return deferred.promise;
         },
