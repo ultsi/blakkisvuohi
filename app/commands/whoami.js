@@ -28,7 +28,7 @@ const strings = require('../strings.js');
 function whoAmI(context, user, msg, words) {
     return context.privateReply(strings.commands.whoami.reply.format({
         username: user.username,
-        id: user.userid,
+        user_id: user.userId,
         weight: user.weight,
         height: user.height,
         gender: user.gender,

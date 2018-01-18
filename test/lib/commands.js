@@ -98,21 +98,22 @@ describe('commands.js', function() {
             const mocked = blakkistest.mockMsgAndBot();
             Commands.call('/start', mocked.msg, ['/start']);
             assert.equal(mocked.internals.sentChatId, mocked.privateId);
-            assert.equal(mocked.internals.sentText, strings.help_text);
+            assert.equal(mocked.internals.sentText, strings.commands.blakkis.help_text);
         });
 
         it('should send cmds string msg privately with /komennot', function() {
             const mocked = blakkistest.mockMsgAndBot();
             Commands.call('/komennot', mocked.msg, ['/komennot']);
             assert.equal(mocked.internals.sentChatId, mocked.privateId);
-            assert.equal(mocked.internals.sentText.split('\n')[0], 'Komennot:');
+            assert.notEqual(mocked.internals.sentText.indexOf(strings.commands.blakkis.cmd_list.unformat()), -1);
         });
 
         it('should send help string and cmds string msg privately with /help', function() {
             const mocked = blakkistest.mockMsgAndBot();
             Commands.call('/help', mocked.msg, ['/help']);
             assert.equal(mocked.internals.sentChatId, mocked.privateId);
-            assert(mocked.internals.sentText.split('\n').length > strings.help_text.split('\n').length);
+            assert.notEqual(mocked.internals.sentText.indexOf(strings.commands.blakkis.cmd_list.unformat()), -1);
+            assert.notEqual(mocked.internals.sentText.indexOf(strings.commands.blakkis.help_text.unformat()), -1);
         });
 
         it('a private command should not be able to called from a chat and a msg is sent to the initiating user', function() {

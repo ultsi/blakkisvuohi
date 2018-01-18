@@ -176,7 +176,7 @@ module.exports = {
         /* /whoami */
         whoami: {
             cmd_description: '/whoami - tulosta omat tietosi.',
-            reply: 'Käyttäjä {username}\nID: {id}\nPaino: {weight}kg\nPituus: {height}cm\nSukupuoli: {gender}\nKäyttäjä luotu: {created}'
+            reply: 'Käyttäjä {username}\nID: {user_id}\nPaino: {weight}kg\nPituus: {height}cm\nSukupuoli: {gender}\nKäyttäjä luotu: {created}'
         }
     }
 };

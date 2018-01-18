@@ -100,12 +100,12 @@ function listPermilles(context, user, msg, words) {
                 const listText = permillesListing.map(user => strings.commands.promillet.text_group_list_item.format({
                     username: user[0],
                     permilles: utils.roundTo(user[1], 2),
-                    drinks12h: utils.roundTO(user[2], 2),
-                    drinks24h: utils.roundTO(user[3], 2)
+                    drinks12h: utils.roundTo(user[2], 2),
+                    drinks24h: utils.roundTo(user[3], 2)
                 }));
                 const text = strings.commands.promillet.text_group.format({
                     chat_title: msg.chat.title,
-                    list: listText
+                    list: listText.join('\n')
                 });
                 deferred.resolve(context.chatReply(text));
             }, (err) => {

@@ -29,6 +29,7 @@ require('../../app/commands/laatta.js');
 const assert = require('assert');
 const blakkistest = require('../blakkistest.js');
 const Commands = require('../../app/lib/commands.js');
+const strings = require('../../app/strings.js');
 
 describe('laatta.js', function() {
     beforeEach(blakkistest.resetDbWithTestUsersAndGroupsAndDrinks);
@@ -39,7 +40,7 @@ describe('laatta.js', function() {
         setTimeout(() => {
             try {
                 assert.equal(mocked.internals.sentChatId, mocked.msg.from.id);
-                assert.notEqual(mocked.internals.sentText.match('varma'));
+                assert.equal(mocked.internals.sentText, strings.commands.laatta.start_text);
                 assert.notEqual(mocked.internals.sentOptions.reply_markup.keyboard.length, 0);
                 done();
             } catch (err) {
@@ -57,7 +58,7 @@ describe('laatta.js', function() {
                 setTimeout(() => {
                     try {
                         assert.equal(mocked.internals.sentChatId, mocked.msg.from.id);
-                        assert.notEqual(mocked.internals.sentText.match('varma'));
+                        assert.equal(mocked.internals.sentText, strings.commands.laatta.start_text);
                         assert.notEqual(mocked.internals.sentOptions.reply_markup.keyboard.length, 0);
                         Commands.call('test', mocked.msg, ['test']);
                         resolve();
@@ -70,7 +71,7 @@ describe('laatta.js', function() {
                 setTimeout(() => {
                     try {
                         assert.equal(mocked.internals.sentChatId, mocked.msg.from.id);
-                        assert.notEqual(mocked.internals.sentText.match('varma'), null);
+                        assert.equal(mocked.internals.sentText, strings.commands.laatta.error_text);
                         assert.notEqual(mocked.internals.sentOptions.reply_markup.keyboard.length, 0);
                         done();
                     } catch (err) {
@@ -93,7 +94,7 @@ describe('laatta.js', function() {
                     Commands.call('/laatta', mocked.msg, ['/laatta']);
                     return new Promise((resolve) => {
                         setTimeout(() => {
-                            Commands.call('Kyllä', mocked.msg, ['Kyllä']); // yes option
+                            Commands.call(strings.commands.laatta.start_answer_yes, mocked.msg, [strings.commands.laatta.start_answer_yes]); // yes option
                             setTimeout(() => {
                                 resolve(user.getBooze());
                             }, 50);
@@ -127,7 +128,7 @@ describe('laatta.js', function() {
                     Commands.call('/laatta', mocked.msg, ['/laatta']);
                     return new Promise((resolve) => {
                         setTimeout(() => {
-                            Commands.call('En', mocked.msg, ['En']); // no option
+                            Commands.call(strings.commands.laatta.start_answer_no, mocked.msg, [strings.commands.laatta.start_answer_no]); // no option
                             setTimeout(() => {
                                 resolve(user.getBooze());
                             }, 50);

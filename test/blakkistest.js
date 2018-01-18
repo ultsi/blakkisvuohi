@@ -26,6 +26,7 @@
 const utils = require('../app/lib/utils.js');
 const users = require('../app/db/users.js');
 const groups = require('../app/db/groups.js');
+const announcements = require('../app/announcements.js');
 const when = require('when');
 const query = require('pg-query');
 query.connectionParameters = process.env.DATABASE_URL;
@@ -36,7 +37,7 @@ blakkistest.users = [{}, {}, {}, {}, {}, {}, {}, {}, {}, {}]; // 10 users
 blakkistest.realIds = [];
 blakkistest.users = blakkistest.users.map((_, i) => {
     const id = 100 + i;
-    const user = new users.User(utils.hashSha256(id), i + '', 80 + i, 'mies', 180 + i, true, 1, Date.now());
+    const user = new users.User(utils.hashSha256(id), i + '', 80 + i, 'mies', 180 + i, true, announcements.length, Date.now());
     blakkistest.realIds[i] = id;
     return user;
 });

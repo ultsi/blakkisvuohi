@@ -36,6 +36,6 @@ describe('about.js', function() {
         const mocked = blakkistest.mockMsgAndBot();
         Commands.call('/about', mocked.msg, ['/about']);
         assert.equal(mocked.internals.sentChatId, mocked.privateId);
-        assert.equal(mocked.internals.sentText, strings.about);
+        assert.equal(mocked.internals.sentText, strings.commands.about.text);
     });
 });

@@ -197,3 +197,7 @@ String.prototype.format = function(placeholders) {
     }
     return s;
 };
+
+String.prototype.unformat = function() {
+    return this.replace(/{.+}/g, '');
+};

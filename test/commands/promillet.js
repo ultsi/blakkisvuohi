@@ -29,6 +29,7 @@ require('../../app/commands/promillet.js');
 const assert = require('assert');
 const blakkistest = require('../blakkistest.js');
 const Commands = require('../../app/lib/commands.js');
+const strings = require('../../app/strings.js');
 
 describe('promillet.js', function() {
     beforeEach(blakkistest.resetDbWithTestUsersAndGroupsAndDrinks);
@@ -40,15 +41,14 @@ describe('promillet.js', function() {
         Commands.call('/promillet', mocked.msg, ['/promillet']);
         setTimeout(() => {
             try {
-                console.log(mocked.internals);
                 assert.equal(mocked.internals.sentChatId, mocked.msg.chat.id);
+                assert.notEqual(mocked.internals.sentText.indexOf(strings.commands.promillet.text_group.unformat()), -1);
                 assert.equal(mocked.internals.sentText.match(/\n/g).length, 4); // 1 header line + 2 breaks + 2 users separated by 1 linebreak
-                assert.notEqual(mocked.internals.sentText.match(mocked.msg.chat.title), null);
                 done();
             } catch (err) {
                 done(err);
             }
-        }, 50);
+        }, 100);
     });
 
     it('Calling /promillet in an empty group should list no users', function(done) {
@@ -59,8 +59,8 @@ describe('promillet.js', function() {
         setTimeout(() => {
             try {
                 assert.equal(mocked.internals.sentChatId, mocked.msg.chat.id);
+                assert.notEqual(mocked.internals.sentText.indexOf(strings.commands.promillet.text_group.unformat()), -1);
                 assert.equal(mocked.internals.sentText.match(/\n/g).length, 3);  // 1 header line + 2 breaks + 0 users
-                assert.notEqual(mocked.internals.sentText.match(mocked.msg.chat.title), null);
                 done();
             } catch (err) {
                 done(err);
@@ -75,7 +75,7 @@ describe('promillet.js', function() {
         setTimeout(() => {
             try {
                 assert.equal(mocked.internals.sentChatId, mocked.msg.from.id);  // 1 header line + 2 breaks + 0 users
-                assert(mocked.internals.sentText.match('‰'));
+                assert.notEqual(mocked.internals.sentText.match('‰'), null);
                 done();
             } catch (err) {
                 done(err);

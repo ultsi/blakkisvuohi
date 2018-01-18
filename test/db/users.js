@@ -29,6 +29,7 @@ const blakkistest = require('../blakkistest.js');
 const assert = require('assert');
 const users = require('../../app/db/users.js');
 const utils = require('../../app/lib/utils.js');
+const announcements = require('../../app/announcements.js');
 const query = require('pg-query');
 query.connectionParameters = process.env.DATABASE_URL;
 
@@ -367,17 +368,17 @@ describe('users.js', function() {
                 .then((res) => {
                     const found = res[0][0];
                     try {
-                        assert.equal(found.read_announcements, 1);
+                        assert.equal(found.read_announcements, announcements.length);
                     } catch (err) {
                         return done(err);
                     }
-                    return user.updateReadAnnouncements(2);
+                    return user.updateReadAnnouncements(announcements.length+1);
                 })
                 .then(() => query('select * from users where userId=$1', [user.userId]))
                 .then((res) => {
                     const found = res[0][0];
                     try {
-                        assert.equal(found.read_announcements, 2);
+                        assert.equal(found.read_announcements, announcements.length+1);
                         done();
                     } catch (err) {
                         return done(err);
