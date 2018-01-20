@@ -21,7 +21,136 @@
     unit tests for tunnus.js functions
 */
 
-/* globals describe, it */
+/* globals describe, it, beforeEach */
 
 'use strict';
 require('../../app/commands/tunnus.js');
+
+const assert = require('assert');
+const blakkistest = require('../blakkistest.js');
+const Commands = require('../../app/lib/commands.js');
+const users = require('../../app/db/users.js');
+const strings = require('../../app/strings.js');
+
+describe('tunnus.js', function() {
+    beforeEach(blakkistest.resetDbWithTestUsersAndGroupsAndDrinks);
+
+    it('Calling /tunnus with correct parameters should create a new user', function(done) {
+        const mocked = blakkistest.mockMsgAndBot();
+        const userId = 1337;
+        mocked.msg.from.id = userId;
+        mocked.msg.from.username = 'testuser';
+
+        users.find(userId)
+            .then((user) => {
+                if (user) {
+                    return Promise.reject(new Error('user found when should not exist'));
+                }
+                return Commands.call('/tunnus', mocked.msg, ['/tunnus']);
+            })
+            .then(() => {
+                try {
+                    assert.equal(mocked.internals.sentText, strings.commands.tunnus.start);
+                    return Commands.call('80', mocked.msg, ['80']);
+                } catch (err) {
+                    return Promise.reject(err);
+                }
+            })
+            .then(() => {
+                try {
+                    assert.equal(mocked.internals.sentText, strings.commands.tunnus.height);
+                    return Commands.call('190', mocked.msg, ['190']);
+                } catch (err) {
+                    return Promise.reject(err);
+                }
+            })
+            .then(() => {
+                try {
+                    assert.equal(mocked.internals.sentText, strings.commands.tunnus.gender);
+                    return Commands.call(strings.gender.male, mocked.msg, [strings.gender.male]);
+                } catch (err) {
+                    return Promise.reject(err);
+                }
+            })
+            .then(() => {
+                try {
+                    assert.equal(mocked.internals.sentText, strings.commands.tunnus.terms.format({
+                        terms: strings.commands.terms.reply
+                    }));
+                    return Commands.call(strings.commands.tunnus.terms_answer_yes, mocked.msg, [strings.commands.tunnus.terms_answer_yes]);
+                } catch (err) {
+                    return Promise.reject(err);
+                }
+            })
+            .then(() => users.find(userId))
+            .then((user) => {
+                if (user) {
+                    return done();
+                }
+                return Promise.reject(new Error('user creation failed'));
+            })
+            .catch((err) => done(err));
+    });
+
+    it('Calling /tunnus with an existing user should update user values', function(done) {
+        const mocked = blakkistest.mockMsgAndBot();
+        const user = blakkistest.users[0];
+        mocked.msg.from.id = blakkistest.realIds[0];
+        mocked.msg.from.username = user.username;
+
+        users.find(mocked.msg.from.id)
+            .then((foundUser) => {
+                if (!foundUser) {
+                    return Promise.reject(new Error('user not found when should exist'));
+                }
+                return Commands.call('/tunnus', mocked.msg, ['/tunnus']);
+            })
+            .then(() => {
+                try {
+                    assert.equal(mocked.internals.sentText, strings.commands.tunnus.start);
+                    return Commands.call('80', mocked.msg, ['80']);
+                } catch (err) {
+                    return Promise.reject(err);
+                }
+            })
+            .then(() => {
+                try {
+                    assert.equal(mocked.internals.sentText, strings.commands.tunnus.height);
+                    return Commands.call('190', mocked.msg, ['190']);
+                } catch (err) {
+                    return Promise.reject(err);
+                }
+            })
+            .then(() => {
+                try {
+                    assert.equal(mocked.internals.sentText, strings.commands.tunnus.gender);
+                    return Commands.call(strings.gender.male, mocked.msg, [strings.gender.male]);
+                } catch (err) {
+                    return Promise.reject(err);
+                }
+            })
+            .then(() => {
+                try {
+                    assert.equal(mocked.internals.sentText, strings.commands.tunnus.terms.format({
+                        terms: strings.commands.terms.reply
+                    }));
+                    return Commands.call(strings.commands.tunnus.terms_answer_yes, mocked.msg, [strings.commands.tunnus.terms_answer_yes]);
+                } catch (err) {
+                    return Promise.reject(err);
+                }
+            })
+            .then(() => users.find(mocked.msg.from.id))
+            .then((foundUser) => {
+                if (foundUser) {
+                    try {
+                        assert.equal(mocked.internals.sentText, strings.commands.tunnus.update);
+                        return done();
+                    } catch (err) {
+                        return Promise.reject(err);
+                    }
+                }
+                return Promise.reject(new Error('user creation failed'));
+            })
+            .catch((err) => done(err));
+    });
+});

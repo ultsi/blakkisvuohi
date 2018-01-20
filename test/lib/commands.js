@@ -29,6 +29,9 @@ const assert = require('assert');
 const blakkistest = require('../blakkistest.js');
 const mocked = blakkistest.mockMsgAndBot();
 const Commands = require('../../app/lib/commands.js');
+require('../../app/commands/help.js');
+require('../../app/commands/komennot.js');
+require('../../app/commands/start.js');
 const Message = require('../../app/lib/message.js');
 const strings = require('../../app/strings.js');
 

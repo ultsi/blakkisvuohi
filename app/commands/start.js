@@ -17,22 +17,20 @@
 */
 
 /*
-    /about
-    Print short description about Bläkkisvuohi
+    /start
+    Begin using the bot
 */
 'use strict';
 
 const Commands = require('../lib/commands.js');
 const strings = require('../strings.js');
 
-function aboutCommand(context, msg, words) {
-    return msg.sendPrivateMessage(strings.commands.about.text, {
-        'parse_mode': 'Markdown'
-    });
+function startCommand(context, msg, words) {
+    return msg.sendPrivateMessage(strings.commands.blakkis.help_text);
 }
 
 Commands.registerSimple(
-    '/about',
-    strings.commands.about.cmd_description,
-    Commands.TYPE_PRIVATE, aboutCommand
+    '/start',
+    strings.commands.start.cmd_description,
+    Commands.TYPE_PRIVATE, startCommand
 );

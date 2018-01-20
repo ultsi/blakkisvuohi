@@ -109,12 +109,10 @@ let command = {
             return read === strings.commands.tunnus.terms_answer_yes.toLowerCase() || read === strings.commands.tunnus.terms_answer_no.toLowerCase();
         },
         onValidInput: (context, msg, words) => {
-            let deferred = when.defer();
             let read = words[0].toLowerCase();
             if (read === strings.commands.tunnus.terms_answer_no.toLowerCase()) {
-                deferred.resolve(context.privateReply(strings.commands.tunnus.terms_on_reject));
                 context.end();
-                return deferred.promise;
+                return Promise.resolve(context.privateReply(strings.commands.tunnus.terms_on_reject));
             }
 
             const userId = context.fetchVariable('userId');
@@ -122,31 +120,26 @@ let command = {
             const weight = context.fetchVariable('weight');
             const height = context.fetchVariable('height');
             const gender = context.fetchVariable('gender');
-            users.find(userId)
+            return users.find(userId)
                 .then((user) => {
-                    user.updateInfo(username, weight, gender, height, true)
-                        .then(() => {
-                            deferred.resolve(context.privateReply(strings.commands.tunnus.update));
-                        }, (err) => {
-                            log.error('Error creating new user! ' + err);
-                            log.debug(err.stack);
-                            deferred.resolve(context.privateReply(strings.commands.tunnus.update_error));
-                        });
-                }, () => {
-                    // try to create a new user
-                    users.new(userId, username, weight, gender, height, true)
-                        .then((user) => {
-                            deferred.resolve(context.privateReply(strings.commands.tunnus.new_user.format({
-                                username: user.username
-                            })));
-                        }, (err) => {
-                            log.error('Error creating new user! ' + err);
-                            log.debug(err.stack);
-                            deferred.reject('Isompi ongelma, ota yhteyttä adminiin.');
-                        });
+                    if (user) {
+                        return user.updateInfo(username, weight, gender, height, true)
+                            .then(() => {
+                                return Promise.resolve(context.privateReply(strings.commands.tunnus.update));
+                            });
+                    } else {
+                        return users.new(userId, username, weight, gender, height, true)
+                            .then((user) => {
+                                return Promise.resolve(context.privateReply(strings.commands.tunnus.new_user.format({
+                                    username: user.username
+                                })));
+                            });
+                    }
+                }).catch((err) => {
+                    log.error('Error creating new user! ' + err);
+                    log.error(err.stack);
+                    return Promise.reject('Isompi ongelma, ota yhteyttä adminiin.');
                 });
-
-            return deferred.promise;
         },
         errorMessage: message.PrivateKeyboardMessage(strings.commands.tunnus.terms_error, [
             [strings.commands.tunnus.terms_answer_yes, strings.commands.tunnus.terms_answer_no]

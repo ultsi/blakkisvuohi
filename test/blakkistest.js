@@ -90,7 +90,8 @@ blakkistest.mockMsgAndBot = () => {
             title: 'Chat title'
         },
         from: {
-            id: mock.privateId
+            id: mock.privateId,
+            username: 'testuser'
         },
         text: 'mock_text',
         message_id: mock.messageId

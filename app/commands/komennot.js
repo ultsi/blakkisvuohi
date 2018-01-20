@@ -17,22 +17,27 @@
 */
 
 /*
-    /about
-    Print short description about Bläkkisvuohi
+    /komennot
+    Print commands
 */
 'use strict';
 
 const Commands = require('../lib/commands.js');
 const strings = require('../strings.js');
 
-function aboutCommand(context, msg, words) {
-    return msg.sendPrivateMessage(strings.commands.about.text, {
-        'parse_mode': 'Markdown'
+function cmdListCommand(context, msg, words) {
+    const cmdListStr = Object.values(Commands.__cmds__)
+                        .filter(cmd => !cmd.adminCommand)
+                        .map(cmd => cmd.cmd_help)
+                        .join('\n');
+    const cmdStr = strings.commands.blakkis.cmd_list.format({
+        cmd_list: cmdListStr
     });
+    return msg.sendPrivateMessage(cmdStr);
 }
 
 Commands.registerSimple(
-    '/about',
-    strings.commands.about.cmd_description,
-    Commands.TYPE_PRIVATE, aboutCommand
+    '/komennot',
+    strings.commands.komennot.cmd_description,
+    Commands.TYPE_PRIVATE, cmdListCommand
 );

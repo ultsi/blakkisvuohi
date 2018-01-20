@@ -31,6 +31,7 @@ const assert = require('assert');
 
 describe('linegraph.js', function() {
     describe('linechart.getLineGraphBuffer()', function() {
+        this.slow(200);
         it('should return a png buffer with empty data', function(done) {
             linechart.getLineGraphBuffer([], '')
                 .then((buffer) => {

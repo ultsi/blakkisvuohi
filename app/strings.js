@@ -75,6 +75,18 @@ module.exports = {
             text_group_list_item: '{username}... {standard_drinks}kpl ({drinks12h}/{drinks24h})'
         },
 
+        help: {
+            cmd_description: '/help - tulosta ohje'
+        },
+
+        komennot: {
+            cmd_description: '/komennot - listaa kaikki botin komennot'
+        },
+
+        start: {
+            cmd_description: '/start - aloita botin käyttö'
+        },
+
         /* jalkikellotus -strings */
         jalkikellotus: {
             cmd_description: '/jalkikellotus - Kellota unohtuneet juomat mukaan tilastoihin',

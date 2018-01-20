@@ -100,14 +100,35 @@ function createSendPhotoFunction(msg, bot) {
 }
 
 utils.hookNewRelic = function(url, func) {
-    if (global.newrelic && global.newrelic.startWebTransaction) {
-        global.newrelic.startWebTransaction(url, function() {
-            func();
-            global.newrelic.getTransaction().end();
-        });
-    } else {
-        func();
-    }
+    return new Promise(function(resolve, reject){
+        if (global.newrelic && global.newrelic.startWebTransaction) {
+            global.newrelic.startWebTransaction(url, function() {
+                let p = func();
+                if(p && p.then) {
+                    p.then(() => {
+                        global.newrelic.getTransaction().end();
+                        resolve();
+                    }).catch((err) => {
+                        global.newrelic.getTransaction().end();
+                        reject(err);
+                    });
+                } else {
+                    global.newrelic.getTransaction().end();
+                    resolve();
+                }
+            });
+        } else {
+            let p = func();
+            if(p && p.then) {
+                p.then(() => {
+                    global.newrelic.getTransaction().end();
+                    resolve();
+                }).catch((err) => reject(err));
+            } else {
+                resolve();
+            }
+        }
+    });
 };
 
 utils.attachMethods = function attachMethods(msg, bot) {

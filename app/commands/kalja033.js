@@ -22,7 +22,6 @@
 */
 'use strict';
 
-const when = require('when');
 const log = require('loglevel').getLogger('commands');
 const Commands = require('../lib/commands.js');
 const utils = require('../lib/utils.js');
@@ -30,8 +29,7 @@ const constants = require('../constants.js');
 const strings = require('../strings.js');
 
 function kaljaCommand(context, user, msg, words) {
-    let deferred = when.defer();
-    user.drinkBoozeReturnEBAC(constants.KALJA033, '/kalja033', msg)
+    return user.drinkBoozeReturnEBAC(constants.KALJA033, '/kalja033', msg)
         .then((ebac) => {
             const permilles = ebac.permilles;
             const permilles30Min = ebac.permilles30Min;
@@ -39,14 +37,8 @@ function kaljaCommand(context, user, msg, words) {
                 permilles: utils.roundTo(permilles, 2),
                 permilles30Min: utils.roundTo(permilles30Min, 2)
             });
-            deferred.resolve(context.privateReply(text));
-        }, (err) => {
-            log.error(err);
-            log.debug(err.stack);
-            deferred.reject('Isompi ongelma, ota yhteyttä adminiin.');
+            return Promise.resolve(context.privateReply(text));
         });
-    context.end();
-    return deferred.promise;
 }
 
 Commands.registerUserCommand(

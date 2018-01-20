@@ -21,8 +21,6 @@
     Undoes a drink after confirmation
 */
 'use strict';
-const when = require('when');
-const log = require('loglevel').getLogger('commands');
 const Commands = require('../lib/commands.js');
 const alcomath = require('../lib/alcomath.js');
 const message = require('../lib/message.js');
@@ -38,33 +36,21 @@ let command = {
             return answer === strings.commands.laatta.start_answer_yes.toLowerCase() || answer === strings.commands.laatta.start_answer_no.toLowerCase();
         },
         onValidInput: (context, user, msg, words) => {
-            let deferred = when.defer();
             if (words[0].toLowerCase() === strings.commands.laatta.start_answer_yes.toLowerCase()) {
-                user.undoDrink()
-                    .then(() => {
-                        user.getBooze()
-                            .then((drinks) => {
-                                let ebac = alcomath.calculateEBACFromDrinks(user, drinks);
-                                let permilles = ebac.permilles;
-                                let permilles30Min = ebac.permilles30Min;
-                                deferred.resolve(context.privateReply(strings.commands.laatta.success.format({
-                                    permilles: permilles,
-                                    permilles30Min: permilles30Min
-                                })));
-                            }, (err) => {
-                                log.error(err);
-                                log.debug(err.stack);
-                                deferred.reject(err);
-                            });
-                    }, (err) => {
-                        log.error(err);
-                        log.debug(err.stack);
-                        deferred.reject(err);
+                return user.undoDrink()
+                    .then(() => user.getBooze())
+                    .then((drinks) => {
+                        let ebac = alcomath.calculateEBACFromDrinks(user, drinks);
+                        let permilles = ebac.permilles;
+                        let permilles30Min = ebac.permilles30Min;
+                        return Promise.resolve(context.privateReply(strings.commands.laatta.success.format({
+                            permilles: permilles,
+                            permilles30Min: permilles30Min
+                        })));
                     });
             } else {
-                deferred.resolve(context.privateReply(strings.commands.laatta.cancel));
+                return Promise.resolve(context.privateReply(strings.commands.laatta.cancel));
             }
-            return deferred.promise;
         },
         errorMessage: message.PrivateKeyboardMessage(strings.commands.laatta.error_text, [[strings.commands.laatta.start_answer_yes, strings.commands.laatta.start_answer_no]])
     }

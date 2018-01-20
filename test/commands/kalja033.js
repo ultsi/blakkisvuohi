@@ -45,14 +45,9 @@ describe('kalja033.js', function() {
                 } catch (err) {
                     return Promise.reject(err);
                 }
-                Commands.call('/kalja033', mocked.msg, ['/kalja033']);
-                let p = new Promise((resolve) => {
-                    setTimeout(() => {
-                        resolve(user.getBooze());
-                    }, 50);
-                });
-                return p;
+                return Commands.call('/kalja033', mocked.msg, ['/kalja033']);
             })
+            .then(() => user.getBooze())
             .then((rows) => {
                 try {
                     assert.equal(rows.length, 3);

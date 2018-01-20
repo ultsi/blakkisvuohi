@@ -93,24 +93,58 @@ describe('utils', function() {
             };
         }
 
-        it('should not hook newrelic if global.newrelic is not set', function() {
+        it('should not hook newrelic if global.newrelic is not set', function(done) {
             newRelicStart = false;
             newRelicEnd = false;
-            utils.hookNewRelic('lol', () => {});
-            assert.equal(newRelicStart, false);
-            assert.equal(newRelicEnd, false);
+            utils.hookNewRelic('lol', () => {})
+                .then(() => {
+                    try {
+                        assert.equal(newRelicStart, false);
+                        assert.equal(newRelicEnd, false);
+                    } catch (err) {
+                        return Promise.reject(err);
+                    }
+                    done();
+                }).catch((err) => done(err));
         });
 
-        it('should hook newrelic if global.newrelic is set', function() {
+        it('should hook newrelic if global.newrelic is set', function(done) {
             newRelicStart = false;
             newRelicEnd = false;
             global.newrelic = {
                 startWebTransaction: startWebTransaction,
                 getTransaction: getTransaction
             };
-            utils.hookNewRelic('lol', () => {});
-            assert.equal(newRelicStart, true);
-            assert.equal(newRelicEnd, true);
+            utils.hookNewRelic('lol', () => {})
+                .then(() => {
+                    try {
+                        assert.equal(newRelicStart, true);
+                        assert.equal(newRelicEnd, true);
+                    } catch (err) {
+                        return Promise.reject(err);
+                    }
+                    done();
+                }).catch((err) => done(err));
+        });
+
+        it('should propagate error if the func errors', function(done) {
+            newRelicStart = false;
+            newRelicEnd = false;
+            global.newrelic = {
+                startWebTransaction: startWebTransaction,
+                getTransaction: getTransaction
+            };
+            utils.hookNewRelic('lol', () => {throw new Error('test');})
+                .then(() => {
+                    done(new Error('didn\'t error!'));
+                }).catch((err) => {
+                    try {
+                        assert.equal(err, 'Error: test');
+                        done();
+                    } catch (err) {
+                        done(err);
+                    }
+                });
         });
     });
 

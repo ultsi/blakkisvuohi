@@ -53,20 +53,19 @@ users.new = function(userId, nick, weight, gender, height, read_terms) {
     log.debug(params);
     query('insert into users (userId, nick, weight, gender, height, read_terms, read_announcements) values ($1, $2, $3, $4, $5, $6, $7)', params)
         .then(() => {
-            log.debug('created new user');
+            console.log('created new user ' + nick);
             deferred.resolve(new User(params[0], utils.decrypt(params[1]), params[2], gender, params[4], params[5], Date.now()));
         }, (err) => {
             log.error(err);
-            log.debug(err.stack);
+            log.error(err.stack);
             deferred.reject(err);
         });
     return deferred.promise;
 };
 
 users.find = function find(userId) {
-    let deferred = when.defer();
     userId = utils.hashSha256(userId);
-    query('select userId, nick, weight, gender, height, read_terms, read_announcements, created from users where userId=$1', [userId])
+    return query('select userId, nick, weight, gender, height, read_terms, read_announcements, created from users where userId=$1', [userId])
         .then((res) => {
             log.debug('Finding user... ' + userId);
             let rows = res[0];
@@ -75,19 +74,18 @@ users.find = function find(userId) {
                 try {
                     let found = rows[0];
                     let nick = utils.decrypt(found.nick);
-                    deferred.resolve(new User(found.userid, nick, found.weight, found.gender, found.height, found.read_terms, found.read_announcements, found.created));
+                    return Promise.resolve(new User(found.userid, nick, found.weight, found.gender, found.height, found.read_terms, found.read_announcements, found.created));
                 } catch (err) {
-                    deferred.reject(err);
+                    return Promise.reject(err);
                 }
             } else {
-                deferred.resolve();
+                return Promise.resolve();
             }
-        }, (err) => {
+        }).catch((err) => {
             log.error(err);
-            log.debug(err.stack);
-            deferred.reject(err);
+            log.error(err.stack);
+            return Promise.reject(err);
         });
-    return deferred.promise;
 };
 
 User.prototype.drinkBooze = function(amount, description) {
@@ -228,9 +226,14 @@ User.prototype.updateInfo = function(username, weight, gender, height, read_term
     let deferred = when.defer();
     let self = this;
     username = utils.encrypt(username);
-    query('update users set nick=$1, weight=$2, gender=$3, height=$4, read_terms=$5 where userId=$6', [username, weight, gender, height, read_terms, self.userId])
-        .then(() => {
-            deferred.resolve();
+    query('update users set nick=$1, weight=$2, gender=$3, height=$4, read_terms=$5 where userId=$6 returning userId, nick, weight, gender, read_terms, created', [username, weight, gender, height, read_terms, self.userId])
+        .then((res) => {
+            const found = res[0][0];
+            if (found) {
+                deferred.resolve(new User(found.userid, utils.decrypt(found.nick), found.weight, found.gender, found.height, found.read_terms, found.read_announcements, found.created));
+            } else {
+                deferred.reject('not found');
+            }
         }, (err) => {
             log.error(err);
             log.debug(err.stack);

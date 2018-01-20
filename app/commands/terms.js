@@ -23,24 +23,15 @@
 'use strict';
 
 const Commands = require('../lib/commands.js');
-const Message = require('../lib/message.js');
 const strings = require('../strings.js');
 
-const termsCommand = {
-    [0]: {
-        startMessage: Message.PrivateMessage(strings.commands.terms.reply, {
-            'parse_mode': 'Markdown'
-        }),
-        validateInput: () => {
-            return true;
-        },
-        onValidInput: (context) => {
-            return context.end();
-        }
-    }
-};
+function termsCommand(context, msg, words) {
+    return msg.sendPrivateMessage(strings.commands.terms.reply, {
+        'parse_mode': 'Markdown'
+    });
+}
 
-Commands.register(
+Commands.registerSimple(
     '/terms',
     strings.commands.terms.cmd_description,
     Commands.TYPE_PRIVATE, termsCommand
