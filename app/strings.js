@@ -102,6 +102,7 @@ module.exports = {
         juoma: {
             cmd_description: '/juoma - lisää yksi juoma tilastoihin',
             start: 'Valitse juoman kategoria',
+            start_error: 'Virhe! Valitse yksi kategorioista',
             to_start: 'Alkuun',
             milds: 'Miedot',
             booze: 'Tiukat',

@@ -106,7 +106,7 @@ contexts.Context.prototype.photoReply = function(stream, caption) {
 contexts.Context.prototype.sendMessage = function(message) {
     if (!message || !message.type || !message.text) {
         log.error('sendMessage: invalid message object! ' + message);
-        return Promise.reject();
+        return Promise.reject(new Error('invalid message object'));
     }
     let self = this;
 

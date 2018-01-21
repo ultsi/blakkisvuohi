@@ -167,8 +167,7 @@ function callUserCommand(context, cmd, msg, words, user) {
                     return Promise.reject(err);
                 }
             } else {
-                context.sendMessage(phase.errorMessage);
-                return Promise.resolve(); // reject or resolve?
+                return context.sendMessage(phase.errorMessage);
             }
 
         } else {
@@ -308,6 +307,7 @@ Commands.call = function call(firstWord, msg, words) {
         }
     }).catch((err) => {
         log.error('Couldn\'t execute cmd ' + cmd.name);
+        log.error(err);
         log.debug(err);
     });
 };

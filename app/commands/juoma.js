@@ -67,6 +67,7 @@ let command = {
     [0]: {
         startMessage: message.PrivateKeyboardMessage(strings.commands.juoma.start, drinkCommand.startKeyboard),
         validateInput: (context, user, msg, words) => {
+            console.log(msg);
             return drinkCommand.startKeyboard[0].find((x) => x.toLowerCase() === msg.text.toLowerCase());
         },
         onValidInput: (context, user, msg, words) => {
@@ -74,7 +75,7 @@ let command = {
             return Promise.resolve();
         },
         nextPhase: 0,
-        errorMessage: message.PrivateKeyboardMessage(strings.commands.juoma.start, drinkCommand.startKeyboard)
+        errorMessage: message.PrivateKeyboardMessage(strings.commands.juoma.start_error, drinkCommand.startKeyboard)
     },
     miedot: {
         startMessage: message.PrivateKeyboardMessage(drinkCommand.miedotReply.text, drinkCommand.miedotReply.keyboard),

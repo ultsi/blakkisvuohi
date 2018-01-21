@@ -27,6 +27,7 @@ const utils = require('../app/lib/utils.js');
 const users = require('../app/db/users.js');
 const groups = require('../app/db/groups.js');
 const announcements = require('../app/announcements.js');
+const log = require('loglevel');
 const query = require('pg-query');
 query.connectionParameters = process.env.DATABASE_URL;
 
@@ -42,6 +43,12 @@ blakkistest.users = blakkistest.users.map((_, i) => {
 });
 const groupId = 1;
 const group = new groups.Group(groupId);
+
+
+log.getLogger('system').setLevel('info');
+log.getLogger('db').setLevel('info');
+log.getLogger('commands').setLevel('info');
+
 
 blakkistest.groups = [{
     realId: groupId,
