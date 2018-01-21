@@ -24,7 +24,6 @@
         Returns information about current alcohol levels
 */
 'use strict';
-const when = require('when');
 const log = require('loglevel').getLogger('commands');
 const Commands = require('../lib/commands.js');
 const alcomath = require('../lib/alcomath.js');

@@ -24,7 +24,6 @@
 'use strict';
 
 const log = require('loglevel').getLogger('commands');
-const when = require('when');
 
 const Commands = require('../lib/commands.js');
 const utils = require('../lib/utils.js');
@@ -40,7 +39,6 @@ let command = {
             return utils.isValidInt(words[0]) && weight >= 20 && weight <= 250;
         },
         onValidInput: (context, msg, words) => {
-            let deferred = when.defer();
             let username = msg.from.username;
             if (!username) {
                 username = msg.from.first_name;
@@ -53,9 +51,7 @@ let command = {
 
             let weight = parseInt(words[0], 10);
             context.storeVariable('weight', weight);
-            deferred.resolve();
-
-            return deferred.promise;
+            return Promise.resolve();
         },
         nextPhase: 'height',
         errorMessage: message.PrivateMessage(strings.commands.tunnus.start_error)
@@ -67,12 +63,9 @@ let command = {
             return utils.isValidInt(words[0]) && height >= 120 && height <= 240;
         },
         onValidInput: (context, msg, words) => {
-            let deferred = when.defer();
             let height = parseInt(words[0], 10);
             context.storeVariable('height', height);
-            deferred.resolve();
-
-            return deferred.promise;
+            return Promise.resolve();
         },
         nextPhase: 'gender',
         errorMessage: message.PrivateMessage(strings.commands.tunnus.height_error)
@@ -86,12 +79,9 @@ let command = {
             return gender === strings.gender.male.toLowerCase() || gender === strings.gender.female.toLowerCase();
         },
         onValidInput: (context, msg, words) => {
-            let deferred = when.defer();
             const gender = words[0].toLowerCase();
             context.storeVariable('gender', gender);
-            deferred.resolve();
-
-            return deferred.promise;
+            return Promise.resolve();
         },
         nextPhase: 'terms',
         errorMessage: message.PrivateKeyboardMessage(strings.commands.tunnus.gender_error, [

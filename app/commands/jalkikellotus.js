@@ -23,7 +23,6 @@
 */
 'use strict';
 
-const when = require('when');
 const log = require('loglevel').getLogger('commands');
 const Commands = require('../lib/commands.js');
 const utils = require('../lib/utils.js');
@@ -40,11 +39,9 @@ let command = {
             return utils.isValidFloat(hours) && hours > 0 && hours < 24;
         },
         onValidInput: (context, user, msg, words) => {
-            let deferred = when.defer();
             context.storeVariable('hours', parseFloat(words[0]));
             context.storeVariable('drinks', []);
-            deferred.resolve();
-            return deferred.promise;
+            return Promise.resolve();
         },
         nextPhase: 'inputDrinks',
         errorMessage: message.PrivateMessage(strings.commands.jalkikellotus.hours_error)
@@ -78,8 +75,6 @@ let command = {
             return true;
         },
         onValidInput: (context, user, msg, words) => {
-            let deferred = when.defer();
-            deferred.resolve();
             // Skip to end if first word is 'stop'
             if (words[0] !== 'stop') {
                 let drinks = context.fetchVariable('drinks');
@@ -92,6 +87,7 @@ let command = {
                 }
                 context.storeVariable('drinks', drinks);
                 context.privateReply(strings.commands.jalkikellotus.input_drinks_drink_saved);
+                return Promise.resolve();
             } else {
                 let hours = context.fetchVariable('hours');
                 let drinks = context.fetchVariable('drinks');
@@ -102,22 +98,17 @@ let command = {
                     };
                 });
 
-                user.drinkBoozeLate(drinks, hours)
+                context.toPhase('END');
+                return user.drinkBoozeLate(drinks, hours)
                     .then((ebac) => {
                         const permilles = ebac.permilles;
                         const permilles30Min = ebac.permilles30Min;
-                        deferred.resolve(context.privateReply(utils.getRandomFromArray(strings.drink_responses) + ' ' + strings.short_permilles_text.format({
+                        return Promise.resolve(context.privateReply(utils.getRandomFromArray(strings.drink_responses) + ' ' + strings.short_permilles_text.format({
                             permilles: utils.roundTo(permilles, 2),
                             permilles30Min: utils.roundTo(permilles30Min, 2)
                         })));
-                    }, (err) => {
-                        log.error(err);
-                        log.debug(err.stack);
-                        deferred.reject(err);
                     });
-                context.toPhase('END');
             }
-            return deferred.promise;
         },
         nextPhase: 'inputDrinks',
         errorMessage: message.PrivateMessage(strings.commands.jalkikellotus.input_drinks_error)

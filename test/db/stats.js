@@ -51,7 +51,7 @@ describe('stats.js', function() {
                     } catch (err) {
                         done(err);
                     }
-                }, (err) => {
+                }).catch((err) => {
                     done(new Error(err));
                 });
         });
@@ -72,7 +72,7 @@ describe('stats.js', function() {
                     } catch (err) {
                         done(err);
                     }
-                }, (err) => {
+                }).catch((err) => {
                     done(err);
                 });
         });
@@ -89,7 +89,7 @@ describe('stats.js', function() {
                     } catch (err) {
                         done(err);
                     }
-                }, (err) => {
+                }).catch((err) => {
                     done(new Error(err));
                 });
         });
@@ -107,7 +107,7 @@ describe('stats.js', function() {
                     } catch (err) {
                         done(err);
                     }
-                }, (err) => {
+                }).catch((err) => {
                     done(err);
                 });
         });

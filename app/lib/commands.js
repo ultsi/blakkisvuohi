@@ -31,7 +31,6 @@ const strings = require('../strings.js');
 const utils = require('./utils.js');
 const log = require('loglevel').getLogger('system');
 const announcements = require('../announcements.js');
-const when = require('when');
 
 let Commands = module.exports = {};
 let cmds = {};
@@ -243,7 +242,7 @@ function callCommandFunction(context, cmd, msg, words) {
                         log.debug('Words: ' + words);
                         log.debug('Phase ' + context.phase + ' of cmd ' + cmd.name + ' executed perfectly.');
                         return Promise.resolve();
-                    }, (err) => {
+                    }).catch((err) => {
                         log.error('Couldn\'t execute cmd function "' + cmd.name + '" phase ' + context.phase + '! ' + err);
                         msg.sendPrivateMessage(strings.commands.blakkis.error);
                         return Promise.reject(err);

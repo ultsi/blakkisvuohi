@@ -23,7 +23,6 @@
 
 'use strict';
 
-const when = require('when');
 const log = require('loglevel').getLogger('system');
 let contexts = module.exports = {};
 
@@ -36,7 +35,6 @@ contexts.Context = function(cmd, msg) {
 };
 
 contexts.Context.prototype.privateReply = function(text) {
-    let deferred = when.defer();
     let self = this;
     let options = {
         'parse_mode': 'Markdown',
@@ -45,20 +43,18 @@ contexts.Context.prototype.privateReply = function(text) {
             'remove_keyboard': true
         }
     };
-    self.msg.sendMessage(self.msg.from.id, text, options)
+    return self.msg.sendMessage(self.msg.from.id, text, options)
         .then(() => {
             log.debug('Sent ' + text + ' to ' + self.msg.from.username);
-            deferred.resolve();
-        }, (err) => {
+            return Promise.resolve();
+        }).catch((err) => {
             log.error('couldn\'t send private msg! Err: ' + err);
             log.debug(err.stack);
-            deferred.reject(err);
+            return Promise.reject(err);
         });
-    return deferred.promise;
 };
 
 contexts.Context.prototype.privateReplyWithKeyboard = function(text, keyboardButtons) {
-    let deferred = when.defer();
     let self = this;
     let options = {
         'parse_mode': 'Markdown',
@@ -69,81 +65,74 @@ contexts.Context.prototype.privateReplyWithKeyboard = function(text, keyboardBut
         },
         'reply_to_message_id': this.msg.message_id
     };
-    self.msg.sendMessage(self.msg.from.id, text, options)
+    return self.msg.sendMessage(self.msg.from.id, text, options)
         .then(() => {
             log.debug('Sent ' + text + ' to ' + self.msg.from.username);
-            deferred.resolve();
-        }, (err) => {
+            return Promise.resolve();
+        }).catch((err) => {
             log.error('couldn\'t send private msg! Err: ' + err);
             log.debug(err.stack);
-            deferred.reject(err);
+            return Promise.reject(err);
         });
-    return deferred.promise;
 };
 
 contexts.Context.prototype.chatReply = function(text) {
-    let deferred = when.defer();
     let self = this;
-    self.msg.sendMessage(self.msg.chat.id, text)
+    return self.msg.sendMessage(self.msg.chat.id, text)
         .then(() => {
             log.debug('Sent ' + text + ' to chat ' + self.msg.chat.title);
-            deferred.resolve();
-        }, (err) => {
+            return Promise.resolve();
+        }).catch((err) => {
             log.error('couldn\'t send chat msg! Err: ' + err);
             log.debug(err.stack);
-            deferred.reject(err);
+            return Promise.reject(err);
         });
-    return deferred.promise;
 };
 
 contexts.Context.prototype.photoReply = function(stream, caption) {
-    let deferred = when.defer();
     let self = this;
-    self.msg.sendPhoto(self.msg.chat.id, stream, {
+    return self.msg.sendPhoto(self.msg.chat.id, stream, {
             caption: caption
         })
         .then(() => {
             log.debug('Sent a photo to chat ' + self.msg.chat.title);
-            deferred.resolve();
-        }, (err) => {
+            return Promise.resolve();
+        }).catch((err) => {
             log.error('couldn\'t send photo to chat! Err: ' + err);
             log.debug(err.stack);
-            deferred.reject(err);
+            return Promise.reject(err);
         });
-    return deferred.promise;
 };
 
 contexts.Context.prototype.sendMessage = function(message) {
     if (!message || !message.type || !message.text ) {
         log.error('sendMessage: invalid message object! ' + message);
-        return;
+        return Promise.reject();
     }
-    let deferred = when.defer();
     let self = this;
 
     if (message.type === 'photo') {
-        self.msg.sendPhoto(self.msg.chat.id, message.buffer, message.options)
+        return self.msg.sendPhoto(self.msg.chat.id, message.buffer, message.options)
             .then(() => {
                 log.debug('Sent a photo to chat ' + self.msg.chat.title);
-                deferred.resolve();
-            }, (err) => {
+                return Promise.resolve();
+            }).catch((err) => {
                 log.error('couldn\'t send photo to chat! Err: ' + err);
                 log.debug(err.stack);
-                deferred.reject(err);
+                return Promise.reject(err);
             });
     } else {
         let to = message.type === 'private_message' ? self.msg.from : self.msg.chat;
-        self.msg.sendMessage(to.id, message.text, message.options)
+        return self.msg.sendMessage(to.id, message.text, message.options)
             .then(() => {
                 log.debug('Sent ' + message.text + ' to ' + to.title || to.username || to.first_name);
-                deferred.resolve();
-            }, (err) => {
+                return Promise.resolve();
+            }).catch((err) => {
                 log.error('couldn\'t send msg! Err: ' + err);
                 log.debug(err.stack);
-                deferred.reject(err);
+                return Promise.reject(err);
             });
     }
-    return deferred.promise;
 };
 
 contexts.Context.prototype.storeVariable = function(key, value) {
@@ -161,9 +150,7 @@ contexts.Context.prototype.toPhase = function(phase) {
 contexts.Context.prototype.end = function() {
     this.phase = -1;
     this.variables = 0;
-    let deferred = when.defer();
-    deferred.resolve();
-    return deferred.promise;
+    return Promise.resolve();;
 };
 
 contexts.Context.prototype.isPrivateChat = function() {

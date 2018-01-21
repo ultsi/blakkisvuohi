@@ -25,7 +25,6 @@
 */
 'use strict';
 
-const when = require('when');
 const log = require('loglevel').getLogger('commands');
 const Commands = require('../lib/commands.js');
 const alcomath = require('../lib/alcomath.js');
@@ -59,12 +58,14 @@ function makeDrinksString(drinks) {
 }
 
 function annokset(context, user, msg, words) {
-    let deferred = when.defer();
+    context.end();
     if (msg.chat.type === 'private') {
-        when.all([
+        return Promise.all([
             user.getBooze(),
             user.getBoozeForLastHours(72)
-        ]).spread((drinks, drinks72h) => {
+        ]).then((res) => {
+            const drinks = res[0],
+                drinks72h = res[1];
             try {
                 let ebac = alcomath.calculateEBACFromDrinks(user, drinks);
                 let permilles = ebac.permilles;
@@ -83,20 +84,16 @@ function annokset(context, user, msg, words) {
                     minutes: ('0' + Math.ceil((time - hours) * 60)).slice(-2),
                     drinkList72h: makeDrinksString(drinks72h)
                 });
-                deferred.resolve(context.privateReply(text));
+                return Promise.resolve(context.privateReply(text));
             } catch (err) {
                 log.error(err);
                 log.debug(err.stack);
-                deferred.reject('Isompi ongelma, ota yhteyttä adminiin.');
+                return Promise.reject('Isompi ongelma, ota yhteyttä adminiin.');
             }
-        }, (err) => {
-            log.error(err);
-            log.debug(err.stack);
-            deferred.reject('Isompi ongelma, ota yhteyttä adminiin.');
         });
     } else {
         let group = new groups.Group(msg.chat.id);
-        group.getStandardDrinksListing(msg.chat.id)
+        return group.getStandardDrinksListing(msg.chat.id)
             .then((standardDrinksListing) => {
                 const listText = standardDrinksListing.map(user => strings.commands.annokset.text_group_list_item.format({
                     username: user[0],
@@ -108,15 +105,9 @@ function annokset(context, user, msg, words) {
                     chat_title: msg.chat.title,
                     list: listText
                 });
-                deferred.resolve(context.chatReply(text));
-            }, (err) => {
-                log.error(err);
-                log.debug(err.stack);
-                deferred.reject('Isompi ongelma, ota yhteyttä adminiin.');
+                return Promise.resolve(context.chatReply(text));
             });
     }
-    context.end();
-    return deferred.promise;
 }
 
 Commands.registerUserCommand(

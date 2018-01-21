@@ -27,7 +27,6 @@ const utils = require('../app/lib/utils.js');
 const users = require('../app/db/users.js');
 const groups = require('../app/db/groups.js');
 const announcements = require('../app/announcements.js');
-const when = require('when');
 const query = require('pg-query');
 query.connectionParameters = process.env.DATABASE_URL;
 
@@ -104,11 +103,11 @@ blakkistest.mockMsgAndBot = () => {
     for use as a beforeEach function
 */
 blakkistest.clearDb = function(done) {
-    when.all([
+    Promise.all([
         query('delete from users'),
         query('delete from users_drinks'),
         query('delete from users_in_groups')
-    ]).spread(() => {
+    ]).then(() => {
         done();
     }).catch((err) => {
         done(new Error(err));
@@ -116,33 +115,33 @@ blakkistest.clearDb = function(done) {
 };
 
 blakkistest.resetDbWithTestUsersAndGroups = function(done) {
-    when.all([
+    Promise.all([
         query('delete from users'),
         query('delete from users_drinks'),
         query('delete from users_in_groups')
-    ]).spread(() => {
-        when.all([
+    ]).then(() => {
+        Promise.all([
                 query('insert into users (userid, nick, weight, gender, height, read_terms, read_announcements) values ' + userInsertValuesStr.join(', ')),
                 query('insert into users_in_groups (groupid, userid) values ' + userInGroupsValuesStr.join(', '))
             ])
-            .spread(() => done()).catch((err) => done(new Error(err)));
-    }, (err) => {
+            .then(() => done()).catch((err) => done(new Error(err)));
+    }).catch((err) => {
         done(new Error(err));
     });
 };
 
 blakkistest.resetDbWithTestUsersAndGroupsAndDrinks = function(done) {
-    when.all([
+    Promise.all([
         query('delete from users'),
         query('delete from users_drinks'),
         query('delete from users_in_groups')
-    ]).spread(() => {
-        when.all([
+    ]).then(() => {
+        Promise.all([
                 query('insert into users (userid, nick, weight, gender, height, read_terms, read_announcements) values ' + userInsertValuesStr.join(', ')),
                 query('insert into users_in_groups (groupid, userid) values ' + userInGroupsValuesStr.join(', ')),
                 query(`insert into users_drinks (userid, alcohol, description, created) values ('${blakkistest.users[0].userId}', 12347, 'kalja', now()), ('${blakkistest.users[0].userId}', 12347, 'kalja', now() - interval '1 second'), ('${blakkistest.users[1].userId}', 12347, 'kalja', now())`)
             ])
-            .spread(() => done()).catch((err) => done(new Error(err)));
+            .then(() => done()).catch((err) => done(new Error(err)));
     }).catch((err) => {
         done(new Error(err));
     });

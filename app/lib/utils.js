@@ -23,7 +23,6 @@
 
 'use strict';
 
-const when = require('when');
 const log = require('loglevel').getLogger('system');
 const constants = require('../constants.js');
 const crypto = require('crypto');
@@ -37,65 +36,57 @@ utils.getDateMinusHours = function(hours) {
 
 function createSendPrivateMsgFunction(msg, bot) {
     return function(text) {
-        let deferred = when.defer();
-        bot.sendMessage(msg.from.id, text)
+        return bot.sendMessage(msg.from.id, text)
             .then(() => {
                 log.debug('sent ' + text + ' to ' + msg.from.username);
-                deferred.resolve();
-            }, (err) => {
+                return Promise.resolve();
+            }).catch((err) => {
                 log.error('couldn\'t send private msg! Err: ' + err);
                 log.debug(err.stack);
-                deferred.reject(err);
+                return Promise.reject(err);
             });
-        return deferred.promise;
     };
 }
 
 function createSendChatMsgFunction(msg, bot) {
     return function(text) {
-        let deferred = when.defer();
-        bot.sendMessage(msg.chat.id, text)
+        return bot.sendMessage(msg.chat.id, text)
             .then(() => {
                 log.debug('sent ' + text + ' to chat ' + msg.chat.title);
-                deferred.resolve();
-            }, (err) => {
+                return Promise.resolve();
+            }).catch((err) => {
                 log.error('couldn\'t send chat msg! Err: ' + err);
                 log.debug(err.stack);
-                deferred.reject(err);
+                return Promise.reject(err);
             });
-        return deferred.promise;
     };
 }
 
 function createSendMsgToFunction(msg, bot) {
     return function(chatId, text, options) {
-        let deferred = when.defer();
-        bot.sendMessage(chatId, text, options)
+        return bot.sendMessage(chatId, text, options)
             .then(() => {
                 log.debug('sent ' + text + ' to chat ' + chatId);
-                deferred.resolve();
-            }, (err) => {
+                return Promise.resolve();
+            }).catch((err) => {
                 log.error('couldn\'t send msg! Err: ' + err);
                 log.debug(err.stack);
-                deferred.reject(err);
+                return Promise.reject(err);
             });
-        return deferred.promise;
     };
 }
 
 function createSendPhotoFunction(msg, bot) {
     return function(chatId, stream, options) {
-        let deferred = when.defer();
-        bot.sendPhoto(chatId, stream, options)
+        return bot.sendPhoto(chatId, stream, options)
             .then(() => {
                 log.debug('sent photo to chat ' + chatId);
-                deferred.resolve();
-            }, (err) => {
+                return Promise.resolve();
+            }).catch((err) => {
                 log.error('couldn\'t send photo! Err: ' + err);
                 log.debug(err.stack);
-                deferred.reject(err);
+                return Promise.reject(err);
             });
-        return deferred.promise;
     };
 }
 

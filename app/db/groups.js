@@ -23,7 +23,6 @@
 
 'use strict';
 const query = require('pg-query');
-const when = require('when');
 const log = require('loglevel').getLogger('db');
 const utils = require('../lib/utils.js');
 const alcomath = require('../lib/alcomath.js');
@@ -59,38 +58,31 @@ function groupDrinksByUser(drinks) {
 }
 
 Group.prototype.getDrinkSum = function() {
-    let deferred = when.defer();
-    query('select coalesce(sum(alcohol), 0) as sum, coalesce(min(users_drinks.created), now()) as created from users_in_groups left outer join users_drinks on users_drinks.userid=users_in_groups.userid and users_in_groups.groupid=$1', [this.groupId])
-        .then((res) => {
-            deferred.resolve(res[0][0]);
-        }, (err) => {
+    return query('select coalesce(sum(alcohol), 0) as sum, coalesce(min(users_drinks.created), now()) as created from users_in_groups left outer join users_drinks on users_drinks.userid=users_in_groups.userid and users_in_groups.groupid=$1', [this.groupId])
+        .then((res) => Promise.resolve(res[0][0]))
+        .catch((err) => {
             log.error(err);
             log.debug(err.stack);
-            deferred.reject(err);
+            return Promise.reject(err);
         });
-    return deferred.promise;
 };
 
 Group.prototype.getDrinkSumForXHours = function(hours) {
-    let deferred = when.defer();
     let hoursAgo = utils.getDateMinusHours(hours);
-    query('select coalesce(sum(alcohol), 0) as sum, coalesce(min(users_drinks.created), now()) as created from users_in_groups left outer join users_drinks on users_drinks.userid=users_in_groups.userid and users_in_groups.groupid=$1 and users_drinks.created >= $2', [this.groupId, hoursAgo])
-        .then((res) => {
-            deferred.resolve(res[0][0]);
-        }, (err) => {
+    return query('select coalesce(sum(alcohol), 0) as sum, coalesce(min(users_drinks.created), now()) as created from users_in_groups left outer join users_drinks on users_drinks.userid=users_in_groups.userid and users_in_groups.groupid=$1 and users_drinks.created >= $2', [this.groupId, hoursAgo])
+        .then((res) => Promise.resolve(res[0][0]))
+        .catch((err) => {
             log.error(err);
             log.debug(err.stack);
-            deferred.reject(err);
+            return Promise.reject(err);
         });
-    return deferred.promise;
 };
 
 Group.prototype.getDrinkSumsByUser = function(hours) {
     hours = hours ? hours : 24;
 
-    let deferred = when.defer();
     let oneDayAgo = utils.getDateMinusHours(hours);
-    query('select users.userId, users.nick, sum(alcohol) as sum from users_in_groups left outer join users_drinks on users_drinks.userid=users_in_groups.userid join users on users.userId=users_in_groups.userId where users_in_groups.groupId=$1 and users_drinks.created >= $2 group by users.userId', [this.groupId, oneDayAgo])
+    return query('select users.userId, users.nick, sum(alcohol) as sum from users_in_groups left outer join users_drinks on users_drinks.userid=users_in_groups.userid join users on users.userId=users_in_groups.userId where users_in_groups.groupId=$1 and users_drinks.created >= $2 group by users.userId', [this.groupId, oneDayAgo])
         .then((res) => {
             let drinkSums = res[0];
             let drinkSumsByUser = {};
@@ -102,37 +94,36 @@ Group.prototype.getDrinkSumsByUser = function(hours) {
                     sum: drinkSum.sum
                 };
             }
-            deferred.resolve(drinkSumsByUser);
-        }, (err) => {
+            return Promise.resolve(drinkSumsByUser);
+        }).catch((err) => {
             log.error(err);
             log.debug(err.stack);
-            deferred.reject('Ota adminiin yhteyttä.');
+            return Promise.reject('Ota adminiin yhteyttä.');
         });
-    return deferred.promise;
 };
 
 Group.prototype.getDrinkTimesByUser = function() {
-    let deferred = when.defer();
-    query('select users.userId, users.nick, users.weight, users.gender, users.height, coalesce(alcohol, 0) as alcohol, description, users_drinks.created from users_in_groups left outer join users_drinks on users_in_groups.userId=users_drinks.userId join users on users.userId=users_in_groups.userId where users_in_groups.groupId=$1 and users_drinks.created >= NOW() - \'2 day\'::INTERVAL order by users_drinks.created asc', [this.groupId])
+    return query('select users.userId, users.nick, users.weight, users.gender, users.height, coalesce(alcohol, 0) as alcohol, description, users_drinks.created from users_in_groups left outer join users_drinks on users_in_groups.userId=users_drinks.userId join users on users.userId=users_in_groups.userId where users_in_groups.groupId=$1 and users_drinks.created >= NOW() - \'2 day\'::INTERVAL order by users_drinks.created asc', [this.groupId])
         .then((res) => {
             let drinksByUser = groupDrinksByUser(res[0]);
-            deferred.resolve(drinksByUser);
-        }, (err) => {
+            return Promise.resolve(drinksByUser);
+        }).catch((err) => {
             log.error(err);
             log.debug(err.stack);
-            deferred.reject('Ota adminiin yhteyttä.');
+            return Promise.reject('Ota adminiin yhteyttä.');
         });
-    return deferred.promise;
 };
 
 Group.prototype.getStandardDrinksListing = function() {
-    let deferred = when.defer();
     let self = this;
-    when.all([
+    return Promise.all([
         self.getDrinkTimesByUser(),
         self.getDrinkSumsByUser(12),
         self.getDrinkSumsByUser(24)
-    ]).spread((drinksByUser, drinkSumsByUser12h, drinkSumsByUser24h) => {
+    ]).then((res) => {
+        const drinksByUser = res[0],
+            drinkSumsByUser12h = res[1],
+            drinkSumsByUser24h = res[2];
         try {
             let drinks = [];
             for (var userId in drinksByUser) {
@@ -149,28 +140,29 @@ Group.prototype.getStandardDrinksListing = function() {
             drinks = drinks.sort((a, b) => {
                 return b[1] - a[1];
             });
-            deferred.resolve(drinks);
+            return Promise.resolve(drinks);
         } catch (err) {
             log.error(err);
             log.debug(err.stack);
-            deferred.reject('Isompi ongelma, ota yhteyttä adminiin.');
+            return Promise.reject(err);
         }
-    }, (err) => {
+    }).catch((err) => {
         log.error(err);
         log.debug(err.stack);
-        deferred.reject('Isompi ongelma, ota yhteyttä adminiin.');
+        return Promise.reject(err);
     });
-    return deferred.promise;
 };
 
 Group.prototype.getPermillesListing = function() {
-    let deferred = when.defer();
     let self = this;
-    when.all([
+    return Promise.all([
         self.getDrinkTimesByUser(),
         self.getDrinkSumsByUser(12),
         self.getDrinkSumsByUser(24)
-    ]).spread((drinksByUser, drinkSumsByUser12h, drinkSumsByUser24h) => {
+    ]).then((res) => {
+        const drinksByUser = res[0],
+            drinkSumsByUser12h = res[1],
+            drinkSumsByUser24h = res[2];
         try {
             let permilles = [];
             for (var userId in drinksByUser) {
@@ -187,16 +179,15 @@ Group.prototype.getPermillesListing = function() {
             permilles = permilles.sort((a, b) => {
                 return b[1] - a[1];
             });
-            deferred.resolve(permilles);
+            return Promise.resolve(permilles);
         } catch (err) {
             log.error(err);
             log.debug(err.stack);
-            deferred.reject('Isompi ongelma, ota yhteyttä adminiin.');
+            return Promise.reject('Isompi ongelma, ota yhteyttä adminiin.');
         }
-    }, (err) => {
+    }).catch((err) => {
         log.error(err);
         log.debug(err.stack);
-        deferred.reject('Isompi ongelma, ota yhteyttä adminiin.');
+        return Promise.reject('Isompi ongelma, ota yhteyttä adminiin.');
     });
-    return deferred.promise;
 };

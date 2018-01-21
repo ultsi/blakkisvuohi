@@ -22,7 +22,6 @@
 */
 'use strict';
 
-const when = require('when');
 const log = require('loglevel').getLogger('commands');
 const Commands = require('../lib/commands.js');
 const utils = require('../lib/utils.js');
@@ -52,8 +51,7 @@ drinkCommand.tiukatReply = {
 };
 
 function saveDrink(context, user, milligrams, drinkName) {
-    let deferred = when.defer();
-    user.drinkBoozeReturnEBAC(milligrams, drinkName)
+    return user.drinkBoozeReturnEBAC(milligrams, drinkName)
         .then((ebac) => {
             const permilles = ebac.permilles;
             const permilles30Min = ebac.permilles30Min;
@@ -61,13 +59,8 @@ function saveDrink(context, user, milligrams, drinkName) {
                 permilles: utils.roundTo(permilles, 2),
                 permilles30Min: utils.roundTo(permilles30Min, 2)
             });
-            deferred.resolve(context.privateReply(text));
-        }, (err) => {
-            log.error(err);
-            log.debug(err.stack);
-            deferred.reject('Isompi ongelma, ota yhteyttä adminiin.');
+            return Promise.resolve(context.privateReply(text));
         });
-    return deferred.promise;
 }
 
 let command = {
@@ -77,10 +70,8 @@ let command = {
             return drinkCommand.startKeyboard[0].find((x) => x.toLowerCase() === msg.text.toLowerCase());
         },
         onValidInput: (context, user, msg, words) => {
-            let deferred = when.defer();
             context.toPhase(words[0].toLowerCase());
-            deferred.resolve();
-            return deferred.promise;
+            return Promise.resolve();
         },
         nextPhase: 0,
         errorMessage: message.PrivateKeyboardMessage(strings.commands.juoma.start, drinkCommand.startKeyboard)
@@ -92,10 +83,8 @@ let command = {
         },
         onValidInput: (context, user, msg, words) => {
             if (words[0].toLowerCase() === drinkCommand.toStartText.toLowerCase()) {
-                let deferred = when.defer();
                 context.toPhase(0);
-                deferred.resolve();
-                return deferred.promise;
+                return Promise.resolve();
             }
             const milds = constants.milds;
             let drink = null;
@@ -117,10 +106,8 @@ let command = {
         },
         onValidInput: (context, user, msg, words) => {
             if (words[0].toLowerCase() === drinkCommand.toStartText.toLowerCase()) {
-                let deferred = when.defer();
                 context.toPhase(0);
-                deferred.resolve();
-                return deferred.promise;
+                return Promise.resolve();
             }
 
             const booze = constants.booze;
@@ -141,14 +128,12 @@ let command = {
         startMessage: message.PrivateMessage(strings.commands.juoma.self_define_vol),
         validateInput: (context, user, msg, words) => {
             let vol = parseFloat(words[0]);
-            return utils.isValidFloat(vol) && vol > 0 ||  vol < 100;
+            return utils.isValidFloat(vol) && vol > 0 || vol < 100;
         },
         onValidInput: (context, user, msg, words) => {
-            let deferred = when.defer();
             context.storeVariable('vol', parseFloat(words[0]));
             context.toPhase('omacl');
-            deferred.resolve();
-            return deferred.promise;
+            return Promise.resolve();
         },
         nextPhase: 'oma',
         errorMessage: message.PrivateMessage(strings.commands.juoma.self_define_vol)

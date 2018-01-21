@@ -22,7 +22,6 @@
 */
 'use strict';
 
-const when = require('when');
 const log = require('loglevel').getLogger('commands');
 const Commands = require('../lib/commands.js');
 const alcomath = require('../lib/alcomath.js');
@@ -34,15 +33,15 @@ const strings = require('../strings.js');
 
 
 function kuvaaja(context, user, msg, words) {
-    let deferred = when.defer();
     log.debug('Trying to form graph image');
 
     let graphTitle = strings.commands.kuvaaja.graph_title.format({
         chat_title: msg.chat.title
     });
+    context.end();
 
     let group = new groups.Group(msg.chat.id);
-    group.getDrinkTimesByUser(msg.chat.id)
+    return group.getDrinkTimesByUser(msg.chat.id)
         .then((drinksByUser) => {
             try {
                 const lastNHours = 24;
@@ -112,30 +111,18 @@ function kuvaaja(context, user, msg, words) {
                 }
                 labels = labels.slice(trimFromStartMin, trimFromEndMax);*/
 
-                linechart.getLineGraphBuffer({
-                        labels: labels,
-                        datasets: datasets
-                    }, graphTitle)
-                    .then((buffer) => {
-                        deferred.resolve(context.photoReply(buffer, graphTitle));
-                    }, (err) => {
-                        log.error(err);
-                        log.debug(err.stack);
-                        deferred.resolve(context.chatReply(strings.commands.kuvaaja.img_failed));
-                    });
+                return linechart.getLineGraphBuffer({
+                    labels: labels,
+                    datasets: datasets
+                }, graphTitle);
+
             } catch (err) {
                 log.error(err);
                 log.debug(err.stack);
-                deferred.reject('Isompi ongelma, ota yhteyttä adminiin.');
+                return Promise.reject(err);
             }
-        }, (err) => {
-            log.error(err);
-            log.debug(err.stack);
-            deferred.reject('Isompi ongelma, ota yhteyttä adminiin.');
-        });
-
-    context.end();
-    return deferred.promise;
+        })
+        .then((buffer) => context.photoReply(buffer, graphTitle));
 }
 
 Commands.registerUserCommand(

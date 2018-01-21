@@ -21,13 +21,11 @@
     Allows the admin to set the loglevel
 */
 'use strict';
-const when = require('when');
 const log = require('loglevel');
 const Commands = require('../lib/commands.js');
 const strings = require('../strings.js');
 
 function loglevel(context, user, msg, words) {
-    let deferred = when.defer();
     log.getLogger('commands').debug(log.getLoggers());
 
     let what = words[1] || 'commands';
@@ -41,14 +39,14 @@ function loglevel(context, user, msg, words) {
     }
 
     log.getLogger(what).setLevel(level);
+    context.end();
 
-    deferred.resolve(context.privateReply(strings.commands.admin_loglevel.level_set_text.format({
+
+    return Promise.resolve(context.privateReply(strings.commands.admin_loglevel.level_set_text.format({
         logger: what,
         level: level
     })));
 
-    context.end();
-    return deferred.promise;
 }
 
 Commands.registerAdminCommand(
