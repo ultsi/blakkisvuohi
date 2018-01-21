@@ -34,8 +34,7 @@ exports.up = () => {
                         return arr;
                     }, []);
                     const queryStr = 'UPDATE users set nick = u.value from (VALUES ' + valuePairs.join(', ') + ') as u(id, value) WHERE u.id = users.userid';
-                    console.log(params);
-                    query(queryStr, params)
+                    return query(queryStr, params)
                         .then(() => {
                             return Promise.resolve();
                         }).catch((err) => {
@@ -67,7 +66,7 @@ exports.down = () => {
                     return arr;
                 }, []);
                 const queryStr = 'UPDATE users set nick = u.value from (VALUES ' + valuePairs.join(', ') + ') as u(id, value) WHERE u.id = users.userid';
-                query(queryStr, params)
+                return query(queryStr, params)
                     .then(() => {
                         return Promise.resolve();
                     }).catch((err) => {

@@ -134,7 +134,9 @@ describe('utils', function() {
                 startWebTransaction: startWebTransaction,
                 getTransaction: getTransaction
             };
-            utils.hookNewRelic('lol', () => {throw new Error('test');})
+            utils.hookNewRelic('lol', () => {
+                    throw new Error('test');
+                })
                 .then(() => {
                     done(new Error('didn\'t error!'));
                 }).catch((err) => {

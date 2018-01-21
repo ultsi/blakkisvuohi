@@ -102,7 +102,7 @@ describe('stats.js', function() {
                         assert.equal(res.top10UserStats[0].userid, blakkistest.users[0].userId);
                         assert.equal(res.top10UserStats[1].userid, blakkistest.users[1].userId);
                         assert.equal(res.top10UserStats[1].userid, blakkistest.users[1].userId);
-                        assert.equal(res.groupDrinkSum.sum, 12347*3);
+                        assert.equal(res.groupDrinkSum.sum, 12347 * 3);
                         done();
                     } catch (err) {
                         done(err);

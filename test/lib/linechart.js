@@ -50,7 +50,7 @@ describe('linegraph.js', function() {
         });
 
         it('should return a png buffer with some data and text', function(done) {
-            linechart.getLineGraphBuffer([1,2,3,4,5,6], 'test text')
+            linechart.getLineGraphBuffer([1, 2, 3, 4, 5, 6], 'test text')
                 .then((buffer) => {
                     try {
                         assert.notEqual(buffer, undefined);

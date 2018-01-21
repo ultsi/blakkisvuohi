@@ -52,7 +52,9 @@ let command = {
                 return Promise.resolve(context.privateReply(strings.commands.laatta.cancel));
             }
         },
-        errorMessage: message.PrivateKeyboardMessage(strings.commands.laatta.error_text, [[strings.commands.laatta.start_answer_yes, strings.commands.laatta.start_answer_no]])
+        errorMessage: message.PrivateKeyboardMessage(strings.commands.laatta.error_text, [
+            [strings.commands.laatta.start_answer_yes, strings.commands.laatta.start_answer_no]
+        ])
     }
 };
 

@@ -122,7 +122,7 @@ describe('commands.js', function() {
         it('a private command should not be able to called from a chat and a msg is sent to the initiating user', function() {
             const mocked = blakkistest.mockMsgAndBot();
             mocked.msg.chat.type = 'chat';
-            Commands.register('/private_command', 'help', Commands.TYPE_PRIVATE,[() => {}]);
+            Commands.register('/private_command', 'help', Commands.TYPE_PRIVATE, [() => {}]);
             Commands.call('/private_command', mocked.msg, ['/private_command']);
             assert.equal(mocked.internals.sentChatId, mocked.privateId);
         });

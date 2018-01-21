@@ -172,7 +172,8 @@ describe('users.js', function() {
                     if (rows[0].alcohol !== 12347) {
                         const err = new Error('invalid amount of alcohol in db');
                         done(err);
-                        return Promise.reject(err);                    }
+                        return Promise.reject(err);
+                    }
                     done();
                 })
                 .catch((err) => {
@@ -372,13 +373,13 @@ describe('users.js', function() {
                     } catch (err) {
                         return done(err);
                     }
-                    return user.updateReadAnnouncements(announcements.length+1);
+                    return user.updateReadAnnouncements(announcements.length + 1);
                 })
                 .then(() => query('select * from users where userId=$1', [user.userId]))
                 .then((res) => {
                     const found = res[0][0];
                     try {
-                        assert.equal(found.read_announcements, announcements.length+1);
+                        assert.equal(found.read_announcements, announcements.length + 1);
                         done();
                     } catch (err) {
                         return done(err);
@@ -503,7 +504,7 @@ describe('users.js', function() {
                 })
                 .then((res) => {
                     try {
-                        assert.equal(res.sum, 12347*2);
+                        assert.equal(res.sum, 12347 * 2);
                     } catch (err) {
                         return done(err);
                     }
@@ -511,7 +512,7 @@ describe('users.js', function() {
                 })
                 .then((res) => {
                     try {
-                        assert.equal(res.sum, 12347*3);
+                        assert.equal(res.sum, 12347 * 3);
                     } catch (err) {
                         return done(err);
                     }

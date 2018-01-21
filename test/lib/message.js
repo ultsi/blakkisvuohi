@@ -29,14 +29,14 @@ const message = require('../../app/lib/message.js');
 
 describe('message.js', function() {
     describe('new Message()', function() {
-        it('should return a new Message object', function(){
+        it('should return a new Message object', function() {
             const msg = new message.Message('text', {});
             assert(msg instanceof message.Message);
         });
     });
 
     describe('ChatMessage()', function() {
-        it('should return a new Message object, that has type "chat_message"', function(){
+        it('should return a new Message object, that has type "chat_message"', function() {
             const msg = message.ChatMessage('text', {});
             assert(msg instanceof message.Message);
             assert.equal(msg.type, 'chat_message');
@@ -44,7 +44,7 @@ describe('message.js', function() {
     });
 
     describe('PrivateMessage()', function() {
-        it('should return a new Message object, that has type "private_message"', function(){
+        it('should return a new Message object, that has type "private_message"', function() {
             const msg = message.PrivateMessage('text', {});
             assert(msg instanceof message.Message);
             assert.equal(msg.type, 'private_message');
@@ -52,7 +52,7 @@ describe('message.js', function() {
     });
 
     describe('PrivateMessage()', function() {
-        it('should return a new Message object, that has type "private_message"', function(){
+        it('should return a new Message object, that has type "private_message"', function() {
             const msg = message.PrivateMessage('text', {});
             assert(msg instanceof message.Message);
             assert.equal(msg.type, 'private_message');
@@ -60,8 +60,10 @@ describe('message.js', function() {
     });
 
     describe('PrivateKeyboardMessage()', function() {
-        it('should return a new Message object, that has type "private_message" and has keyboard options', function(){
-            const keyboard = [['A', 'B']];
+        it('should return a new Message object, that has type "private_message" and has keyboard options', function() {
+            const keyboard = [
+                ['A', 'B']
+            ];
             const msg = message.PrivateKeyboardMessage('text', keyboard);
             assert(msg instanceof message.Message);
             assert.equal(msg.type, 'private_message');
@@ -71,7 +73,7 @@ describe('message.js', function() {
     });
 
     describe('Photo()', function() {
-        it('should return a new Message object, that has type "photo"', function(){
+        it('should return a new Message object, that has type "photo"', function() {
             const msg = message.Photo('text');
             assert(msg instanceof message.Message);
             assert.equal(msg.type, 'photo');

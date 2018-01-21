@@ -19,15 +19,31 @@
 'use strict';
 
 exports.up = (pgm) => {
-    pgm.alterColumn('users', 'userid', {type: 'text'});
-    pgm.alterColumn('users_drinks', 'userid', {type: 'text'});
-    pgm.alterColumn('users_in_groups', 'userid', {type: 'text'});
-    pgm.alterColumn('users_in_groups', 'groupid', {type: 'text'});
+    pgm.alterColumn('users', 'userid', {
+        type: 'text'
+    });
+    pgm.alterColumn('users_drinks', 'userid', {
+        type: 'text'
+    });
+    pgm.alterColumn('users_in_groups', 'userid', {
+        type: 'text'
+    });
+    pgm.alterColumn('users_in_groups', 'groupid', {
+        type: 'text'
+    });
 };
 
 exports.down = (pgm) => {
-    pgm.alterColumn('users', 'userid', {type: 'int'});
-    pgm.alterColumn('users_drinks', 'userid', {type: 'int'});
-    pgm.alterColumn('users_in_groups', 'userid', {type: 'int'});
-    pgm.alterColumn('users_in_groups', 'groupid', {type: 'bigint'});
+    pgm.alterColumn('users', 'userid', {
+        type: 'int'
+    });
+    pgm.alterColumn('users_drinks', 'userid', {
+        type: 'int'
+    });
+    pgm.alterColumn('users_in_groups', 'userid', {
+        type: 'int'
+    });
+    pgm.alterColumn('users_in_groups', 'groupid', {
+        type: 'bigint'
+    });
 };

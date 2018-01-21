@@ -35,14 +35,14 @@ describe('about.js', function() {
     it('Calling /about should print about text', function(done) {
         const mocked = blakkistest.mockMsgAndBot();
         Commands.call('/about', mocked.msg, ['/about'])
-        .then(() => {
-            try {
-                assert.equal(mocked.internals.sentChatId, mocked.privateId);
-                assert.equal(mocked.internals.sentText, strings.commands.about.text);
-            } catch (err) {
-                return Promise.reject(err);
-            }
-            done();
-        }).catch((err) => done(err));
+            .then(() => {
+                try {
+                    assert.equal(mocked.internals.sentChatId, mocked.privateId);
+                    assert.equal(mocked.internals.sentText, strings.commands.about.text);
+                } catch (err) {
+                    return Promise.reject(err);
+                }
+                done();
+            }).catch((err) => done(err));
     });
 });

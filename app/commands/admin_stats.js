@@ -28,7 +28,6 @@ const utils = require('../lib/utils.js');
 const strings = require('../strings.js');
 
 function printAdminStats(context, user, msg, words) {
-
     return stats.getGlobalStats()
         .then((res) => {
             let top10text = res.top10UserStats.map((stats) => utils.decrypt(stats.nick) + ' - ' + stats.count).join('\n');

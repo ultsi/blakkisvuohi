@@ -142,7 +142,7 @@ describe('groups.js', function() {
                 .then((rows) => {
                     try {
                         const user0 = rows[blakkistest.users[0].userId];
-                        assert.equal(user0.sum, 12347*2);
+                        assert.equal(user0.sum, 12347 * 2);
                         const user1 = rows[blakkistest.users[1].userId];
                         assert.equal(user1.sum, 12347);
                     } catch (err) {

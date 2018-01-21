@@ -55,8 +55,10 @@ describe('moro.js', function() {
             .then((res) => {
                 try {
                     assert.equal(mocked.internals.sentChatId, mocked.msg.chat.id);
-                    assert.equal(mocked.internals.sentText, strings.commands.moro.join_text.format({chat_title: mocked.msg.chat.title}));
-                    assert.equal(res.sum, 12347*2);
+                    assert.equal(mocked.internals.sentText, strings.commands.moro.join_text.format({
+                        chat_title: mocked.msg.chat.title
+                    }));
+                    assert.equal(res.sum, 12347 * 2);
                 } catch (err) {
                     return Promise.reject(err);
                 }

@@ -91,11 +91,11 @@ function createSendPhotoFunction(msg, bot) {
 }
 
 utils.hookNewRelic = function(url, func) {
-    return new Promise(function(resolve, reject){
+    return new Promise(function(resolve, reject) {
         if (global.newrelic && global.newrelic.startWebTransaction) {
             global.newrelic.startWebTransaction(url, function() {
                 let p = func();
-                if(p && p.then) {
+                if (p && p.then) {
                     p.then(() => {
                         global.newrelic.getTransaction().end();
                         resolve();
@@ -110,7 +110,7 @@ utils.hookNewRelic = function(url, func) {
             });
         } else {
             let p = func();
-            if(p && p.then) {
+            if (p && p.then) {
                 p.then(() => {
                     global.newrelic.getTransaction().end();
                     resolve();

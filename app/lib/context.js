@@ -26,7 +26,6 @@
 const log = require('loglevel').getLogger('system');
 let contexts = module.exports = {};
 
-
 contexts.Context = function(cmd, msg) {
     this.cmd = cmd;
     this.msg = msg;
@@ -105,7 +104,7 @@ contexts.Context.prototype.photoReply = function(stream, caption) {
 };
 
 contexts.Context.prototype.sendMessage = function(message) {
-    if (!message || !message.type || !message.text ) {
+    if (!message || !message.type || !message.text) {
         log.error('sendMessage: invalid message object! ' + message);
         return Promise.reject();
     }

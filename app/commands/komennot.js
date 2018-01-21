@@ -27,9 +27,9 @@ const strings = require('../strings.js');
 
 function cmdListCommand(context, msg, words) {
     const cmdListStr = Object.values(Commands.__cmds__)
-                        .filter(cmd => !cmd.adminCommand)
-                        .map(cmd => cmd.cmd_help)
-                        .join('\n');
+        .filter(cmd => !cmd.adminCommand)
+        .map(cmd => cmd.cmd_help)
+        .join('\n');
     const cmdStr = strings.commands.blakkis.cmd_list.format({
         cmd_list: cmdListStr
     });

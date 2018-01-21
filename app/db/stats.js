@@ -51,10 +51,10 @@ stats.getGlobalStats = function() {
                 top10UserStats: res[6][0]
             });
         }).catch((err) => {
-            log.error(err);
-            log.debug(err.stack);
-            return Promise.reject(err);
-        });
+        log.error(err);
+        log.debug(err.stack);
+        return Promise.reject(err);
+    });
 };
 
 stats.getGroupStats = function(group, hours) {
