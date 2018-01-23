@@ -89,7 +89,7 @@ function sendErrorMessage(msg, err) {
         case errors.PrivateCommandUsedInChat:
             return msg.sendPrivateMessage(strings.commands.blakkis.use_only_in_private);
         case errors.ChatCommandUsedInPrivate:
-            return msg.sendPrivateMessage(strings.commands.blakkis.use_only_in_chat);
+            return msg.sendPrivateMessage(strings.commands.blakkis.use_only_in_chats);
         case errors.ContextEnded:
             return msg.sendPrivateMessage(strings.commands.blakkis.command_not_found);
         case errors.UserNotAdmin:
