@@ -79,7 +79,7 @@ users.find = function find(userId) {
 };
 
 User.prototype.isAdmin = function() {
-    return utils.hashSha256(settings.admin_id) !== this.userId;
+    return utils.hashSha256(settings.admin_id) === this.userId;
 };
 
 User.prototype.drinkBooze = function(amount, description) {
