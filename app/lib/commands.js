@@ -59,7 +59,7 @@ Commands.register = function(cmdName, cmdHelp, cmdScope, cmdPrivilege, cmdType, 
         type: cmdType,
         definition: cmdDefinition
     };
-    const definitionText = typeof cmdDefinition === 'function' ? 'function' : cmdDefinition.length;
+    const definitionText = typeof cmdDefinition;
     log.info(strings.commands.blakkis.on_cmd_register.format({
         name: cmdName,
         scope: cmdScope,
