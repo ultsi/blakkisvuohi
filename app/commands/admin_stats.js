@@ -21,7 +21,6 @@
     Allows the admin to set the loglevel
 */
 'use strict';
-const log = require('loglevel');
 const Commands = require('../lib/commands.js');
 const stats = require('../db/stats.js');
 const utils = require('../lib/utils.js');
@@ -40,10 +39,6 @@ function printAdminStats(context, msg, words, user) {
                 activeGroups7DaysCount: res.activeGroups7DaysCount,
                 top10List: top10text
             }));
-        }).catch((err) => {
-            log.error(err);
-            context.privateReply(strings.commands.admin_stats.error);
-            return Promise.resolve();
         });
 }
 

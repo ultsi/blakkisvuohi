@@ -27,5 +27,5 @@ module.exports = {
     'log_system_level': 'info',
     'log_db_level': 'info',
     'log_commands_level': 'info',
-    'admin_id': '2cc8dfbfa5ff5e16a5039b5355603b99dc53b1c13a2da326782f1e20f909795a' // @ultsi
+    'admin_id': 62461364 // @ultsi
 };

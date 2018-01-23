@@ -59,23 +59,13 @@ function groupDrinksByUser(drinks) {
 
 Group.prototype.getDrinkSum = function() {
     return query('select coalesce(sum(alcohol), 0) as sum, coalesce(min(users_drinks.created), now()) as created from users_in_groups left outer join users_drinks on users_drinks.userid=users_in_groups.userid and users_in_groups.groupid=$1', [this.groupId])
-        .then((res) => Promise.resolve(res[0][0]))
-        .catch((err) => {
-            log.error(err);
-            log.debug(err.stack);
-            return Promise.reject(err);
-        });
+        .then((res) => Promise.resolve(res[0][0]));
 };
 
 Group.prototype.getDrinkSumForXHours = function(hours) {
     let hoursAgo = utils.getDateMinusHours(hours);
     return query('select coalesce(sum(alcohol), 0) as sum, coalesce(min(users_drinks.created), now()) as created from users_in_groups left outer join users_drinks on users_drinks.userid=users_in_groups.userid and users_in_groups.groupid=$1 and users_drinks.created >= $2', [this.groupId, hoursAgo])
-        .then((res) => Promise.resolve(res[0][0]))
-        .catch((err) => {
-            log.error(err);
-            log.debug(err.stack);
-            return Promise.reject(err);
-        });
+        .then((res) => Promise.resolve(res[0][0]));
 };
 
 Group.prototype.getDrinkSumsByUser = function(hours) {
@@ -95,10 +85,6 @@ Group.prototype.getDrinkSumsByUser = function(hours) {
                 };
             }
             return Promise.resolve(drinkSumsByUser);
-        }).catch((err) => {
-            log.error(err);
-            log.debug(err.stack);
-            return Promise.reject('Ota adminiin yhteyttä.');
         });
 };
 
@@ -107,10 +93,6 @@ Group.prototype.getDrinkTimesByUser = function() {
         .then((res) => {
             let drinksByUser = groupDrinksByUser(res[0]);
             return Promise.resolve(drinksByUser);
-        }).catch((err) => {
-            log.error(err);
-            log.debug(err.stack);
-            return Promise.reject('Ota adminiin yhteyttä.');
         });
 };
 
@@ -124,32 +106,22 @@ Group.prototype.getStandardDrinksListing = function() {
         const drinksByUser = res[0],
             drinkSumsByUser12h = res[1],
             drinkSumsByUser24h = res[2];
-        try {
-            let drinks = [];
-            for (var userId in drinksByUser) {
-                let details = drinksByUser[userId];
-                let user = new users.User(details.userid, details.nick, details.weight, details.gender, details.height);
-                let userEBAC = alcomath.calculateEBACFromDrinks(user, details.drinks);
-                let userGrams = userEBAC.grams;
-                if (userGrams > 0) {
-                    let sum12h = drinkSumsByUser12h[details.userid] && drinkSumsByUser12h[details.userid].sum || 0;
-                    let sum24h = drinkSumsByUser24h[details.userid] && drinkSumsByUser24h[details.userid].sum || 0;
-                    drinks.push([user.username, userGrams / (constants.STANDARD_DRINK_GRAMS), sum12h / (constants.STANDARD_DRINK_GRAMS * 1000), sum24h / (constants.STANDARD_DRINK_GRAMS * 1000)]);
-                }
+        let drinks = [];
+        for (var userId in drinksByUser) {
+            let details = drinksByUser[userId];
+            let user = new users.User(details.userid, details.nick, details.weight, details.gender, details.height);
+            let userEBAC = alcomath.calculateEBACFromDrinks(user, details.drinks);
+            let userGrams = userEBAC.grams;
+            if (userGrams > 0) {
+                let sum12h = drinkSumsByUser12h[details.userid] && drinkSumsByUser12h[details.userid].sum || 0;
+                let sum24h = drinkSumsByUser24h[details.userid] && drinkSumsByUser24h[details.userid].sum || 0;
+                drinks.push([user.username, userGrams / (constants.STANDARD_DRINK_GRAMS), sum12h / (constants.STANDARD_DRINK_GRAMS * 1000), sum24h / (constants.STANDARD_DRINK_GRAMS * 1000)]);
             }
-            drinks = drinks.sort((a, b) => {
-                return b[1] - a[1];
-            });
-            return Promise.resolve(drinks);
-        } catch (err) {
-            log.error(err);
-            log.debug(err.stack);
-            return Promise.reject(err);
         }
-    }).catch((err) => {
-        log.error(err);
-        log.debug(err.stack);
-        return Promise.reject(err);
+        drinks = drinks.sort((a, b) => {
+            return b[1] - a[1];
+        });
+        return Promise.resolve(drinks);
     });
 };
 
@@ -163,31 +135,21 @@ Group.prototype.getPermillesListing = function() {
         const drinksByUser = res[0],
             drinkSumsByUser12h = res[1],
             drinkSumsByUser24h = res[2];
-        try {
-            let permilles = [];
-            for (var userId in drinksByUser) {
-                let details = drinksByUser[userId];
-                let user = new users.User(details.userid, details.nick, details.weight, details.gender, details.height);
-                let ebac = alcomath.calculateEBACFromDrinks(user, details.drinks);
-                let userPermilles = ebac.permilles;
-                if (userPermilles > 0) {
-                    let sum12h = drinkSumsByUser12h[details.userid] && drinkSumsByUser12h[details.userid].sum || 0;
-                    let sum24h = drinkSumsByUser24h[details.userid] && drinkSumsByUser24h[details.userid].sum || 0;
-                    permilles.push([user.username, userPermilles, sum12h / (constants.STANDARD_DRINK_GRAMS * 1000), sum24h / (constants.STANDARD_DRINK_GRAMS * 1000)]);
-                }
+        let permilles = [];
+        for (var userId in drinksByUser) {
+            let details = drinksByUser[userId];
+            let user = new users.User(details.userid, details.nick, details.weight, details.gender, details.height);
+            let ebac = alcomath.calculateEBACFromDrinks(user, details.drinks);
+            let userPermilles = ebac.permilles;
+            if (userPermilles > 0) {
+                let sum12h = drinkSumsByUser12h[details.userid] && drinkSumsByUser12h[details.userid].sum || 0;
+                let sum24h = drinkSumsByUser24h[details.userid] && drinkSumsByUser24h[details.userid].sum || 0;
+                permilles.push([user.username, userPermilles, sum12h / (constants.STANDARD_DRINK_GRAMS * 1000), sum24h / (constants.STANDARD_DRINK_GRAMS * 1000)]);
             }
-            permilles = permilles.sort((a, b) => {
-                return b[1] - a[1];
-            });
-            return Promise.resolve(permilles);
-        } catch (err) {
-            log.error(err);
-            log.debug(err.stack);
-            return Promise.reject('Isompi ongelma, ota yhteyttä adminiin.');
         }
-    }).catch((err) => {
-        log.error(err);
-        log.debug(err.stack);
-        return Promise.reject('Isompi ongelma, ota yhteyttä adminiin.');
+        permilles = permilles.sort((a, b) => {
+            return b[1] - a[1];
+        });
+        return Promise.resolve(permilles);
     });
 };

@@ -28,6 +28,7 @@
 const assert = require('assert');
 const blakkistest = require('../blakkistest.js');
 const utils = require('../../app/lib/utils.js');
+const realsecret = process.env.SECRET;
 
 describe('utils', function() {
     describe('getDateMinusHours()', function() {
@@ -319,4 +320,10 @@ describe('utils', function() {
             assert(utils1.decrypt(encrypted1) === data);
         });
     });
+
+    after(function() {
+        delete require.cache[require.resolve('../../app/lib/utils.js')];
+        process.env.SECRET = realsecret;
+        require('../../app/lib/utils.js');
+    })
 });

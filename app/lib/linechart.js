@@ -65,25 +65,20 @@ const lineChartTemplate = {
 
 linechart.getLineGraphBuffer = function(data, title) {
     log.debug('Trying to make a line chart from data');
-    try {
-        var chartNode = new ChartjsNode(1024, 728);
-        var lineChartConfig = lineChartTemplate;
+    var chartNode = new ChartjsNode(1024, 728);
+    var lineChartConfig = lineChartTemplate;
 
-        lineChartConfig.data = data;
-        lineChartConfig.options.title.text = title;
+    lineChartConfig.data = data;
+    lineChartConfig.options.title.text = title;
 
-        return chartNode.drawChart(lineChartConfig)
-            .then(() => {
-                let buffer = chartNode.getImageBuffer('image/png');
-                log.debug('Drawing line chart succeeded');
-                return Promise.resolve(buffer);
-            }).catch((err) => {
-                log.error('Error writing PNG to buffer:');
-                log.error(err);
-                return Promise.reject();
-            });
-    } catch (err) {
-        log.error('ChartJS err: ' + err);
-        return Promise.reject();
-    }
+    return chartNode.drawChart(lineChartConfig)
+        .then(() => {
+            let buffer = chartNode.getImageBuffer('image/png');
+            log.debug('Drawing line chart succeeded');
+            return Promise.resolve(buffer);
+        }).catch((err) => {
+            log.error('Error writing PNG to buffer:');
+            log.error(err);
+            return Promise.reject(err);
+        });
 };

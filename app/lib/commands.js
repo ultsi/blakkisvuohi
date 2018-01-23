@@ -30,6 +30,7 @@ const strings = require('../strings.js');
 const utils = require('./utils.js');
 const log = require('loglevel').getLogger('system');
 const announcements = require('../announcements.js');
+const settings = require('../settings.js');
 const errors = require('./errors.js');
 
 let Commands = module.exports = {};
@@ -98,7 +99,16 @@ function sendErrorMessage(msg, err) {
         case errors.UserNotReadTerms:
             return msg.sendPrivateMessage(strings.commands.blakkis.please_update_user_info);
         default:
-            return msg.sendPrivateMessage(strings.commands.blakkis.error);
+            log.error('!!!Unknown error!!!');
+            log.error(err);
+            log.error(msg);
+            log.error('!!!Unknown error!!!');
+            return msg.sendMessage(settings.admin_id, `Unknown error ${err.message} upon user ${msg.from.username} sending msg ${msg.text}`)
+                .then(() => msg.sendPrivateMessage(strings.commands.blakkis.error))
+                .catch((err) => {
+                    log.error('CANT SEND ERROR MESSAGES');
+                    log.error(err);
+                });
     }
 }
 
@@ -144,8 +154,13 @@ Commands.call = function call(firstWord, msg, words) {
         }
         return users.find(msg.from.id)
             .then((user) => {
-                if (!user && cmd.privilege === Commands.PRIVILEGE_USER) {
-                    return Promise.reject(new errors.UserNotFound());
+                if (!user) {
+                    if (cmd.privilege === Commands.PRIVILEGE_ADMIN && msg.from.id !== settings.admin_id) {
+                        return Promise.reject(new errors.UserNotAdmin({userId: msg.from.id}));
+                    }
+                    if(cmd.privilege === Commands.PRIVILEGE_USER) {
+                        return Promise.reject(new errors.UserNotFound(user));
+                    }
                 }
                 if (user) {
                     if(cmd.privilege === Commands.PRIVILEGE_ADMIN && !user.isAdmin()) {
@@ -181,17 +196,17 @@ Commands.call = function call(firstWord, msg, words) {
                     return phase.onValidInput(context, msg, words, user)
                         .then(() => {
                             phase = cmd.definition[context.phase];
-                            if (phase.nextPhase || phase.nextPhase === 'start') {
-                                context.toPhase(phase.nextPhase);
-                                let newPhase = cmd.definition[context.phase];
-                                context.sendMessage(newPhase.startMessage);
-                            } else {
-                                context.end();
-                            }
                             log.debug('Executing phase ' + context.phase + ' of usercmd ' + cmd.name);
                             log.debug('Words: ' + words);
                             log.debug('Phase ' + context.phase + ' of cmd ' + cmd.name + ' executed perfectly.');
-                            return Promise.resolve(); // reject or resolve?
+
+                            if (phase.nextPhase || phase.nextPhase === 'start') {
+                                context.toPhase(phase.nextPhase);
+                                let newPhase = cmd.definition[context.phase];
+                                return context.sendMessage(newPhase.startMessage);
+                            } else {
+                                return context.end();
+                            }
                         });
                 }
             })
@@ -200,8 +215,7 @@ Commands.call = function call(firstWord, msg, words) {
                 return Promise.resolve();
             });
     }).catch((err) => {
-        log.error(`Couldn\'t execute cmd ${cmd.name} properly`);
-        log.error(err);
+        log.error(`Couldn\'t execute cmd ${cmd.name} properly, err message: ${err.message}`);
         return sendErrorMessage(msg, err);
     });
 };

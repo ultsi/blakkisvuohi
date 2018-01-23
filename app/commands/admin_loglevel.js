@@ -26,7 +26,6 @@ const Commands = require('../lib/commands.js');
 const strings = require('../strings.js');
 
 function loglevel(context, msg, words, user) {
-    log.getLogger('commands').debug(log.getLoggers());
 
     let what = words[1] || 'commands';
     let level = words[2] || 'info';

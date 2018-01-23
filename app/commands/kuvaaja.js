@@ -43,84 +43,77 @@ function kuvaaja(context, msg, words, user) {
     let group = new groups.Group(msg.chat.id);
     return group.getDrinkTimesByUser(msg.chat.id)
         .then((drinksByUser) => {
-            try {
-                const lastNHours = 24;
-                const predictNHours = 12;
-                let labels = [];
-                let datasets = [];
-                /*let trimFromStart = [];
-                let trimFromEnd = [];*/
-                let colors = utils.getColorSet(drinksByUser.length);
-                for (let userId in drinksByUser) {
-                    let details = drinksByUser[userId];
-                    let user = new users.User(details.userid, details.nick, details.weight, details.gender, details.height);
-                    let permillesByHour = alcomath.calculateEBACByHourFromDrinks(user, details.drinks, lastNHours, predictNHours);
-                    let permillesLastNHours = [];
-                    let permillesPredictNHours = [];
-                    for (let i = 0; i < permillesByHour.length; i += 1) {
-                        if (labels.length < permillesByHour.length) {
-                            labels.push(permillesByHour[i].hour);
-                        }
-                        if (i <= lastNHours) {
-                            permillesLastNHours[i] = permillesByHour[i].permilles;
-                        }
-                        if (i >= lastNHours) {
-                            permillesPredictNHours[i] = permillesByHour[i].permilles;
-                        }
-                        /*
-                        // Trim start & end if no data (i.e. 0)
-                        if (permillesByHour[i].permilles === 0) {
-                            if (!trimFromStart[userId] || trimFromStart[userId] === i - 1) {
-                                trimFromStart[userId] = i;
-                            }
-                        } else {
-                            trimFromEnd[userId] = i + 1;
-                        }*/
+            const lastNHours = 24;
+            const predictNHours = 12;
+            let labels = [];
+            let datasets = [];
+            /*let trimFromStart = [];
+            let trimFromEnd = [];*/
+            let colors = utils.getColorSet(drinksByUser.length);
+            for (let userId in drinksByUser) {
+                let details = drinksByUser[userId];
+                let user = new users.User(details.userid, details.nick, details.weight, details.gender, details.height);
+                let permillesByHour = alcomath.calculateEBACByHourFromDrinks(user, details.drinks, lastNHours, predictNHours);
+                let permillesLastNHours = [];
+                let permillesPredictNHours = [];
+                for (let i = 0; i < permillesByHour.length; i += 1) {
+                    if (labels.length < permillesByHour.length) {
+                        labels.push(permillesByHour[i].hour);
                     }
-
-                    let randomColorI = Math.floor(Math.random() * colors.length);
-                    let color = colors.splice(randomColorI, 1);
-                    color = 'rgb(' + color[0] + ',' + color[1] + ',' + color[2] + ')';
-                    datasets.push({
-                        label: details.nick,
-                        data: permillesLastNHours,
-                        fill: false,
-                        backgroundColor: color,
-                        borderColor: color
-                    });
-                    datasets.push({
-                        label: '',
-                        data: permillesPredictNHours,
-                        fill: false,
-                        backgroundColor: color,
-                        borderColor: color,
-                        borderDash: [5, 15]
-                    });
+                    if (i <= lastNHours) {
+                        permillesLastNHours[i] = permillesByHour[i].permilles;
+                    }
+                    if (i >= lastNHours) {
+                        permillesPredictNHours[i] = permillesByHour[i].permilles;
+                    }
+                    /*
+                    // Trim start & end if no data (i.e. 0)
+                    if (permillesByHour[i].permilles === 0) {
+                        if (!trimFromStart[userId] || trimFromStart[userId] === i - 1) {
+                            trimFromStart[userId] = i;
+                        }
+                    } else {
+                        trimFromEnd[userId] = i + 1;
+                    }*/
                 }
-                /*let trimFromStartMin = trimFromStart.reduce((x, y) => x <= y ? x : y);
-                let trimFromEndMax = trimFromEnd.reduce((x, y) => x >= y ? x : y);
-                trimFromStartMin = trimFromStartMin <= 1 ? 0 : trimFromStartMin - 2;
-                trimFromEndMax = trimFromEndMax >= labels.length - 2 ? labels.length - 2 : trimFromEndMax + 2;
 
-                // force trimFromEndMax to current hour
-                trimFromEndMax = trimFromEndMax < lastNHours + 1 ? lastNHours + 1 : trimFromEndMax;
-
-                // Trim datasets
-                for (let i = 0; i < datasets.length; i += 1) {
-                    datasets[i].data = datasets[i].data.slice(trimFromStartMin, trimFromEndMax);
-                }
-                labels = labels.slice(trimFromStartMin, trimFromEndMax);*/
-
-                return linechart.getLineGraphBuffer({
-                    labels: labels,
-                    datasets: datasets
-                }, graphTitle);
-
-            } catch (err) {
-                log.error(err);
-                log.debug(err.stack);
-                return Promise.reject(err);
+                let randomColorI = Math.floor(Math.random() * colors.length);
+                let color = colors.splice(randomColorI, 1);
+                color = 'rgb(' + color[0] + ',' + color[1] + ',' + color[2] + ')';
+                datasets.push({
+                    label: details.nick,
+                    data: permillesLastNHours,
+                    fill: false,
+                    backgroundColor: color,
+                    borderColor: color
+                });
+                datasets.push({
+                    label: '',
+                    data: permillesPredictNHours,
+                    fill: false,
+                    backgroundColor: color,
+                    borderColor: color,
+                    borderDash: [5, 15]
+                });
             }
+            /*let trimFromStartMin = trimFromStart.reduce((x, y) => x <= y ? x : y);
+            let trimFromEndMax = trimFromEnd.reduce((x, y) => x >= y ? x : y);
+            trimFromStartMin = trimFromStartMin <= 1 ? 0 : trimFromStartMin - 2;
+            trimFromEndMax = trimFromEndMax >= labels.length - 2 ? labels.length - 2 : trimFromEndMax + 2;
+
+            // force trimFromEndMax to current hour
+            trimFromEndMax = trimFromEndMax < lastNHours + 1 ? lastNHours + 1 : trimFromEndMax;
+
+            // Trim datasets
+            for (let i = 0; i < datasets.length; i += 1) {
+                datasets[i].data = datasets[i].data.slice(trimFromStartMin, trimFromEndMax);
+            }
+            labels = labels.slice(trimFromStartMin, trimFromEndMax);*/
+
+            return linechart.getLineGraphBuffer({
+                labels: labels,
+                datasets: datasets
+            }, graphTitle);
         })
         .then((buffer) => context.photoReply(buffer, graphTitle));
 }

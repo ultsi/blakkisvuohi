@@ -66,30 +66,24 @@ function annokset(context, msg, words, user) {
         ]).then((res) => {
             const drinks = res[0],
                 drinks72h = res[1];
-            try {
-                let ebac = alcomath.calculateEBACFromDrinks(user, drinks);
-                let permilles = ebac.permilles;
-                let permilles30Min = ebac.permilles30Min;
-                let grams = ebac.grams;
-                let metabolismRate = alcomath.getUserMetabolismRate(user);
-                let time = permilles30Min / metabolismRate;
-                time = time > 0 ? time + 0.5 : time;
-                let hours = Math.floor(time);
-                const text = strings.long_permilles_text.format({
-                    permilles: utils.roundTo(permilles, 2),
-                    permilles30Min: utils.roundTo(permilles30Min, 2),
-                    grams: utils.roundTo(grams),
-                    standard_drinks: utils.roundTo(grams / constants.STANDARD_DRINK_GRAMS, 2),
-                    hours: hours,
-                    minutes: ('0' + Math.ceil((time - hours) * 60)).slice(-2),
-                    drinkList72h: makeDrinksString(drinks72h)
-                });
-                return context.privateReply(text);
-            } catch (err) {
-                log.error(err);
-                log.debug(err.stack);
-                return Promise.reject('Isompi ongelma, ota yhteyttä adminiin.');
-            }
+            let ebac = alcomath.calculateEBACFromDrinks(user, drinks);
+            let permilles = ebac.permilles;
+            let permilles30Min = ebac.permilles30Min;
+            let grams = ebac.grams;
+            let metabolismRate = alcomath.getUserMetabolismRate(user);
+            let time = permilles30Min / metabolismRate;
+            time = time > 0 ? time + 0.5 : time;
+            let hours = Math.floor(time);
+            const text = strings.long_permilles_text.format({
+                permilles: utils.roundTo(permilles, 2),
+                permilles30Min: utils.roundTo(permilles30Min, 2),
+                grams: utils.roundTo(grams),
+                standard_drinks: utils.roundTo(grams / constants.STANDARD_DRINK_GRAMS, 2),
+                hours: hours,
+                minutes: ('0' + Math.ceil((time - hours) * 60)).slice(-2),
+                drinkList72h: makeDrinksString(drinks72h)
+            });
+            return context.privateReply(text);
         });
     } else {
         let group = new groups.Group(msg.chat.id);

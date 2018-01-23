@@ -69,46 +69,27 @@ users.find = function find(userId) {
             let rows = res[0];
             let info = res[1];
             if (rows.length > 0 && info.rowCount > 0) {
-                try {
-                    let found = rows[0];
-                    let nick = utils.decrypt(found.nick);
-                    return Promise.resolve(new User(found.userid, nick, found.weight, found.gender, found.height, found.read_terms, found.read_announcements, found.created));
-                } catch (err) {
-                    return Promise.reject(err);
-                }
+                let found = rows[0];
+                let nick = utils.decrypt(found.nick);
+                return Promise.resolve(new User(found.userid, nick, found.weight, found.gender, found.height, found.read_terms, found.read_announcements, found.created));
             } else {
                 return Promise.resolve();
             }
-        }).catch((err) => {
-            log.error(err);
-            log.error(err.stack);
-            return Promise.reject(err);
         });
 };
 
 User.prototype.isAdmin = function() {
-    return settings.admin_id !== this.userId;
+    return utils.hashSha256(settings.admin_id) !== this.userId;
 };
 
 User.prototype.drinkBooze = function(amount, description) {
-    return query('insert into users_drinks (userId, alcohol, description) values($1, $2, $3)', [this.userId, amount, description])
-        .then(() => {
-            return Promise.resolve();
-        }).catch((err) => {
-            log.error(err);
-            log.debug(err.stack);
-            return Promise.reject(err);
-        });
+    return query('insert into users_drinks (userId, alcohol, description) values($1, $2, $3)', [this.userId, amount, description]);
 };
 
 User.prototype.getBooze = function() {
     return query('select alcohol, description, created from users_drinks where userId = $1 order by created asc', [this.userId])
         .then((res) => {
             return Promise.resolve(res[0]);
-        }).catch((err) => {
-            log.error(err);
-            log.debug(err.stack);
-            return Promise.reject(err);
         });
 };
 
@@ -117,10 +98,6 @@ User.prototype.getDrinkSumForXHours = function(hours) {
     return query('select sum(alcohol) as sum, min(created) as created from users_drinks where userId = $1 and created > $2 ', [this.userId, hoursAgo])
         .then((res) => {
             return Promise.resolve(res[0][0]);
-        }).catch((err) => {
-            log.error(err);
-            log.debug(err.stack);
-            return Promise.reject(err);
         });
 };
 
@@ -128,10 +105,6 @@ User.prototype.undoDrink = function() {
     return query('delete from users_drinks where created=(select created from users_drinks where userid = $1 order by created desc limit 1)', [this.userId])
         .then((res) => {
             return Promise.resolve(res[0]);
-        }).catch((err) => {
-            log.error(err);
-            log.debug(err.stack);
-            return Promise.reject(err);
         });
 };
 
@@ -140,10 +113,6 @@ User.prototype.getBoozeForLastHours = function(hours) {
     return query('select alcohol, description, created from users_drinks where userId = $1 and created > $2 order by created desc', [this.userId, hoursAgo.toISOString()])
         .then((res) => {
             return Promise.resolve(res[0]);
-        }).catch((err) => {
-            log.error(err);
-            log.debug(err.stack);
-            return Promise.reject(err);
         });
 };
 
@@ -152,10 +121,6 @@ User.prototype.joinGroup = function(groupId) {
     return query('insert into users_in_groups (userId, groupId) values ($1, $2)', [this.userId, groupIdHash])
         .then((res) => {
             return Promise.resolve(res[0]);
-        }).catch((err) => {
-            log.error(err);
-            log.debug(err.stack);
-            return Promise.reject('Ota adminiin yhteyttä.');
         });
 };
 
@@ -166,10 +131,6 @@ User.prototype.drinkBoozeReturnEBAC = function(amount, description) {
         .then((drinks) => {
             let ebac = alcomath.calculateEBACFromDrinks(self, drinks);
             return Promise.resolve(ebac);
-        }).catch((err) => {
-            log.error(err);
-            log.debug(err.stack);
-            return Promise.reject('Isompi ongelma, ota yhteyttä adminiin.');
         });
 };
 
@@ -189,10 +150,6 @@ User.prototype.drinkBoozeLate = function(drinks, hours) {
         .then((drinks) => {
             let ebac = alcomath.calculateEBACFromDrinks(self, drinks);
             return Promise.resolve(ebac);
-        }).catch((err) => {
-            log.error(err);
-            log.debug(err.stack);
-            return Promise.reject('Isompi ongelma, ota yhteyttä adminiin.');
         });
 };
 
@@ -202,26 +159,11 @@ User.prototype.updateInfo = function(username, weight, gender, height, read_term
     return query('update users set nick=$1, weight=$2, gender=$3, height=$4, read_terms=$5 where userId=$6 returning userId, nick, weight, gender, read_terms, created', [username, weight, gender, height, read_terms, self.userId])
         .then((res) => {
             const found = res[0][0];
-            if (found) {
-                return Promise.resolve(new User(found.userid, utils.decrypt(found.nick), found.weight, found.gender, found.height, found.read_terms, found.read_announcements, found.created));
-            } else {
-                return Promise.reject('not found');
-            }
-        }).catch((err) => {
-            log.error(err);
-            log.debug(err.stack);
-            return Promise.reject(err);
+            return Promise.resolve(new User(found.userid, utils.decrypt(found.nick), found.weight, found.gender, found.height, found.read_terms, found.read_announcements, found.created));
         });
 };
 
 User.prototype.updateReadAnnouncements = function(read_announcements_count) {
     const self = this;
-    return query('update users set read_announcements=$1 where userId=$2', [read_announcements_count, self.userId])
-        .then(() => {
-            return Promise.resolve();
-        }).catch((err) => {
-            log.error(err);
-            log.debug(err.stack);
-            return Promise.reject(err);
-        });
+    return query('update users set read_announcements=$1 where userId=$2', [read_announcements_count, self.userId]);
 };
