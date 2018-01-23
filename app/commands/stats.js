@@ -61,6 +61,7 @@ function printStats(context, msg, words, user) {
                     grams: utils.roundTo(grams, 1),
                     standard_drinks: utils.roundTo(grams / STANDARD_DRINK_GRAMS, 1),
                     avg_standard_drinks: utils.roundTo((grams / daysBetween / STANDARD_DRINK_GRAMS), 1),
+                    global_drinks_count: res.drinkCount,
                     top10List: top10text
                 }));
             });

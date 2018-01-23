@@ -37,7 +37,8 @@ function printAdminStats(context, msg, words, user) {
                 groupsCount: res.groupsCount,
                 activeGroups14DaysCount: res.activeGroups14DaysCount,
                 activeGroups7DaysCount: res.activeGroups7DaysCount,
-                top10List: top10text
+                top10List: top10text,
+                global_drinks_count: res.drinkCount
             }));
         });
 }
