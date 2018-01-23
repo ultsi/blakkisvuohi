@@ -25,59 +25,90 @@
 */
 'use strict';
 
-const when = require('when');
 const log = require('loglevel').getLogger('commands');
 const Commands = require('../lib/commands.js');
 const alcomath = require('../lib/alcomath.js');
+const utils = require('../lib/utils.js');
 const groups = require('../db/groups.js');
+const constants = require('../constants.js');
+const strings = require('../strings.js');
 
-function annokset(context, user, msg, words) {
-    let deferred = when.defer();
-    if (msg.chat.type === 'private') {
-        user.getBooze()
-            .then((drinks) => {
-                try {
-                    let ebac = alcomath.calculateEBACFromDrinks(user, drinks);
-                    let permilles = ebac.permilles;
-                    let permilles30Min = ebac.permilles30Min;
-                    let grams = ebac.grams;
-                    let metabolismRate = alcomath.getUserMetabolismRate(user);
-                    console.log(metabolismRate, permilles30Min);
-                    let time = permilles30Min / metabolismRate;
-                    time = time > 0 ? time + 0.5 : time;
-                    let hours = Math.floor(time);
-                    let minutes = ('0' + Math.ceil((time - hours) * 60)).slice(-2);
-                    deferred.resolve(context.privateReply('Olet ' + permilles.toFixed(2) + '‰ humalassa nyt, ja ' + permilles30Min.toFixed(2) + '‰ humalassa 30min päästä. Veressäsi on ' + grams.toFixed(2) + ' grammaa alkoholia, joka vastaa ' + (grams / 12.2).toFixed(2) + ' annosta. Olet selvinpäin ' + hours + 'h' + minutes + 'min päästä.'));
-                } catch (err) {
-                    log.error(err);
-                    log.debug(err.stack);
-                    deferred.reject('Isompi ongelma, ota yhteyttä adminiin.');
-                }
-            }, (err) => {
-                log.error(err);
-                log.debug(err.stack);
-                deferred.reject('Isompi ongelma, ota yhteyttä adminiin.');
-            });
-    } else {
-        let group = new groups.Group(msg.chat.id);
-        group.getStandardDrinksListing(msg.chat.id)
-            .then((standardDrinksListing) => {
-                let text = standardDrinksListing.map(user => user[0] + '... ' + user[1].toFixed(2) + 'kpl (' + user[2].toFixed(1) + '/' + user[3].toFixed(1) + ')');
-                text = 'Käyttäjä... annoksia (yht 12h/24h)\n\n' + text.join('\n');
-                text = msg.chat.title + ' -kavereiden rippitaso:\n' + text;
-                deferred.resolve(context.chatReply(text));
-            }, (err) => {
-                log.error(err);
-                log.debug(err.stack);
-                deferred.reject('Isompi ongelma, ota yhteyttä adminiin.');
-            });
+function makeDrinksString(drinks) {
+    let list = [];
+    let day = null;
+    for (var i in drinks) {
+        let drink = drinks[i];
+        let drinkTime = new Date(Date.parse(drink.created));
+        let drinkShortDate = drinkTime.getDate() + '.' + (drinkTime.getMonth() + 1) + '.';
+        if (day !== drinkShortDate) {
+            day = drinkShortDate;
+            list.push(day);
+        }
+        let drinkHours = drinkTime.getHours() + '';
+        if (drinkHours.length === 1) {
+            drinkHours = '0' + drinkHours;
+        }
+        let drinkMinutes = drinkTime.getMinutes() + '';
+        if (drinkMinutes.length === 1) {
+            drinkMinutes = '0' + drinkMinutes;
+        }
+        list.push(drinkHours + ':' + drinkMinutes + ' ' + drink.description);
     }
-    context.end();
-    return deferred.promise;
+    return list.join('\n');
 }
 
-Commands.registerUserCommand(
+function annokset(context, msg, words, user) {
+    context.end();
+    if (msg.chat.type === 'private') {
+        return Promise.all([
+            user.getBooze(),
+            user.getBoozeForLastHours(72)
+        ]).then((res) => {
+            const drinks = res[0],
+                drinks72h = res[1];
+            let ebac = alcomath.calculateEBACFromDrinks(user, drinks);
+            let permilles = ebac.permilles;
+            let permilles30Min = ebac.permilles30Min;
+            let grams = ebac.grams;
+            let metabolismRate = alcomath.getUserMetabolismRate(user);
+            let time = permilles30Min / metabolismRate;
+            time = time > 0 ? time + 0.5 : time;
+            let hours = Math.floor(time);
+            const text = strings.long_permilles_text.format({
+                permilles: utils.roundTo(permilles, 2),
+                permilles30Min: utils.roundTo(permilles30Min, 2),
+                grams: utils.roundTo(grams),
+                standard_drinks: utils.roundTo(grams / constants.STANDARD_DRINK_GRAMS, 2),
+                hours: hours,
+                minutes: ('0' + Math.ceil((time - hours) * 60)).slice(-2),
+                drinkList72h: makeDrinksString(drinks72h)
+            });
+            return context.privateReply(text);
+        });
+    } else {
+        let group = new groups.Group(msg.chat.id);
+        return group.getStandardDrinksListing(msg.chat.id)
+            .then((standardDrinksListing) => {
+                const listText = standardDrinksListing.map(user => strings.commands.annokset.text_group_list_item.format({
+                    username: user[0],
+                    standard_drinks: utils.roundTo(user[1], 2),
+                    drinks12h: utils.roundTo(user[2], 2),
+                    drinks24h: utils.roundTo(user[3], 2)
+                }));
+                const text = strings.commands.annokset.text_group.format({
+                    chat_title: msg.chat.title,
+                    list: listText
+                });
+                return context.chatReply(text);
+            });
+    }
+}
+
+Commands.register(
     '/annokset',
-    '/annokset - kertoo ryhmän kulutetut annokset viimeisen 48h ajalta',
-    Commands.TYPE_ALL, [annokset]
+    strings.commands.annokset.cmd_description,
+    Commands.SCOPE_ALL,
+    Commands.PRIVILEGE_USER,
+    Commands.TYPE_SINGLE,
+    annokset
 );

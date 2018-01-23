@@ -16,19 +16,31 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
+/*
+    /komennot
+    Print commands
+*/
 'use strict';
 
-exports.up = (pgm) => {
-    pgm.addColumns('users_drinks', {
-        id: {
-            type: 'serial',
-            notNull: true,
-            unique: true
-        }
-    });
-    pgm.dropConstraint('users_drinks', 'users_drinks_pkey');
-};
+const Commands = require('../lib/commands.js');
+const strings = require('../strings.js');
 
-exports.down = (pgm) => {
-    pgm.dropColumns('users_drinks', ['id']);
-};
+function cmdListCommand(context, msg, words) {
+    const cmdListStr = Object.values(Commands.__cmds__)
+        .filter(cmd => !cmd.adminCommand)
+        .map(cmd => cmd.cmd_help)
+        .join('\n');
+    const cmdStr = strings.commands.blakkis.cmd_list.format({
+        cmd_list: cmdListStr
+    });
+    return msg.sendPrivateMessage(cmdStr);
+}
+
+Commands.register(
+    '/komennot',
+    strings.commands.komennot.cmd_description,
+    Commands.SCOPE_PRIVATE,
+    Commands.PRIVILEGE_ALL,
+    Commands.TYPE_SINGLE,
+    cmdListCommand
+);

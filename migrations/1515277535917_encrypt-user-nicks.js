@@ -18,13 +18,11 @@
 
 'use strict';
 const query = require('pg-query');
-const when = require('when');
 const utils = require('../app/lib/utils.js');
 query.connectionParameters = process.env.DATABASE_URL;
 
 exports.up = () => {
-    const deferred = when.defer();
-    query('select userid, nick from users')
+    return query('select userid, nick from users')
         .then((res) => {
             try {
                 const rows = res[0];
@@ -36,31 +34,27 @@ exports.up = () => {
                         return arr;
                     }, []);
                     const queryStr = 'UPDATE users set nick = u.value from (VALUES ' + valuePairs.join(', ') + ') as u(id, value) WHERE u.id = users.userid';
-                    console.log(params);
-                    query(queryStr, params)
+                    return query(queryStr, params)
                         .then(() => {
-                            deferred.resolve();
-                        }, (err) => {
+                            return Promise.resolve();
+                        }).catch((err) => {
                             console.log(err);
-                            deferred.reject(err);
+                            return Promise.reject(err);
                         });
                 } else {
-                    deferred.resolve();
+                    return Promise.resolve();
                 }
             } catch (err) {
                 console.log(err);
-                deferred.reject(err);
+                return Promise.reject(err);
             }
-        }, (err) => {
+        }).catch((err) => {
             console.log(err);
-            deferred.reject(err);
+            return Promise.reject(err);
         });
-
-    return deferred.promise;
 };
 
 exports.down = () => {
-    const deferred = when.defer();
     query('select userid, nick from users')
         .then((res) => {
             try {
@@ -72,19 +66,17 @@ exports.down = () => {
                     return arr;
                 }, []);
                 const queryStr = 'UPDATE users set nick = u.value from (VALUES ' + valuePairs.join(', ') + ') as u(id, value) WHERE u.id = users.userid';
-                query(queryStr, params)
+                return query(queryStr, params)
                     .then(() => {
-                        deferred.resolve();
-                    }, (err) => {
-                        deferred.reject(err);
+                        return Promise.resolve();
+                    }).catch((err) => {
+                        return Promise.reject(err);
                     });
             } catch (err) {
                 console.log(err);
-                deferred.reject(err);
+                return Promise.reject(err);
             }
-        }, (err) => {
-            deferred.reject(err);
+        }).catch((err) => {
+            return Promise.reject(err);
         });
-
-    return deferred.promise;
 };

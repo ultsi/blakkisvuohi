@@ -14,7 +14,7 @@
     "test-with-coverage": "export $(cat .env) && nyc --reporter=text mocha --exit test/*"
   },
   "engines": {
-    "node": "6.11.1"
+    "node": "8.9.4"
   },
   "author": "Joonas Ulmanen",
   "license": "GPL-3.0",

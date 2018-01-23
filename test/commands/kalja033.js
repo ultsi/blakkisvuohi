@@ -39,28 +39,15 @@ describe('kalja033.js', function() {
 
         user.getBooze()
             .then((rows) => {
-                try {
-                    assert.equal(rows.length, 2);
-                    assert(!rows.find(x => x.description === '/kalja033'));
-                } catch (err) {
-                    return Promise.reject(err);
-                }
-                Commands.call('/kalja033', mocked.msg, ['/kalja033']);
-                let p = new Promise((resolve) => {
-                    setTimeout(() => {
-                        resolve(user.getBooze());
-                    }, 50);
-                });
-                return p;
+                assert.equal(rows.length, 2);
+                assert(!rows.find(x => x.description === '/kalja033'));
+                return Commands.call('/kalja033', mocked.msg, ['/kalja033']);
             })
+            .then(() => user.getBooze())
             .then((rows) => {
-                try {
-                    assert.equal(rows.length, 3);
-                    assert(rows.find(x => x.description === '/kalja033'));
-                    assert.notEqual(mocked.internals.sentText.match('‰'), null);
-                } catch (err) {
-                    return Promise.reject(err);
-                }
+                assert.equal(rows.length, 3);
+                assert(rows.find(x => x.description === '/kalja033'));
+                assert.notEqual(mocked.internals.sentText.match('‰'), null);
                 done();
             })
             .catch((err) => done(err));

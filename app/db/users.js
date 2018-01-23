@@ -23,11 +23,11 @@
 
 'use strict';
 const query = require('pg-query');
-const when = require('when');
 const log = require('loglevel').getLogger('db');
 const utils = require('../lib/utils.js');
 const alcomath = require('../lib/alcomath.js');
 const announcements = require('../announcements.js');
+const settings = require('../settings.js');
 query.connectionParameters = process.env.DATABASE_URL;
 
 let users = module.exports = {};
@@ -46,155 +46,95 @@ function User(userId, username, weight, gender, height, read_terms, read_announc
 users.User = User;
 
 users.new = function(userId, nick, weight, gender, height, read_terms) {
-    let deferred = when.defer();
     const params = [utils.hashSha256(parseInt(userId, 10)), utils.encrypt(nick), parseInt(weight, 10), gender, parseInt(height, 10), read_terms, announcements.length];
 
     log.debug('Creating user... params:');
     log.debug(params);
-    query('insert into users (userId, nick, weight, gender, height, read_terms, read_announcements) values ($1, $2, $3, $4, $5, $6, $7)', params)
+    return query('insert into users (userId, nick, weight, gender, height, read_terms, read_announcements) values ($1, $2, $3, $4, $5, $6, $7)', params)
         .then(() => {
-            log.debug('created new user');
-            deferred.resolve(new User(params[0], utils.decrypt(params[1]), params[2], gender, params[4], params[5], Date.now()));
-        }, (err) => {
+            console.log('created new user ' + nick);
+            return Promise.resolve(new User(params[0], utils.decrypt(params[1]), params[2], gender, params[4], params[5], Date.now()));
+        }).catch((err) => {
             log.error(err);
-            log.debug(err.stack);
-            deferred.reject(err);
+            log.error(err.stack);
+            return Promise.reject(err);
         });
-    return deferred.promise;
 };
 
 users.find = function find(userId) {
-    let deferred = when.defer();
     userId = utils.hashSha256(userId);
-    query('select userId, nick, weight, gender, height, read_terms, read_announcements, created from users where userId=$1', [userId])
+    return query('select userId, nick, weight, gender, height, read_terms, read_announcements, created from users where userId=$1', [userId])
         .then((res) => {
             log.debug('Finding user... ' + userId);
             let rows = res[0];
             let info = res[1];
             if (rows.length > 0 && info.rowCount > 0) {
-                try {
-                    let found = rows[0];
-                    let nick = utils.decrypt(found.nick);
-                    deferred.resolve(new User(found.userid, nick, found.weight, found.gender, found.height, found.read_terms, found.read_announcements, found.created));
-                } catch (err) {
-                    deferred.reject(err);
-                }
+                let found = rows[0];
+                let nick = utils.decrypt(found.nick);
+                return Promise.resolve(new User(found.userid, nick, found.weight, found.gender, found.height, found.read_terms, found.read_announcements, found.created));
             } else {
-                deferred.resolve();
+                return Promise.resolve();
             }
-        }, (err) => {
-            log.error(err);
-            log.debug(err.stack);
-            deferred.reject(err);
         });
-    return deferred.promise;
+};
+
+User.prototype.isAdmin = function() {
+    return utils.hashSha256(settings.admin_id) !== this.userId;
 };
 
 User.prototype.drinkBooze = function(amount, description) {
-    let deferred = when.defer();
-    query('insert into users_drinks (userId, alcohol, description) values($1, $2, $3)', [this.userId, amount, description])
-        .then(() => {
-            deferred.resolve(amount);
-        }, (err) => {
-            log.error(err);
-            log.debug(err.stack);
-            deferred.reject(err);
-        });
-    return deferred.promise;
+    return query('insert into users_drinks (userId, alcohol, description) values($1, $2, $3)', [this.userId, amount, description]);
 };
 
 User.prototype.getBooze = function() {
-    let deferred = when.defer();
-    query('select alcohol, description, created from users_drinks where userId = $1 order by created asc', [this.userId])
+    return query('select alcohol, description, created from users_drinks where userId = $1 order by created asc', [this.userId])
         .then((res) => {
-            deferred.resolve(res[0]);
-        }, (err) => {
-            log.error(err);
-            log.debug(err.stack);
-            deferred.reject(err);
+            return Promise.resolve(res[0]);
         });
-    return deferred.promise;
 };
 
 User.prototype.getDrinkSumForXHours = function(hours) {
-    let deferred = when.defer();
     let hoursAgo = utils.getDateMinusHours(hours);
-    query('select sum(alcohol) as sum, min(created) as created from users_drinks where userId = $1 and created > $2 ', [this.userId, hoursAgo])
+    return query('select sum(alcohol) as sum, min(created) as created from users_drinks where userId = $1 and created > $2 ', [this.userId, hoursAgo])
         .then((res) => {
-            deferred.resolve(res[0][0]);
-        }, (err) => {
-            log.error(err);
-            log.debug(err.stack);
-            deferred.reject(err);
+            return Promise.resolve(res[0][0]);
         });
-    return deferred.promise;
 };
 
 User.prototype.undoDrink = function() {
-    let deferred = when.defer();
-    query('delete from users_drinks where created=(select created from users_drinks where userid = $1 order by created desc limit 1)', [this.userId])
+    return query('delete from users_drinks where created=(select created from users_drinks where userid = $1 order by created desc limit 1)', [this.userId])
         .then((res) => {
-            deferred.resolve(res[0]);
-        }, (err) => {
-            log.error(err);
-            log.debug(err.stack);
-            deferred.reject(err);
+            return Promise.resolve(res[0]);
         });
-    return deferred.promise;
 };
 
 User.prototype.getBoozeForLastHours = function(hours) {
-    let deferred = when.defer();
     let hoursAgo = utils.getDateMinusHours(hours);
-    query('select alcohol, description, created from users_drinks where userId = $1 and created > $2 order by created desc', [this.userId, hoursAgo.toISOString()])
+    return query('select alcohol, description, created from users_drinks where userId = $1 and created > $2 order by created desc', [this.userId, hoursAgo.toISOString()])
         .then((res) => {
-            deferred.resolve(res[0]);
-        }, (err) => {
-            log.error(err);
-            log.debug(err.stack);
-            deferred.reject(err);
+            return Promise.resolve(res[0]);
         });
-    return deferred.promise;
 };
 
 User.prototype.joinGroup = function(groupId) {
-    let deferred = when.defer();
     let groupIdHash = utils.hashSha256(groupId);
-    query('insert into users_in_groups (userId, groupId) values ($1, $2)', [this.userId, groupIdHash])
+    return query('insert into users_in_groups (userId, groupId) values ($1, $2)', [this.userId, groupIdHash])
         .then((res) => {
-            deferred.resolve(res[0]);
-        }, (err) => {
-            log.error(err);
-            log.debug(err.stack);
-            deferred.reject('Ota adminiin yhteyttä.');
+            return Promise.resolve(res[0]);
         });
-    return deferred.promise;
 };
 
 User.prototype.drinkBoozeReturnEBAC = function(amount, description) {
-    let deferred = when.defer();
     let self = this;
-    self.drinkBooze(amount, description)
-        .then((amount) => {
-            self.getBooze()
-                .then((drinks) => {
-                    let ebac = alcomath.calculateEBACFromDrinks(self, drinks);
-                    deferred.resolve(ebac);
-                }, (err) => {
-                    log.error(err);
-                    log.debug(err.stack);
-                    deferred.reject(err);
-                });
-        }, (err) => {
-            log.error(err);
-            log.debug(err.stack);
-            deferred.reject('Isompi ongelma, ota yhteyttä adminiin.');
+    return self.drinkBooze(amount, description)
+        .then(() => self.getBooze())
+        .then((drinks) => {
+            let ebac = alcomath.calculateEBACFromDrinks(self, drinks);
+            return Promise.resolve(ebac);
         });
-    return deferred.promise;
 };
 
 User.prototype.drinkBoozeLate = function(drinks, hours) {
-    let deferred = when.defer();
     let self = this;
     log.debug('Drinking late');
     let queries = [];
@@ -205,52 +145,25 @@ User.prototype.drinkBoozeLate = function(drinks, hours) {
         log.debug(hoursAgo);
         queries.push(query('insert into users_drinks (userId, alcohol, description, created) values($1, $2, $3, $4)', [this.userId, drink.mg, drink.text, hoursAgo]));
     }
-    when.all(queries)
-        .then(() => {
-            self.getBooze()
-                .then((drinks) => {
-                    let ebac = alcomath.calculateEBACFromDrinks(self, drinks);
-                    deferred.resolve(ebac);
-                }, (err) => {
-                    log.error(err);
-                    log.debug(err.stack);
-                    deferred.reject(err);
-                });
-        }, (err) => {
-            log.error(err);
-            log.debug(err.stack);
-            deferred.reject('Isompi ongelma, ota yhteyttä adminiin.');
+    return Promise.all(queries)
+        .then(() => self.getBooze())
+        .then((drinks) => {
+            let ebac = alcomath.calculateEBACFromDrinks(self, drinks);
+            return Promise.resolve(ebac);
         });
-    return deferred.promise;
 };
 
 User.prototype.updateInfo = function(username, weight, gender, height, read_terms) {
-    let deferred = when.defer();
     let self = this;
     username = utils.encrypt(username);
-    query('update users set nick=$1, weight=$2, gender=$3, height=$4, read_terms=$5 where userId=$6', [username, weight, gender, height, read_terms, self.userId])
-        .then(() => {
-            deferred.resolve();
-        }, (err) => {
-            log.error(err);
-            log.debug(err.stack);
-            deferred.reject(err);
+    return query('update users set nick=$1, weight=$2, gender=$3, height=$4, read_terms=$5 where userId=$6 returning userId, nick, weight, gender, read_terms, created', [username, weight, gender, height, read_terms, self.userId])
+        .then((res) => {
+            const found = res[0][0];
+            return Promise.resolve(new User(found.userid, utils.decrypt(found.nick), found.weight, found.gender, found.height, found.read_terms, found.read_announcements, found.created));
         });
-
-    return deferred.promise;
 };
 
 User.prototype.updateReadAnnouncements = function(read_announcements_count) {
-    const deferred = when.defer();
     const self = this;
-    query('update users set read_announcements=$1 where userId=$2', [read_announcements_count, self.userId])
-        .then(() => {
-            deferred.resolve();
-        }, (err) => {
-            log.error(err);
-            log.debug(err.stack);
-            deferred.reject(err);
-        });
-
-    return deferred.promise;
+    return query('update users set read_announcements=$1 where userId=$2', [read_announcements_count, self.userId]);
 };

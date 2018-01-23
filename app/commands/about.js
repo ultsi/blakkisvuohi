@@ -23,21 +23,19 @@
 'use strict';
 
 const Commands = require('../lib/commands.js');
-const Message = require('../lib/message.js');
 const strings = require('../strings.js');
 
-const aboutCommand = {
-    [0]: {
-        startMessage: Message.PrivateMessage(strings.about, {
-            'parse_mode': 'Markdown'
-        }),
-        validateInput: () => {return true;},
-        onValidInput: (context) => {return context.end();}
-    }
-};
+function aboutCommand(context, msg, words) {
+    return msg.sendPrivateMessage(strings.commands.about.text, {
+        'parse_mode': 'Markdown'
+    });
+}
 
 Commands.register(
     '/about',
-    '/about - About the bot',
-    Commands.TYPE_PRIVATE, aboutCommand
+    strings.commands.about.cmd_description,
+    Commands.SCOPE_PRIVATE,
+    Commands.PRIVILEGE_ALL,
+    Commands.TYPE_SINGLE,
+    aboutCommand
 );

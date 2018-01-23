@@ -97,8 +97,6 @@ alcomath.getUserMetabolismRate = function() {
 
 /*
     Alcohol absorbed = (A[ingested]*(1 – e^(−t * ln(2)/t[1_2])))/(r*W)
-
-    TODO: use real height instead of mean height
 */
 const MAGIC_NUMBER = 6.9; // found by trial and error when comparing to multiple measurements
 

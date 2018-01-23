@@ -23,13 +23,24 @@
 'use strict';
 
 const Commands = require('../lib/commands.js');
+const strings = require('../strings.js');
 
-function whoAmI(context, user, msg, words) {
-    return context.privateReply('Käyttäjä ' + user.username + '\nID: ' + user.userId + '\nPaino: ' + user.weight + 'kg\nPituus: ' + user.height + 'cm\nSukupuoli: ' + user.gender + '\nKäyttäjä luotu: ' + user.created.toString());
+function whoAmI(context, msg, words, user) {
+    return context.privateReply(strings.commands.whoami.reply.format({
+        username: user.username,
+        user_id: user.userId,
+        weight: user.weight,
+        height: user.height,
+        gender: user.gender,
+        created: user.created.toString()
+    }));
 }
 
-Commands.registerUserCommand(
+Commands.register(
     '/whoami',
-    '/whoami - tulosta omat tietosi.',
-    Commands.TYPE_PRIVATE, [whoAmI]
+    strings.commands.whoami.cmd_description,
+    Commands.SCOPE_PRIVATE,
+    Commands.PRIVILEGE_USER,
+    Commands.TYPE_SINGLE,
+    whoAmI
 );

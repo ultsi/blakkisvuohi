@@ -23,7 +23,6 @@
 
 'use strict';
 const query = require('pg-query');
-const when = require('when');
 const log = require('loglevel').getLogger('db');
 const utils = require('../lib/utils.js');
 const alcomath = require('../lib/alcomath.js');
@@ -59,38 +58,21 @@ function groupDrinksByUser(drinks) {
 }
 
 Group.prototype.getDrinkSum = function() {
-    let deferred = when.defer();
-    query('select coalesce(sum(alcohol), 0) as sum, coalesce(min(users_drinks.created), now()) as created from users_in_groups left outer join users_drinks on users_drinks.userid=users_in_groups.userid and users_in_groups.groupid=$1', [this.groupId])
-        .then((res) => {
-            deferred.resolve(res[0][0]);
-        }, (err) => {
-            log.error(err);
-            log.debug(err.stack);
-            deferred.reject(err);
-        });
-    return deferred.promise;
+    return query('select coalesce(sum(alcohol), 0) as sum, coalesce(min(users_drinks.created), now()) as created from users_in_groups left outer join users_drinks on users_drinks.userid=users_in_groups.userid and users_in_groups.groupid=$1', [this.groupId])
+        .then((res) => Promise.resolve(res[0][0]));
 };
 
 Group.prototype.getDrinkSumForXHours = function(hours) {
-    let deferred = when.defer();
     let hoursAgo = utils.getDateMinusHours(hours);
-    query('select coalesce(sum(alcohol), 0) as sum, coalesce(min(users_drinks.created), now()) as created from users_in_groups left outer join users_drinks on users_drinks.userid=users_in_groups.userid and users_in_groups.groupid=$1 and users_drinks.created >= $2', [this.groupId, hoursAgo])
-        .then((res) => {
-            deferred.resolve(res[0][0]);
-        }, (err) => {
-            log.error(err);
-            log.debug(err.stack);
-            deferred.reject(err);
-        });
-    return deferred.promise;
+    return query('select coalesce(sum(alcohol), 0) as sum, coalesce(min(users_drinks.created), now()) as created from users_in_groups left outer join users_drinks on users_drinks.userid=users_in_groups.userid and users_in_groups.groupid=$1 and users_drinks.created >= $2', [this.groupId, hoursAgo])
+        .then((res) => Promise.resolve(res[0][0]));
 };
 
 Group.prototype.getDrinkSumsByUser = function(hours) {
     hours = hours ? hours : 24;
 
-    let deferred = when.defer();
     let oneDayAgo = utils.getDateMinusHours(hours);
-    query('select users.userId, users.nick, sum(alcohol) as sum from users_in_groups left outer join users_drinks on users_drinks.userid=users_in_groups.userid join users on users.userId=users_in_groups.userId where users_in_groups.groupId=$1 and users_drinks.created >= $2 group by users.userId', [this.groupId, oneDayAgo])
+    return query('select users.userId, users.nick, sum(alcohol) as sum from users_in_groups left outer join users_drinks on users_drinks.userid=users_in_groups.userid join users on users.userId=users_in_groups.userId where users_in_groups.groupId=$1 and users_drinks.created >= $2 group by users.userId', [this.groupId, oneDayAgo])
         .then((res) => {
             let drinkSums = res[0];
             let drinkSumsByUser = {};
@@ -102,101 +84,72 @@ Group.prototype.getDrinkSumsByUser = function(hours) {
                     sum: drinkSum.sum
                 };
             }
-            deferred.resolve(drinkSumsByUser);
-        }, (err) => {
-            log.error(err);
-            log.debug(err.stack);
-            deferred.reject('Ota adminiin yhteyttä.');
+            return Promise.resolve(drinkSumsByUser);
         });
-    return deferred.promise;
 };
 
 Group.prototype.getDrinkTimesByUser = function() {
-    let deferred = when.defer();
-    query('select users.userId, users.nick, users.weight, users.gender, users.height, coalesce(alcohol, 0) as alcohol, description, users_drinks.created from users_in_groups left outer join users_drinks on users_in_groups.userId=users_drinks.userId join users on users.userId=users_in_groups.userId where users_in_groups.groupId=$1 and users_drinks.created >= NOW() - \'2 day\'::INTERVAL order by users_drinks.created asc', [this.groupId])
+    return query('select users.userId, users.nick, users.weight, users.gender, users.height, coalesce(alcohol, 0) as alcohol, description, users_drinks.created from users_in_groups left outer join users_drinks on users_in_groups.userId=users_drinks.userId join users on users.userId=users_in_groups.userId where users_in_groups.groupId=$1 and users_drinks.created >= NOW() - \'2 day\'::INTERVAL order by users_drinks.created asc', [this.groupId])
         .then((res) => {
             let drinksByUser = groupDrinksByUser(res[0]);
-            deferred.resolve(drinksByUser);
-        }, (err) => {
-            log.error(err);
-            log.debug(err.stack);
-            deferred.reject('Ota adminiin yhteyttä.');
+            return Promise.resolve(drinksByUser);
         });
-    return deferred.promise;
 };
 
 Group.prototype.getStandardDrinksListing = function() {
-    let deferred = when.defer();
     let self = this;
-    when.all([
+    return Promise.all([
         self.getDrinkTimesByUser(),
         self.getDrinkSumsByUser(12),
         self.getDrinkSumsByUser(24)
-    ]).spread((drinksByUser, drinkSumsByUser12h, drinkSumsByUser24h) => {
-        try {
-            let drinks = [];
-            for (var userId in drinksByUser) {
-                let details = drinksByUser[userId];
-                let user = new users.User(details.userid, details.nick, details.weight, details.gender, details.height);
-                let userEBAC = alcomath.calculateEBACFromDrinks(user, details.drinks);
-                let userGrams = userEBAC.grams;
-                if (userGrams > 0) {
-                    let sum12h = drinkSumsByUser12h[details.userid] && drinkSumsByUser12h[details.userid].sum || 0;
-                    let sum24h = drinkSumsByUser24h[details.userid] && drinkSumsByUser24h[details.userid].sum || 0;
-                    drinks.push([user.username, userGrams / (constants.STANDARD_DRINK_GRAMS), sum12h / (constants.STANDARD_DRINK_GRAMS * 1000), sum24h / (constants.STANDARD_DRINK_GRAMS * 1000)]);
-                }
+    ]).then((res) => {
+        const drinksByUser = res[0],
+            drinkSumsByUser12h = res[1],
+            drinkSumsByUser24h = res[2];
+        let drinks = [];
+        for (var userId in drinksByUser) {
+            let details = drinksByUser[userId];
+            let user = new users.User(details.userid, details.nick, details.weight, details.gender, details.height);
+            let userEBAC = alcomath.calculateEBACFromDrinks(user, details.drinks);
+            let userGrams = userEBAC.grams;
+            if (userGrams > 0) {
+                let sum12h = drinkSumsByUser12h[details.userid] && drinkSumsByUser12h[details.userid].sum || 0;
+                let sum24h = drinkSumsByUser24h[details.userid] && drinkSumsByUser24h[details.userid].sum || 0;
+                drinks.push([user.username, userGrams / (constants.STANDARD_DRINK_GRAMS), sum12h / (constants.STANDARD_DRINK_GRAMS * 1000), sum24h / (constants.STANDARD_DRINK_GRAMS * 1000)]);
             }
-            drinks = drinks.sort((a, b) => {
-                return b[1] - a[1];
-            });
-            deferred.resolve(drinks);
-        } catch (err) {
-            log.error(err);
-            log.debug(err.stack);
-            deferred.reject('Isompi ongelma, ota yhteyttä adminiin.');
         }
-    }, (err) => {
-        log.error(err);
-        log.debug(err.stack);
-        deferred.reject('Isompi ongelma, ota yhteyttä adminiin.');
+        drinks = drinks.sort((a, b) => {
+            return b[1] - a[1];
+        });
+        return Promise.resolve(drinks);
     });
-    return deferred.promise;
 };
 
 Group.prototype.getPermillesListing = function() {
-    let deferred = when.defer();
     let self = this;
-    when.all([
+    return Promise.all([
         self.getDrinkTimesByUser(),
         self.getDrinkSumsByUser(12),
         self.getDrinkSumsByUser(24)
-    ]).spread((drinksByUser, drinkSumsByUser12h, drinkSumsByUser24h) => {
-        try {
-            let permilles = [];
-            for (var userId in drinksByUser) {
-                let details = drinksByUser[userId];
-                let user = new users.User(details.userid, details.nick, details.weight, details.gender, details.height);
-                let ebac = alcomath.calculateEBACFromDrinks(user, details.drinks);
-                let userPermilles = ebac.permilles;
-                if (userPermilles > 0) {
-                    let sum12h = drinkSumsByUser12h[details.userid] && drinkSumsByUser12h[details.userid].sum || 0;
-                    let sum24h = drinkSumsByUser24h[details.userid] && drinkSumsByUser24h[details.userid].sum || 0;
-                    permilles.push([user.username, userPermilles, sum12h / (constants.STANDARD_DRINK_GRAMS * 1000), sum24h / (constants.STANDARD_DRINK_GRAMS * 1000)]);
-                }
+    ]).then((res) => {
+        const drinksByUser = res[0],
+            drinkSumsByUser12h = res[1],
+            drinkSumsByUser24h = res[2];
+        let permilles = [];
+        for (var userId in drinksByUser) {
+            let details = drinksByUser[userId];
+            let user = new users.User(details.userid, details.nick, details.weight, details.gender, details.height);
+            let ebac = alcomath.calculateEBACFromDrinks(user, details.drinks);
+            let userPermilles = ebac.permilles;
+            if (userPermilles > 0) {
+                let sum12h = drinkSumsByUser12h[details.userid] && drinkSumsByUser12h[details.userid].sum || 0;
+                let sum24h = drinkSumsByUser24h[details.userid] && drinkSumsByUser24h[details.userid].sum || 0;
+                permilles.push([user.username, userPermilles, sum12h / (constants.STANDARD_DRINK_GRAMS * 1000), sum24h / (constants.STANDARD_DRINK_GRAMS * 1000)]);
             }
-            permilles = permilles.sort((a, b) => {
-                return b[1] - a[1];
-            });
-            deferred.resolve(permilles);
-        } catch (err) {
-            log.error(err);
-            log.debug(err.stack);
-            deferred.reject('Isompi ongelma, ota yhteyttä adminiin.');
         }
-    }, (err) => {
-        log.error(err);
-        log.debug(err.stack);
-        deferred.reject('Isompi ongelma, ota yhteyttä adminiin.');
+        permilles = permilles.sort((a, b) => {
+            return b[1] - a[1];
+        });
+        return Promise.resolve(permilles);
     });
-    return deferred.promise;
 };

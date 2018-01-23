@@ -36,15 +36,16 @@ describe('whoami.js', function() {
         const mocked = blakkistest.mockMsgAndBot();
         const user = blakkistest.users[0];
         mocked.msg.from.id = blakkistest.realIds[0];
-        Commands.call('/whoami', mocked.msg, ['/whoami']);
-        setTimeout(() => {
-            assert.equal(mocked.internals.sentChatId, mocked.msg.from.id);
-            assert.notEqual(mocked.internals.sentText.match(user.userId), null);
-            assert.notEqual(mocked.internals.sentText.match(user.username), null);
-            assert.notEqual(mocked.internals.sentText.match(user.weight), null);
-            assert.notEqual(mocked.internals.sentText.match(user.height), null);
-            assert.notEqual(mocked.internals.sentText.match(user.gender), null);
-            done();
-        }, 50);
+        Commands.call('/whoami', mocked.msg, ['/whoami'])
+            .then(() => {
+                assert.equal(mocked.internals.sentChatId, mocked.msg.from.id);
+                assert.notEqual(mocked.internals.sentText.match(user.userId), null);
+                assert.notEqual(mocked.internals.sentText.match(user.username), null);
+                assert.notEqual(mocked.internals.sentText.match(user.weight), null);
+                assert.notEqual(mocked.internals.sentText.match(user.height), null);
+                assert.notEqual(mocked.internals.sentText.match(user.gender), null);
+                done();
+            })
+            .catch((err) => done(err));
     });
 });

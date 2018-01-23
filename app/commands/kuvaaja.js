@@ -22,7 +22,6 @@
 */
 'use strict';
 
-const when = require('when');
 const log = require('loglevel').getLogger('commands');
 const Commands = require('../lib/commands.js');
 const alcomath = require('../lib/alcomath.js');
@@ -30,113 +29,100 @@ const utils = require('../lib/utils.js');
 const groups = require('../db/groups.js');
 const users = require('../db/users.js');
 const linechart = require('../lib/linechart.js');
+const strings = require('../strings.js');
 
 
-function kuvaaja(context, user, msg, words) {
-    let deferred = when.defer();
+function kuvaaja(context, msg, words, user) {
     log.debug('Trying to form graph image');
 
-    let graphTitle = 'Promillekuvaaja feat. ' + msg.chat.title;
+    let graphTitle = strings.commands.kuvaaja.graph_title.format({
+        chat_title: msg.chat.title
+    });
+    context.end();
 
     let group = new groups.Group(msg.chat.id);
-    group.getDrinkTimesByUser(msg.chat.id)
+    return group.getDrinkTimesByUser(msg.chat.id)
         .then((drinksByUser) => {
-            try  {
-                const lastNHours = 24;
-                const predictNHours = 12;
-                let labels = [];
-                let datasets = [];
-                /*let trimFromStart = [];
-                let trimFromEnd = [];*/
-                let colors = utils.getColorSet(drinksByUser.length);
-                for (let userId in drinksByUser) {
-                    let details = drinksByUser[userId];
-                    let user = new users.User(details.userid, details.nick, details.weight, details.gender, details.height);
-                    let permillesByHour = alcomath.calculateEBACByHourFromDrinks(user, details.drinks, lastNHours, predictNHours);
-                    let permillesLastNHours = [];
-                    let permillesPredictNHours = [];
-                    for (let i = 0; i < permillesByHour.length; i += 1) {
-                        if (labels.length < permillesByHour.length) {
-                            labels.push(permillesByHour[i].hour);
-                        }
-                        if (i <= lastNHours) {
-                            permillesLastNHours[i] = permillesByHour[i].permilles;
-                        }
-                        if (i >= lastNHours) {
-                            permillesPredictNHours[i] = permillesByHour[i].permilles;
-                        }
-                        /*
-                        // Trim start & end if no data (i.e. 0) 
-                        if (permillesByHour[i].permilles === 0) {
-                            if (!trimFromStart[userId] || trimFromStart[userId] === i - 1) {
-                                trimFromStart[userId] = i;
-                            }
-                        } else {
-                            trimFromEnd[userId] = i + 1;
-                        }*/
+            const lastNHours = 24;
+            const predictNHours = 12;
+            let labels = [];
+            let datasets = [];
+            /*let trimFromStart = [];
+            let trimFromEnd = [];*/
+            let colors = utils.getColorSet(drinksByUser.length);
+            for (let userId in drinksByUser) {
+                let details = drinksByUser[userId];
+                let user = new users.User(details.userid, details.nick, details.weight, details.gender, details.height);
+                let permillesByHour = alcomath.calculateEBACByHourFromDrinks(user, details.drinks, lastNHours, predictNHours);
+                let permillesLastNHours = [];
+                let permillesPredictNHours = [];
+                for (let i = 0; i < permillesByHour.length; i += 1) {
+                    if (labels.length < permillesByHour.length) {
+                        labels.push(permillesByHour[i].hour);
                     }
-
-                    let randomColorI = Math.floor(Math.random() * colors.length);
-                    let color = colors.splice(randomColorI, 1);
-                    color = 'rgb(' + color[0] + ',' + color[1] + ',' + color[2] + ')';
-                    datasets.push({
-                        label: details.nick,
-                        data: permillesLastNHours,
-                        fill: false,
-                        backgroundColor: color,
-                        borderColor: color
-                    });
-                    datasets.push({
-                        label: '',
-                        data: permillesPredictNHours,
-                        fill: false,
-                        backgroundColor: color,
-                        borderColor: color,
-                        borderDash: [5, 15]
-                    });
+                    if (i <= lastNHours) {
+                        permillesLastNHours[i] = permillesByHour[i].permilles;
+                    }
+                    if (i >= lastNHours) {
+                        permillesPredictNHours[i] = permillesByHour[i].permilles;
+                    }
+                    /*
+                    // Trim start & end if no data (i.e. 0)
+                    if (permillesByHour[i].permilles === 0) {
+                        if (!trimFromStart[userId] || trimFromStart[userId] === i - 1) {
+                            trimFromStart[userId] = i;
+                        }
+                    } else {
+                        trimFromEnd[userId] = i + 1;
+                    }*/
                 }
-                /*let trimFromStartMin = trimFromStart.reduce((x, y) => x <= y ? x : y);
-                let trimFromEndMax = trimFromEnd.reduce((x, y) => x >= y ? x : y);
-                trimFromStartMin = trimFromStartMin <= 1 ? 0 : trimFromStartMin - 2;
-                trimFromEndMax = trimFromEndMax >= labels.length - 2 ? labels.length - 2 : trimFromEndMax + 2;
 
-                // force trimFromEndMax to current hour
-                trimFromEndMax = trimFromEndMax < lastNHours + 1 ? lastNHours + 1 : trimFromEndMax;
-
-                // Trim datasets 
-                for (let i = 0; i < datasets.length; i += 1) {
-                    datasets[i].data = datasets[i].data.slice(trimFromStartMin, trimFromEndMax);
-                }
-                labels = labels.slice(trimFromStartMin, trimFromEndMax);*/
-
-                linechart.getLineGraphBuffer({
-                        labels: labels,
-                        datasets: datasets
-                    }, graphTitle)
-                    .then((buffer) => {
-                        deferred.resolve(context.photoReply(buffer, graphTitle));
-                    }, (err) => {
-                        log.error(err);
-                        log.debug(err.stack);
-                        deferred.resolve(context.chatReply('Kuvan muodostus epäonnistui!'));
-                    });
-            } catch (err)  {
-                log.error(err);
-                log.debug(err.stack);
-                deferred.reject('Isompi ongelma, ota yhteyttä adminiin.');
+                let randomColorI = Math.floor(Math.random() * colors.length);
+                let color = colors.splice(randomColorI, 1);
+                color = 'rgb(' + color[0] + ',' + color[1] + ',' + color[2] + ')';
+                datasets.push({
+                    label: details.nick,
+                    data: permillesLastNHours,
+                    fill: false,
+                    backgroundColor: color,
+                    borderColor: color
+                });
+                datasets.push({
+                    label: '',
+                    data: permillesPredictNHours,
+                    fill: false,
+                    backgroundColor: color,
+                    borderColor: color,
+                    borderDash: [5, 15]
+                });
             }
-        }, (err) => {
-            log.error(err);
-            log.debug(err.stack);
-            deferred.reject('Isompi ongelma, ota yhteyttä adminiin.');
-        });
+            /*let trimFromStartMin = trimFromStart.reduce((x, y) => x <= y ? x : y);
+            let trimFromEndMax = trimFromEnd.reduce((x, y) => x >= y ? x : y);
+            trimFromStartMin = trimFromStartMin <= 1 ? 0 : trimFromStartMin - 2;
+            trimFromEndMax = trimFromEndMax >= labels.length - 2 ? labels.length - 2 : trimFromEndMax + 2;
 
-    context.end();
-    return deferred.promise;
+            // force trimFromEndMax to current hour
+            trimFromEndMax = trimFromEndMax < lastNHours + 1 ? lastNHours + 1 : trimFromEndMax;
+
+            // Trim datasets
+            for (let i = 0; i < datasets.length; i += 1) {
+                datasets[i].data = datasets[i].data.slice(trimFromStartMin, trimFromEndMax);
+            }
+            labels = labels.slice(trimFromStartMin, trimFromEndMax);*/
+
+            return linechart.getLineGraphBuffer({
+                labels: labels,
+                datasets: datasets
+            }, graphTitle);
+        })
+        .then((buffer) => context.photoReply(buffer, graphTitle));
 }
 
-Commands.registerUserCommand(
+Commands.register(
     '/kuvaaja',
-    '/kuvaaja - Näyttää ryhmän 24h tapahtumat kuvaajana.',
-    Commands.TYPE_ALL, [kuvaaja]
+    strings.commands.kuvaaja.cmd_description,
+    Commands.SCOPE_ALL,
+    Commands.PRIVILEGE_USER,
+    Commands.TYPE_SINGLE,
+    kuvaaja
 );

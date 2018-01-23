@@ -21,31 +21,32 @@
     Allows the admin to set the loglevel
 */
 'use strict';
-const when = require('when');
-const log = require('loglevel');
 const Commands = require('../lib/commands.js');
 const stats = require('../db/stats.js');
 const utils = require('../lib/utils.js');
+const strings = require('../strings.js');
 
-function printAdminStats(context, user, msg, words)  {
-    let deferred = when.defer();
-
-    stats.getGlobalStats()
+function printAdminStats(context, msg, words, user) {
+    return stats.getGlobalStats()
         .then((res) => {
             let top10text = res.top10UserStats.map((stats) => utils.decrypt(stats.nick) + ' - ' + stats.count).join('\n');
-            context.privateReply('Tilastoja:\nKäyttäjiä on yhteensä ' + res.usersCount + 'kpl, joista 14pv sisällä aktiivisia ' + res.activeUsers14DaysCount + ', ja 7pv sisällä aktiivisia ' + res.activeUsers7DaysCount + '.\nRyhmiä on yhteensä ' + res.groupsCount + 'kpl, joista 14pv sisällä aktiivisia ' + res.activeGroups14DaysCount + ', ja 7pv sisällä aktiivisia ' + res.activeGroups7DaysCount + '.\nTop10 tilastot:\n\n' + top10text);
-            deferred.resolve();
-        }, (err) => {
-            log.error(err);
-            context.privateReply('Virhe!');
-            deferred.resolve();
+            return context.privateReply(strings.commands.admin_stats.stats_text.format({
+                usersCount: res.usersCount,
+                activeUsers14DaysCount: res.activeUsers14DaysCount,
+                activeUsers7DaysCount: res.activeUsers7DaysCount,
+                groupsCount: res.groupsCount,
+                activeGroups14DaysCount: res.activeGroups14DaysCount,
+                activeGroups7DaysCount: res.activeGroups7DaysCount,
+                top10List: top10text
+            }));
         });
-
-    return deferred.promise;
 }
 
-Commands.registerAdminCommand(
+Commands.register(
     '/admin_stats',
-    '/admin_stats - listaa botin statsit',
-    Commands.TYPE_PRIVATE, [printAdminStats]
+    strings.commands.admin_stats.cmd_description,
+    Commands.SCOPE_PRIVATE,
+    Commands.PRIVILEGE_ADMIN,
+    Commands.TYPE_SINGLE,
+    printAdminStats
 );

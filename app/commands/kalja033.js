@@ -18,35 +18,34 @@
 
 /*
     /kalja033
-    Drink one 0.33l 4.7% beer 
+    Drink one 0.33l 4.7% beer
 */
 'use strict';
 
-const when = require('when');
 const log = require('loglevel').getLogger('commands');
 const Commands = require('../lib/commands.js');
 const utils = require('../lib/utils.js');
 const constants = require('../constants.js');
 const strings = require('../strings.js');
 
-function kaljaCommand(context, user, msg, words) {
-    let deferred = when.defer();
-    user.drinkBoozeReturnEBAC(constants.KALJA033, '/kalja033', msg)
+function kaljaCommand(context, msg, words, user) {
+    return user.drinkBoozeReturnEBAC(constants.KALJA033, '/kalja033', msg)
         .then((ebac) => {
             const permilles = ebac.permilles;
             const permilles30Min = ebac.permilles30Min;
-            deferred.resolve(context.privateReply(utils.getRandomFromArray(strings.drink_responses) + ' Nyt: ' + permilles.toFixed(2) + '‰, 30min: ' + permilles30Min.toFixed(2) + '‰'));
-        }, (err) => {
-            log.error(err);
-            log.debug(err.stack);
-            deferred.reject('Isompi ongelma, ota yhteyttä adminiin.');
+            const text = utils.getRandomFromArray(strings.drink_responses) + ' ' + strings.short_permilles_text.format({
+                permilles: utils.roundTo(permilles, 2),
+                permilles30Min: utils.roundTo(permilles30Min, 2)
+            });
+            return context.privateReply(text);
         });
-    context.end();
-    return deferred.promise;
 }
 
-Commands.registerUserCommand(
+Commands.register(
     '/kalja033',
-    '/kalja033 - pikanäppäin yhdelle kappaleelle olutta. Ammattilaiskäyttöön.',
-    Commands.TYPE_PRIVATE, [kaljaCommand]
+    strings.commands.kalja033.cmd_description,
+    Commands.SCOPE_PRIVATE,
+    Commands.PRIVILEGE_USER,
+    Commands.TYPE_SINGLE,
+    kaljaCommand
 );

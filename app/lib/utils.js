@@ -23,7 +23,6 @@
 
 'use strict';
 
-const when = require('when');
 const log = require('loglevel').getLogger('system');
 const constants = require('../constants.js');
 const crypto = require('crypto');
@@ -37,77 +36,89 @@ utils.getDateMinusHours = function(hours) {
 
 function createSendPrivateMsgFunction(msg, bot) {
     return function(text) {
-        let deferred = when.defer();
-        bot.sendMessage(msg.from.id, text)
+        return bot.sendMessage(msg.from.id, text)
             .then(() => {
                 log.debug('sent ' + text + ' to ' + msg.from.username);
-                deferred.resolve();
-            }, (err) => {
+                return Promise.resolve();
+            }).catch((err) => {
                 log.error('couldn\'t send private msg! Err: ' + err);
                 log.debug(err.stack);
-                deferred.reject(err);
+                return Promise.reject(err);
             });
-        return deferred.promise;
     };
 }
 
 function createSendChatMsgFunction(msg, bot) {
     return function(text) {
-        let deferred = when.defer();
-        bot.sendMessage(msg.chat.id, text)
+        return bot.sendMessage(msg.chat.id, text)
             .then(() => {
                 log.debug('sent ' + text + ' to chat ' + msg.chat.title);
-                deferred.resolve();
-            }, (err) => {
+                return Promise.resolve();
+            }).catch((err) => {
                 log.error('couldn\'t send chat msg! Err: ' + err);
                 log.debug(err.stack);
-                deferred.reject(err);
+                return Promise.reject(err);
             });
-        return deferred.promise;
     };
 }
 
 function createSendMsgToFunction(msg, bot) {
     return function(chatId, text, options) {
-        let deferred = when.defer();
-        bot.sendMessage(chatId, text, options)
+        return bot.sendMessage(chatId, text, options)
             .then(() => {
                 log.debug('sent ' + text + ' to chat ' + chatId);
-                deferred.resolve();
-            }, (err) => {
+                return Promise.resolve();
+            }).catch((err) => {
                 log.error('couldn\'t send msg! Err: ' + err);
                 log.debug(err.stack);
-                deferred.reject(err);
+                return Promise.reject(err);
             });
-        return deferred.promise;
     };
 }
 
 function createSendPhotoFunction(msg, bot) {
     return function(chatId, stream, options) {
-        let deferred = when.defer();
-        bot.sendPhoto(chatId, stream, options)
+        return bot.sendPhoto(chatId, stream, options)
             .then(() => {
                 log.debug('sent photo to chat ' + chatId);
-                deferred.resolve();
-            }, (err) => {
+                return Promise.resolve();
+            }).catch((err) => {
                 log.error('couldn\'t send photo! Err: ' + err);
                 log.debug(err.stack);
-                deferred.reject(err);
+                return Promise.reject(err);
             });
-        return deferred.promise;
     };
 }
 
 utils.hookNewRelic = function(url, func) {
-    if (global.newrelic && global.newrelic.startWebTransaction) {
-        global.newrelic.startWebTransaction(url, function() {
-            func();
-            global.newrelic.getTransaction().end();
-        });
-    } else {
-        func();
-    }
+    return new Promise(function(resolve, reject) {
+        if (global.newrelic && global.newrelic.startWebTransaction) {
+            global.newrelic.startWebTransaction(url, function() {
+                let p = func();
+                if (p && p.then) {
+                    p.then(() => {
+                        global.newrelic.getTransaction().end();
+                        resolve();
+                    }).catch((err) => {
+                        global.newrelic.getTransaction().end();
+                        reject(err);
+                    });
+                } else {
+                    global.newrelic.getTransaction().end();
+                    resolve();
+                }
+            });
+        } else {
+            let p = func();
+            if (p && p.then) {
+                p.then(() => {
+                    resolve();
+                }).catch((err) => reject(err));
+            } else {
+                resolve();
+            }
+        }
+    });
 };
 
 utils.attachMethods = function attachMethods(msg, bot) {
@@ -183,4 +194,21 @@ utils.decrypt = function(data) {
     let encrypted = cipher.update(data, 'hex', 'utf8');
     encrypted += cipher.final('utf8');
     return encrypted;
+};
+
+/*
+    Placeholder string format
+    https://stackoverflow.com/questions/18405736/is-there-a-c-sharp-string-format-equivalent-in-javascript
+*/
+String.prototype.format = function(placeholders) {
+    let s = this;
+    for (let propertyName in placeholders) {
+        let re = new RegExp('{' + propertyName + '}', 'gm');
+        s = s.replace(re, placeholders[propertyName]);
+    }
+    return s;
+};
+
+String.prototype.unformat = function() {
+    return this.replace(/{.+}/g, '');
 };

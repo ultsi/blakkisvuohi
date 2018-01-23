@@ -39,19 +39,15 @@ describe('stats.js', function() {
         it('should return an object with 7 fields', function(done) {
             stats.getGlobalStats()
                 .then((res) => {
-                    try {
-                        assert.equal(res.usersCount, 10);
-                        assert.notEqual(res.activeUsers14DaysCount, undefined);
-                        assert.notEqual(res.activeUsers7DaysCount, undefined);
-                        assert.notEqual(res.activeGroups14DaysCount, undefined);
-                        assert.notEqual(res.activeGroups7DaysCount, undefined);
-                        assert.equal(res.groupsCount, 1);
-                        assert.notEqual(res.top10UserStats, undefined);
-                        done();
-                    } catch (err) {
-                        done(err);
-                    }
-                }, (err) => {
+                    assert.equal(res.usersCount, 10);
+                    assert.notEqual(res.activeUsers14DaysCount, undefined);
+                    assert.notEqual(res.activeUsers7DaysCount, undefined);
+                    assert.notEqual(res.activeGroups14DaysCount, undefined);
+                    assert.notEqual(res.activeGroups7DaysCount, undefined);
+                    assert.equal(res.groupsCount, 1);
+                    assert.notEqual(res.top10UserStats, undefined);
+                    done();
+                }).catch((err) => {
                     done(new Error(err));
                 });
         });
@@ -59,20 +55,16 @@ describe('stats.js', function() {
         it('should count active users and groups correctly and list top10 in correct order', function(done) {
             stats.getGlobalStats()
                 .then((res) => {
-                    try {
-                        assert.equal(res.usersCount, 10);
-                        assert.equal(res.activeUsers14DaysCount, 2);
-                        assert.equal(res.activeUsers7DaysCount, 2);
-                        assert.equal(res.activeGroups14DaysCount, 1);
-                        assert.equal(res.activeGroups7DaysCount, 1);
-                        assert.equal(res.top10UserStats.length, 2);
-                        assert.equal(res.top10UserStats[0].userid, blakkistest.users[0].userId);
-                        assert.equal(res.top10UserStats[1].userid, blakkistest.users[1].userId);
-                        done();
-                    } catch (err) {
-                        done(err);
-                    }
-                }, (err) => {
+                    assert.equal(res.usersCount, 10);
+                    assert.equal(res.activeUsers14DaysCount, 2);
+                    assert.equal(res.activeUsers7DaysCount, 2);
+                    assert.equal(res.activeGroups14DaysCount, 1);
+                    assert.equal(res.activeGroups7DaysCount, 1);
+                    assert.equal(res.top10UserStats.length, 2);
+                    assert.equal(res.top10UserStats[0].userid, blakkistest.users[0].userId);
+                    assert.equal(res.top10UserStats[1].userid, blakkistest.users[1].userId);
+                    done();
+                }).catch((err) => {
                     done(err);
                 });
         });
@@ -82,14 +74,10 @@ describe('stats.js', function() {
         it('should return an object with 2 fields', function(done) {
             stats.getGroupStats(blakkistest.groups[0].group, 24)
                 .then((res) => {
-                    try {
-                        assert.notEqual(res.top10UserStats, undefined);
-                        assert.notEqual(res.groupDrinkSum, undefined);
-                        done();
-                    } catch (err) {
-                        done(err);
-                    }
-                }, (err) => {
+                    assert.notEqual(res.top10UserStats, undefined);
+                    assert.notEqual(res.groupDrinkSum, undefined);
+                    done();
+                }).catch((err) => {
                     done(new Error(err));
                 });
         });
@@ -97,17 +85,13 @@ describe('stats.js', function() {
         it('should list top10 in correct order and sum alcohol correctly', function(done) {
             stats.getGroupStats(blakkistest.groups[0].group, 100)
                 .then((res) => {
-                    try {
-                        assert.equal(res.top10UserStats.length, 2);
-                        assert.equal(res.top10UserStats[0].userid, blakkistest.users[0].userId);
-                        assert.equal(res.top10UserStats[1].userid, blakkistest.users[1].userId);
-                        assert.equal(res.top10UserStats[1].userid, blakkistest.users[1].userId);
-                        assert.equal(res.groupDrinkSum.sum, 12347*3);
-                        done();
-                    } catch (err) {
-                        done(err);
-                    }
-                }, (err) => {
+                    assert.equal(res.top10UserStats.length, 2);
+                    assert.equal(res.top10UserStats[0].userid, blakkistest.users[0].userId);
+                    assert.equal(res.top10UserStats[1].userid, blakkistest.users[1].userId);
+                    assert.equal(res.top10UserStats[1].userid, blakkistest.users[1].userId);
+                    assert.equal(res.groupDrinkSum.sum, 12347 * 3);
+                    done();
+                }).catch((err) => {
                     done(err);
                 });
         });

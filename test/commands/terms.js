@@ -32,10 +32,14 @@ const Commands = require('../../app/lib/commands.js');
 const strings = require('../../app/strings.js');
 
 describe('terms.js', function() {
-    it('Calling /terms should print terms text', function() {
+    it('Calling /terms should print terms text', function(done) {
         const mocked = blakkistest.mockMsgAndBot();
-        Commands.call('/terms', mocked.msg, ['/terms']);
-        assert.equal(mocked.internals.sentChatId, mocked.privateId);
-        assert.equal(mocked.internals.sentText, strings.terms);
+        Commands.call('/terms', mocked.msg, ['/terms'])
+            .then(() => {
+                assert.equal(mocked.internals.sentChatId, mocked.privateId);
+                assert.equal(mocked.internals.sentText, strings.commands.terms.reply);
+                done();
+            })
+            .catch((err) => done(err));
     });
 });

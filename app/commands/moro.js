@@ -21,30 +21,24 @@
     Adds the user to a group
 */
 'use strict';
-const when = require('when');
-const log = require('loglevel').getLogger('commands');
 const Commands = require('../lib/commands.js');
+const strings = require('../strings.js');
 
-function moro(context, user, msg, words) {
-    let deferred = when.defer();
-    if (msg.chat.type === 'private') {
-        deferred.reject('Käytä tätä komentoa ryhmässä!');
-        return deferred.promise;
-    }
-    user.joinGroup(msg.chat.id)
+function moro(context, msg, words, user) {
+    return user.joinGroup(msg.chat.id)
         .then(() => {
-            deferred.resolve(context.chatReply('Rippaa rauhassa kera ' + msg.chat.title + ' -kavereiden.'));
-        }, (err) => {
-            log.error(err);
-            log.debug(err.stack);
-            deferred.resolve(context.chatReply('Rippaa rauhassa kera ' + msg.chat.title + ' -kavereiden.'));
+            context.end();
+            return context.chatReply(strings.commands.moro.join_text.format({
+                chat_title: msg.chat.title
+            }));
         });
-    context.end();
-    return deferred.promise;
 }
 
-Commands.registerUserCommand(
+Commands.register(
     '/moro',
-    '/moro - Lisää sinut ryhmään mukaan.',
-    Commands.TYPE_ALL, [moro]
+    strings.commands.moro.cmd_description,
+    Commands.SCOPE_CHAT,
+    Commands.PRIVILEGE_USER,
+    Commands.TYPE_SINGLE,
+    moro
 );

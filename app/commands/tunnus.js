@@ -24,7 +24,6 @@
 'use strict';
 
 const log = require('loglevel').getLogger('commands');
-const when = require('when');
 
 const Commands = require('../lib/commands.js');
 const utils = require('../lib/utils.js');
@@ -33,14 +32,13 @@ const message = require('../lib/message.js');
 const strings = require('../strings.js');
 
 let command = {
-    [0]: {
-        startMessage: message.PrivateMessage('Tervetuloa tunnuksen luomiseen tai päivittämiseen. Alkoholilaskuria varten tarvitsen seuraavat tiedot: paino, pituus ja sukupuoli.\n\nSyötä ensimmäiseksi paino kilogrammoissa ja kokonaislukuna:'),
+    start: {
+        startMessage: message.PrivateMessage(strings.commands.tunnus.start),
         validateInput: (context, msg, words) => {
             let weight = parseInt(words[0], 10);
             return utils.isValidInt(words[0]) && weight >= 20 && weight <= 250;
         },
         onValidInput: (context, msg, words) => {
-            let deferred = when.defer();
             let username = msg.from.username;
             if (!username) {
                 username = msg.from.first_name;
@@ -53,111 +51,84 @@ let command = {
 
             let weight = parseInt(words[0], 10);
             context.storeVariable('weight', weight);
-            deferred.resolve();
-
-            return deferred.promise;
+            return Promise.resolve();
         },
         nextPhase: 'height',
-        errorMessage: message.PrivateMessage('Syötä paino uudelleen. Painon pitää olla kokonaisluku ja ala- ja ylärajat ovat 20kg ja 250kg.')
+        errorMessage: message.PrivateMessage(strings.commands.tunnus.start_error)
     },
     height: {
-        startMessage: message.PrivateMessage('Paino tallennettu. Syötä seuraavaksi pituus senttimetreissä:'),
+        startMessage: message.PrivateMessage(strings.commands.tunnus.height),
         validateInput: (context, msg, words) => {
             let height = parseInt(words[0], 10);
             return utils.isValidInt(words[0]) && height >= 120 && height <= 240;
         },
         onValidInput: (context, msg, words) => {
-            let deferred = when.defer();
             let height = parseInt(words[0], 10);
             context.storeVariable('height', height);
-            deferred.resolve();
-
-            return deferred.promise;
+            return Promise.resolve();
         },
         nextPhase: 'gender',
-        errorMessage: message.PrivateMessage('Syötä pituus uudelleen. Pituuden täytyy olla kokonaisluku ja ala- ja ylärajat ovat 120cm ja 240cm.')
+        errorMessage: message.PrivateMessage(strings.commands.tunnus.height_error)
     },
     gender: {
-        startMessage: message.PrivateKeyboardMessage('Pituus tallennettu. Syötä seuraavaksi sukupuoli:', [
-            ['Mies', 'Nainen']
+        startMessage: message.PrivateKeyboardMessage(strings.commands.tunnus.gender, [
+            [strings.gender.male, strings.gender.female]
         ]),
         validateInput: (context, msg, words) => {
             let gender = words[0].toLowerCase();
-            return gender === 'mies' ||  gender === 'nainen';
+            return gender === strings.gender.male.toLowerCase() || gender === strings.gender.female.toLowerCase();
         },
         onValidInput: (context, msg, words) => {
-            let deferred = when.defer();
             const gender = words[0].toLowerCase();
             context.storeVariable('gender', gender);
-            deferred.resolve();
-
-            return deferred.promise;
+            return Promise.resolve();
         },
         nextPhase: 'terms',
-        errorMessage: message.PrivateKeyboardMessage('Syötä joko mies tai nainen:', [
-            ['Mies', 'Nainen']
+        errorMessage: message.PrivateKeyboardMessage(strings.commands.tunnus.gender_error, [
+            [strings.gender.male, strings.gender.female]
         ])
     },
     terms: {
-        startMessage: message.PrivateKeyboardMessage('Sukupuoli tallennettu. \n\n' + strings.terms + '\n\nOletko lukenut ja hyväksynyt käyttöehdot?', [
-            ['Kyllä', 'En']
+        startMessage: message.PrivateKeyboardMessage(strings.commands.tunnus.terms.format({
+            terms: strings.commands.terms.reply
+        }), [
+            [strings.commands.tunnus.terms_answer_yes, strings.commands.tunnus.terms_answer_no]
         ]),
         validateInput: (context, msg, words) => {
             let read = words[0].toLowerCase();
-            return read === 'kyllä' || read === 'en';
+            return read === strings.commands.tunnus.terms_answer_yes.toLowerCase() || read === strings.commands.tunnus.terms_answer_no.toLowerCase();
         },
         onValidInput: (context, msg, words) => {
-            let deferred = when.defer();
             let read = words[0].toLowerCase();
-            if (read === 'en') {
-                deferred.resolve(context.privateReply('Lue käyttöehdot ja hyväksy ne, ennen kuin voit käyttää muita komentoja.'));
+            if (read === strings.commands.tunnus.terms_answer_no.toLowerCase()) {
                 context.end();
-                return deferred.promise;
+                return context.privateReply(strings.commands.tunnus.terms_on_reject);
             }
 
-            try {
-                const userId = context.fetchVariable('userId');
-                const username = context.fetchVariable('username');
-                const weight = context.fetchVariable('weight');
-                const height = context.fetchVariable('height');
-                const gender = context.fetchVariable('gender');
-                users.find(userId)
-                    .then((user) => {
-                        if(user) {
-                            user.updateInfo(username, weight, gender, height, true)
-                                .then(() => {
-                                    deferred.resolve(context.privateReply('Olet jo rekisteröitynyt. Tiedot päivitetty.'));
-                                }, (err) => {
-                                    log.error('Error creating new user! ' + err);
-                                    log.debug(err.stack);
-                                    deferred.resolve(context.privateReply('Olet jo rekisteröitynyt, mutta tietojen päivityksessä tuli ongelma. Ota yhteyttä adminiin.'));
-                                });
-                        } else {
-                            // try to create a new user
-                            users.new(userId, username, weight, gender, height, true)
-                            .then((user) => {
-                                deferred.resolve(context.privateReply('Moikka ' + user.username + '! Tunnuksesi luotiin onnistuneesti. Muista, että kaikki antamani luvut ovat vain arvioita, eikä niihin voi täysin luottaa. Ja eikun juomaan!'));
-                            }, (err) => {
-                                log.error('Error creating new user! ' + err);
-                                log.debug(err.stack);
-                                deferred.reject('Isompi ongelma, ota yhteyttä adminiin.');
+            const userId = context.fetchVariable('userId');
+            const username = context.fetchVariable('username');
+            const weight = context.fetchVariable('weight');
+            const height = context.fetchVariable('height');
+            const gender = context.fetchVariable('gender');
+            return users.find(userId)
+                .then((user) => {
+                    if (user) {
+                        return user.updateInfo(username, weight, gender, height, true)
+                            .then(() => {
+                                return context.privateReply(strings.commands.tunnus.update);
                             });
-                        }
-                    }, (err) => {
-                        log.error(err);
-                        log.debug(err.stack);
-                        deferred.reject(err);
-                    });
-            } catch (err) {
-                log.error(err);
-                log.debug(err.stack);
-                deferred.reject(err);
-            }
-
-            return deferred.promise;
+                    } else {
+                        return users.new(userId, username, weight, gender, height, true)
+                            .then((user) => {
+                                return context.privateReply(strings.commands.tunnus.new_user.format({
+                                    username: user.username
+                                }));
+                            });
+                    }
+                });
         },
-        errorMessage: message.PrivateKeyboardMessage('Oletko lukenut ja hyväksynyt käyttöehdot?', [
-            ['Kyllä', 'En']
+        errorMessage: message.PrivateKeyboardMessage(strings.commands.tunnus.terms_error, [
+            [strings.commands.tunnus.terms_answer_yes, strings.commands.tunnus.terms_answer_no]
         ])
     }
 };
@@ -165,6 +136,9 @@ let command = {
 // Register the command
 Commands.register(
     '/tunnus',
-    '/tunnus - Luo itsellesi uusi tunnus tai muokkaa tunnustasi.',
-    Commands.TYPE_PRIVATE, command
+    strings.commands.tunnus.cmd_description,
+    Commands.SCOPE_PRIVATE,
+    Commands.PRIVILEGE_ALL,
+    Commands.TYPE_MULTI,
+    command
 );

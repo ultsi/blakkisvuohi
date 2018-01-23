@@ -16,19 +16,24 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
+/*
+    /start
+    Begin using the bot
+*/
 'use strict';
 
-exports.up = (pgm) => {
-    pgm.addColumns('users_drinks', {
-        id: {
-            type: 'serial',
-            notNull: true,
-            unique: true
-        }
-    });
-    pgm.dropConstraint('users_drinks', 'users_drinks_pkey');
-};
+const Commands = require('../lib/commands.js');
+const strings = require('../strings.js');
 
-exports.down = (pgm) => {
-    pgm.dropColumns('users_drinks', ['id']);
-};
+function startCommand(context, msg, words) {
+    return msg.sendPrivateMessage(strings.commands.blakkis.help_text);
+}
+
+Commands.register(
+    '/start',
+    strings.commands.start.cmd_description,
+    Commands.SCOPE_PRIVATE,
+    Commands.PRIVILEGE_ALL,
+    Commands.TYPE_SINGLE,
+    startCommand
+);

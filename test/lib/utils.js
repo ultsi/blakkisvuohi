@@ -28,6 +28,7 @@
 const assert = require('assert');
 const blakkistest = require('../blakkistest.js');
 const utils = require('../../app/lib/utils.js');
+const realsecret = process.env.SECRET;
 
 describe('utils', function() {
     describe('getDateMinusHours()', function() {
@@ -93,24 +94,52 @@ describe('utils', function() {
             };
         }
 
-        it('should not hook newrelic if global.newrelic is not set', function() {
+        it('should not hook newrelic if global.newrelic is not set', function(done) {
             newRelicStart = false;
             newRelicEnd = false;
-            utils.hookNewRelic('lol', () => {});
-            assert.equal(newRelicStart, false);
-            assert.equal(newRelicEnd, false);
+            utils.hookNewRelic('lol', () => {})
+                .then(() => {
+                    assert.equal(newRelicStart, false);
+                    assert.equal(newRelicEnd, false);
+                    done();
+                }).catch((err) => done(err));
         });
 
-        it('should hook newrelic if global.newrelic is set', function() {
+        it('should hook newrelic if global.newrelic is set', function(done) {
             newRelicStart = false;
             newRelicEnd = false;
             global.newrelic = {
                 startWebTransaction: startWebTransaction,
                 getTransaction: getTransaction
             };
-            utils.hookNewRelic('lol', () => {});
-            assert.equal(newRelicStart, true);
-            assert.equal(newRelicEnd, true);
+            utils.hookNewRelic('lol', () => {})
+                .then(() => {
+                    assert.equal(newRelicStart, true);
+                    assert.equal(newRelicEnd, true);
+                    done();
+                }).catch((err) => done(err));
+        });
+
+        it('should propagate error if the func errors', function(done) {
+            newRelicStart = false;
+            newRelicEnd = false;
+            global.newrelic = {
+                startWebTransaction: startWebTransaction,
+                getTransaction: getTransaction
+            };
+            utils.hookNewRelic('lol', () => {
+                    throw new Error('test');
+                })
+                .then(() => {
+                    done(new Error('didn\'t error!'));
+                }).catch((err) => {
+                    try {
+                        assert.equal(err, 'Error: test');
+                        done();
+                    } catch (err) {
+                        done(err);
+                    }
+                });
         });
     });
 
@@ -291,4 +320,10 @@ describe('utils', function() {
             assert(utils1.decrypt(encrypted1) === data);
         });
     });
+
+    after(function() {
+        delete require.cache[require.resolve('../../app/lib/utils.js')];
+        process.env.SECRET = realsecret;
+        require('../../app/lib/utils.js');
+    })
 });

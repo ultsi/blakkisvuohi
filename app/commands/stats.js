@@ -21,34 +21,33 @@
     Allows the admin to set the loglevel
 */
 'use strict';
-const when = require('when');
-const log = require('loglevel');
 const Commands = require('../lib/commands.js');
 const utils = require('../lib/utils.js');
 const stats = require('../db/stats.js');
 const groups = require('../db/groups.js');
 const STANDARD_DRINK_GRAMS = require('../constants.js').STANDARD_DRINK_GRAMS;
+const strings = require('../strings.js');
 
-function printStats(context, user, msg, words) {
-    let deferred = when.defer();
+function printStats(context, msg, words, user) {
     const hours = (words[1] && parseInt(words[1])) ? parseInt(words[1]) * 24 : 4 * 365 * 24;
     if (context.isPrivateChat()) {
-        user.getDrinkSumForXHours(hours)
+        return user.getDrinkSumForXHours(hours)
             .then((res) => {
                 const sum = res.sum;
                 const created = new Date(res.created);
                 const oneDay = 24 * 60 * 60 * 1000; // hours*minutes*seconds*milliseconds
                 const daysBetween = (words[1] && parseInt(words[1])) ? parseInt(words[1]) : Math.round((new Date().getTime() - created.getTime()) / oneDay);
                 const grams = sum / 1000.0;
-                deferred.resolve(context.privateReply('Olet ' + daysBetween + ' päivän aikana tuhonnut ' + utils.roundTo(grams, 0) + ' grammaa alkoholia, joka vastaa ' + utils.roundTo(grams / STANDARD_DRINK_GRAMS, 1) + ' annosta. Keskimäärin olet juonut ' + utils.roundTo((grams / daysBetween / STANDARD_DRINK_GRAMS), 1) + ' annosta per päivä. Hienosti.'));
-            }, (err) => {
-                log.error(err);
-                log.debug(err.stack);
-                deferred.reject('Isompi ongelma, ota yhteyttä adminiin.');
+                return context.privateReply(strings.commands.stats.private.format({
+                    days_count: daysBetween,
+                    grams: utils.roundTo(grams, 1),
+                    standard_drinks: utils.roundTo(grams / STANDARD_DRINK_GRAMS, 1),
+                    avg_standard_drinks: utils.roundTo((grams / daysBetween / STANDARD_DRINK_GRAMS), 1)
+                }));
             });
     } else {
         const group = new groups.Group(msg.chat.id);
-        stats.getGroupStats(group, hours)
+        return stats.getGroupStats(group, hours)
             .then((res) => {
                 const top10Stats = res.top10UserStats;
                 const top10text = top10Stats.map((stats) => utils.decrypt(stats.nick) + ' - ' + stats.count).join('\n');
@@ -57,19 +56,22 @@ function printStats(context, user, msg, words) {
                 const oneDay = 24 * 60 * 60 * 1000; // hours*minutes*seconds*milliseconds
                 const daysBetween = (words[1] && parseInt(words[1])) ? parseInt(words[1]) : Math.round((new Date().getTime() - firstDrinkCreated.getTime()) / oneDay);
                 const grams = groupDrinkSum.sum / 1000.0;
-                deferred.resolve(context.chatReply('Tilastoja:\n\nRyhmän jäsenet ovat ' + daysBetween + ' päivän aikana tuhonneet ' + utils.roundTo(grams, 0) + ' grammaa alkoholia, joka vastaa ' + utils.roundTo(grams / STANDARD_DRINK_GRAMS, 1) + ' annosta. Keskimäärin on juotu ' + utils.roundTo((grams / daysBetween / STANDARD_DRINK_GRAMS), 1) + ' annosta per päivä. Hienosti.\n\nTop10 tilastot:\n\n' + top10text));
-            }, (err) => {
-                log.error(err);
-                context.privateReply('Virhe!');
-                deferred.resolve();
+                return context.chatReply(strings.commands.stats.group.format({
+                    day_count: daysBetween,
+                    grams: utils.roundTo(grams, 1),
+                    standard_drinks: utils.roundTo(grams / STANDARD_DRINK_GRAMS, 1),
+                    avg_standard_drinks: utils.roundTo((grams / daysBetween / STANDARD_DRINK_GRAMS), 1),
+                    top10List: top10text
+                }));
             });
     }
-
-    return deferred.promise;
 }
 
-Commands.registerUserCommand(
+Commands.register(
     '/stats',
-    '/stats - listaa ryhmän tai sinun kulutustilastoja. Lisäämällä numeron komennon perään voit valita, kuinka monelta päivältä taaksepäin haluat tilastot',
-    Commands.TYPE_ALL, [printStats]
+    strings.commands.stats.cmd_description,
+    Commands.SCOPE_ALL,
+    Commands.PRIVILEGE_USER,
+    Commands.TYPE_SINGLE,
+    printStats
 );
