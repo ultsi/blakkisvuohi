@@ -31,8 +31,11 @@ function termsCommand(context, msg, words) {
     });
 }
 
-Commands.registerSimple(
+Commands.register(
     '/terms',
     strings.commands.terms.cmd_description,
-    Commands.TYPE_PRIVATE, termsCommand
+    Commands.SCOPE_PRIVATE,
+    Commands.PRIVILEGE_ALL,
+    Commands.TYPE_SINGLE,
+    termsCommand
 );

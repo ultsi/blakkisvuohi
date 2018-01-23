@@ -25,7 +25,7 @@ const log = require('loglevel');
 const Commands = require('../lib/commands.js');
 const strings = require('../strings.js');
 
-function loglevel(context, user, msg, words) {
+function loglevel(context, msg, words, user) {
     log.getLogger('commands').debug(log.getLoggers());
 
     let what = words[1] || 'commands';
@@ -42,15 +42,18 @@ function loglevel(context, user, msg, words) {
     context.end();
 
 
-    return Promise.resolve(context.privateReply(strings.commands.admin_loglevel.level_set_text.format({
+    return context.privateReply(strings.commands.admin_loglevel.level_set_text.format({
         logger: what,
         level: level
-    })));
+    }));
 
 }
 
-Commands.registerAdminCommand(
-    '/loglevel',
+Commands.register(
+    '/admin_loglevel',
     strings.commands.admin_loglevel.cmd_description,
-    Commands.TYPE_PRIVATE, [loglevel]
+    Commands.SCOPE_PRIVATE,
+    Commands.PRIVILEGE_ADMIN,
+    Commands.TYPE_SINGLE,
+    loglevel
 );

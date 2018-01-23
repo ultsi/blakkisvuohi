@@ -24,21 +24,21 @@
 const Commands = require('../lib/commands.js');
 const strings = require('../strings.js');
 
-function moro(context, user, msg, words) {
-    if (msg.chat.type === 'private') {
-        return Promise.reject(new Error('use in a group'));
-    }
+function moro(context, msg, words, user) {
     return user.joinGroup(msg.chat.id)
         .then(() => {
             context.end();
-            return Promise.resolve(context.chatReply(strings.commands.moro.join_text.format({
+            return context.chatReply(strings.commands.moro.join_text.format({
                 chat_title: msg.chat.title
-            })));
+            }));
         });
 }
 
-Commands.registerUserCommand(
+Commands.register(
     '/moro',
     strings.commands.moro.cmd_description,
-    Commands.TYPE_ALL, [moro]
+    Commands.SCOPE_CHAT,
+    Commands.PRIVILEGE_USER,
+    Commands.TYPE_SINGLE,
+    moro
 );

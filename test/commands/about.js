@@ -36,12 +36,8 @@ describe('about.js', function() {
         const mocked = blakkistest.mockMsgAndBot();
         Commands.call('/about', mocked.msg, ['/about'])
             .then(() => {
-                try {
-                    assert.equal(mocked.internals.sentChatId, mocked.privateId);
-                    assert.equal(mocked.internals.sentText, strings.commands.about.text);
-                } catch (err) {
-                    return Promise.reject(err);
-                }
+                assert.equal(mocked.internals.sentChatId, mocked.privateId);
+                assert.equal(mocked.internals.sentText, strings.commands.about.text);
                 done();
             }).catch((err) => done(err));
     });

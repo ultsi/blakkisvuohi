@@ -57,7 +57,7 @@ function makeDrinksString(drinks) {
     return list.join('\n');
 }
 
-function annokset(context, user, msg, words) {
+function annokset(context, msg, words, user) {
     context.end();
     if (msg.chat.type === 'private') {
         return Promise.all([
@@ -84,7 +84,7 @@ function annokset(context, user, msg, words) {
                     minutes: ('0' + Math.ceil((time - hours) * 60)).slice(-2),
                     drinkList72h: makeDrinksString(drinks72h)
                 });
-                return Promise.resolve(context.privateReply(text));
+                return context.privateReply(text);
             } catch (err) {
                 log.error(err);
                 log.debug(err.stack);
@@ -98,20 +98,23 @@ function annokset(context, user, msg, words) {
                 const listText = standardDrinksListing.map(user => strings.commands.annokset.text_group_list_item.format({
                     username: user[0],
                     standard_drinks: utils.roundTo(user[1], 2),
-                    drinks12h: utils.roundTO(user[2], 2),
-                    drinks24h: utils.roundTO(user[3], 2)
+                    drinks12h: utils.roundTo(user[2], 2),
+                    drinks24h: utils.roundTo(user[3], 2)
                 }));
-                const text = strings.commands.promillet.text_group.format({
+                const text = strings.commands.annokset.text_group.format({
                     chat_title: msg.chat.title,
                     list: listText
                 });
-                return Promise.resolve(context.chatReply(text));
+                return context.chatReply(text);
             });
     }
 }
 
-Commands.registerUserCommand(
+Commands.register(
     '/annokset',
     strings.commands.annokset.cmd_description,
-    Commands.TYPE_ALL, [annokset]
+    Commands.SCOPE_ALL,
+    Commands.PRIVILEGE_USER,
+    Commands.TYPE_SINGLE,
+    annokset
 );

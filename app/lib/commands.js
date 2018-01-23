@@ -26,77 +26,46 @@
 
 const users = require('../db/users.js');
 const contexts = require('./context.js');
-const settings = require('../settings.js');
 const strings = require('../strings.js');
 const utils = require('./utils.js');
 const log = require('loglevel').getLogger('system');
 const announcements = require('../announcements.js');
+const errors = require('./errors.js');
 
 let Commands = module.exports = {};
 let cmds = {};
 let userContexts = {};
 
-Commands.TYPE_PRIVATE = 'private';
-Commands.TYPE_ALL = 'all';
+Commands.SCOPE_PRIVATE = 'private';
+Commands.SCOPE_CHAT = 'chat';
+Commands.SCOPE_ALL = 'all';
+
+Commands.PRIVILEGE_USER = 'user';
+Commands.PRIVILEGE_ADMIN = 'admin';
+Commands.PRIVILEGE_ALL = 'all';
+
+Commands.TYPE_SINGLE = 'single';
+Commands.TYPE_MULTI = 'multi';
 
 Commands.__cmds__ = cmds;
 
-Commands.register = function(cmdName, cmdHelp, cmdType, cmdFunctions) {
+Commands.register = function(cmdName, cmdHelp, cmdScope, cmdPrivilege, cmdType, cmdDefinition) {
     cmds[cmdName] = {
         name: cmdName,
-        type: cmdType,
-        funcs: cmdFunctions,
         help: cmdHelp,
-        userCommand: false
+        scope: cmdScope,
+        privilege: cmdPrivilege,
+        type: cmdType,
+        definition: cmdDefinition
     };
-    log.info('Added command ' + cmdName + ' : (' + cmdType + ') with ' + cmdFunctions.length + ' phases.');
-};
-
-Commands.registerSimple = function(cmdName, cmdHelp, cmdType, cmdFunction) {
-    cmds[cmdName] = {
+    const definitionText = typeof cmdDefinition === 'function' ? 'function' : cmdDefinition.length;
+    log.info(strings.commands.blakkis.on_cmd_register.format({
         name: cmdName,
+        scope: cmdScope,
+        privilege: cmdPrivilege,
         type: cmdType,
-        func: cmdFunction,
-        help: cmdHelp,
-        userCommand: false,
-        simple: true
-    };
-    log.info('Added simple command ' + cmdName + ' : (' + cmdType + ')');
-};
-
-Commands.registerUserCommand = function(cmdName, cmdHelp, cmdType, cmdFunctions) {
-    cmds[cmdName] = {
-        name: cmdName,
-        type: cmdType,
-        funcs: cmdFunctions,
-        help: cmdHelp,
-        userCommand: true
-    };
-    log.info('Added usercommand ' + cmdName + ' : (' + cmdType + ') with ' + cmdFunctions.length + ' phases.');
-};
-
-Commands.registerUserCommandV2 = function(cmdName, cmdHelp, cmdType, cmdFunctions) {
-    cmds[cmdName] = {
-        name: cmdName,
-        type: cmdType,
-        funcs: cmdFunctions,
-        help: cmdHelp,
-        userCommand: true,
-        version: 2
-    };
-    log.info('Added usercommand ' + cmdName + ' : (' + cmdType + ') with ' + cmdFunctions.length + ' phases.');
-};
-
-Commands.registerAdminCommand = function(cmdName, cmdHelp, cmdType, cmdFunctions) {
-    cmds[cmdName] = {
-        name: cmdName,
-        type: cmdType,
-        funcs: cmdFunctions,
-        help: cmdHelp,
-        userCommand: true,
-        adminCommand: true
-    };
-    log.info('Added admincommand ' + cmdName + ' : (' + cmdType + ') with ' + cmdFunctions.length + ' phases.');
+        definition: definitionText
+    }));
 };
 
 function initContext(userId, cmd, msg) {
@@ -114,154 +83,29 @@ function retrieveContext(userId, msg) {
     return false;
 }
 
-function callUserCommand(context, cmd, msg, words, user) {
-    if (!user.read_terms) {
-        msg.sendPrivateMessage(strings.commands.blakkis.please_update_user_info);
-        return Promise.resolve(); // reject or resolve?
-    }
-    if (user.read_announcements < announcements.length) {
-        const unread_announcements = announcements.slice(user.read_announcements, announcements.length + 1);
-        msg.sendPrivateMessage(strings.commands.blakkis.announcements.format({
-            announcements: unread_announcements.join('\n\n')
-        }));
-        user.updateReadAnnouncements(announcements.length);
-    }
-    try {
-        log.debug('Executing phase ' + context.phase + ' of usercmd ' + cmd.name);
-        log.debug('Words: ' + words);
-        log.debug('User: ' + user.username + ' id: ' + user.userId);
-
-        if (cmd.adminCommand && user.userId !== settings.admin_id) {
-            log.info('User ' + user.username + ' tried to use admin command');
-            msg.sendPrivateMessage(strings.commands.blakkis.unauthorized);
-            return Promise.resolve(); // reject or resolve?
-        } else if (cmd.version === 2) {
-
-            /* Version 2 definition of commands */
-            let phase = cmd.funcs[context.phase];
-            if (context.phase === 0 && !context.fetchVariable('_started')) {
-                context.sendMessage(phase.startMessage);
-                context.storeVariable('_started', true);
-                return Promise.resolve(); // reject or resolve?
-            } else if (phase.validateInput(context, user, msg, words)) {
-                try {
-                    return phase.onValidInput(context, user, msg, words)
-                        .then(() => {
-                            phase = cmd.funcs[context.phase];
-                            if (phase.nextPhase || phase.nextPhase === 0) {
-                                context.toPhase(phase.nextPhase);
-                                let newPhase = cmd.funcs[context.phase];
-                                context.sendMessage(newPhase.startMessage);
-                            } else {
-                                context.end();
-                            }
-                            log.debug('Executing phase ' + context.phase + ' of usercmd ' + cmd.name);
-                            log.debug('Words: ' + words);
-                            log.debug('Phase ' + context.phase + ' of cmd ' + cmd.name + ' executed perfectly.');
-                            return Promise.resolve(); // reject or resolve?
-                        });
-                } catch (err) {
-                    log.error('Error executing v2 user cmd function "' + cmd.name + '" phase ' + context.phase + '! ' + err);
-                    log.debug(err.stack);
-                    msg.sendPrivateMessage(strings.commands.blakkis.error);
-                    return Promise.reject(err);
-                }
-            } else {
-                return context.sendMessage(phase.errorMessage);
-            }
-
-        } else {
-            let func = cmd.funcs[context.phase];
-            return func(context, user, msg, words)
-                .then((res) => {
-                    log.debug('Phase ' + context.phase + ' of cmd ' + cmd.name + ' executed perfectly.');
-                    return Promise.resolve();
-                }).catch((err) => {
-                    log.error('Error executing user cmd function "' + cmd.name + '" phase ' + context.phase + '! ' + err);
-                    log.debug(err.stack);
-                    msg.sendPrivateMessage(strings.commands.blakkis.command_error.format({
-                        cmd_help: cmd.help
-                    }));
-                    return Promise.reject(err);
-                });
-        }
-    } catch (err) {
-        log.error('Couldn\'t execute user cmd function "' + cmd.name + '" phase ' + context.phase + '! ' + err);
-        log.debug(err.stack);
-        msg.sendPrivateMessage(strings.commands.blakkis.command_error.format({
-            cmd_help: cmd.help
-        }));
-        return Promise.reject(err);
-    }
-}
-
-function callCommandFunction(context, cmd, msg, words) {
-    if (cmd.simple) {
-        return cmd.func(context, msg, words);
-    }
-
-    const phaseFunc = cmd.funcs[context.phase];
-
-    if (cmd.userCommand) {
-        return users.find(msg.from.id)
-            .then((user) => {
-                if (user) {
-                    return callUserCommand(context, cmd, msg, words, user);
-                } else {
-                    return Promise.reject(new Error('couldn\'t find user for command ' + cmd.name + ' phase ' + context.phase));
-                }
-            })
-            .catch((err) => {
-                log.error(err);
-                log.debug(err.stack);
-                msg.sendPrivateMessage(strings.commands.blakkis.command_error.format({
-                    cmd_help: cmd.help
-                }));
-            });
-    } else {
-        /* Version 2 definition of commands */
-        let phase = phaseFunc;
-        if (context.phase === 0 && !context.fetchVariable('_started')) {
-            context.sendMessage(phase.startMessage);
-            context.storeVariable('_started', true);
-            return Promise.resolve();
-        } else if (phase.validateInput(context, msg, words)) {
-            try {
-                return phase.onValidInput(context, msg, words)
-                    .then(() => {
-                        phase = cmd.funcs[context.phase];
-                        if (phase.nextPhase || phase.nextPhase === 0) {
-                            context.toPhase(phase.nextPhase);
-                            let newPhase = cmd.funcs[context.phase];
-                            context.sendMessage(newPhase.startMessage);
-                        } else {
-                            context.end();
-                        }
-                        log.debug('Executing phase ' + context.phase + ' of cmd ' + cmd.name);
-                        log.debug('Words: ' + words);
-                        log.debug('Phase ' + context.phase + ' of cmd ' + cmd.name + ' executed perfectly.');
-                        return Promise.resolve();
-                    }).catch((err) => {
-                        log.error('Couldn\'t execute cmd function "' + cmd.name + '" phase ' + context.phase + '! ' + err);
-                        msg.sendPrivateMessage(strings.commands.blakkis.error);
-                        return Promise.reject(err);
-                    });
-            } catch (err) {
-                log.error('Error executing v2 cmd function "' + cmd.name + '" phase ' + context.phase + '! ' + err);
-                log.debug(err.stack);
-                msg.sendPrivateMessage(strings.commands.blakkis.error);
-                return Promise.reject(err);
-            }
-        } else {
-            context.sendMessage(phase.errorMessage);
-            return Promise.resolve();
-        }
+function sendErrorMessage(msg, err) {
+    switch (err.constructor) {
+        case errors.PrivateCommandUsedInChat:
+            return msg.sendPrivateMessage(strings.commands.blakkis.use_only_in_private);
+        case errors.ChatCommandUsedInPrivate:
+            return msg.sendPrivateMessage(strings.commands.blakkis.use_only_in_chat);
+        case errors.ContextEnded:
+            return msg.sendPrivateMessage(strings.commands.blakkis.command_not_found);
+        case errors.UserNotAdmin:
+            return msg.sendPrivateMessage(strings.commands.blakkis.unauthorized);
+        case errors.UserNotFound:
+            return msg.sendPrivateMessage(strings.commands.blakkis.user404);
+        case errors.UserNotReadTerms:
+            return msg.sendPrivateMessage(strings.commands.blakkis.please_update_user_info);
+        default:
+            return msg.sendPrivateMessage(strings.commands.blakkis.error);
     }
 }
 
 Commands.call = function call(firstWord, msg, words) {
     const userId = msg.from.id;
 
+    // Find out cmd and context first
     let cmd, context;
     if (cmds[firstWord]) {
         cmd = cmds[firstWord];
@@ -272,42 +116,92 @@ Commands.call = function call(firstWord, msg, words) {
         }
     } else {
         // first word was not a command, try to find a command by context
+        // at the moment only private chats are allowed
+        // don't send any messages to avoid replying to replies
+        if (msg.chat.type !== Commands.SCOPE_PRIVATE) {
+            return Promise.resolve();
+        }
         context = retrieveContext(userId, msg);
 
         if (!context) {
             return msg.sendChatMessage(strings.commands.blakkis.command_not_found);
         }
 
-        if (!context.isPrivateChat()) {
-            // cmds with context only allowed in private
-        }
         cmd = context.cmd;
     }
 
-    if (cmd.type === Commands.TYPE_PRIVATE && !context.isPrivateChat()) {
-        return msg.sendPrivateMessage(strings.commands.blakkis.use_only_in_private);
-    }
+    // Command has been found with context
+    // Execute command
 
-    if (context.phase === -1) {
-        return Promise.resolve();
-    }
-
-    return utils.hookNewRelic('command/' + firstWord, function() {
-
-        try {
-            log.info((msg.from.username || msg.from.first_name) + ': ' + firstWord);
-            return callCommandFunction(context, cmd, msg, words);
-        } catch (err) {
-            log.error('Couldn\'t execute cmd function "' + cmd.name + '" phase ' + context.phase + '! ' + err);
-            log.debug(err.stack);
-            msg.sendPrivateMessage(strings.commands.blakkis.command_error.format({
-                cmd_help: cmd.help
-            }));
-            return Promise.reject(err);
+    return utils.hookNewRelic('command/' + cmd.name, function() {
+        log.info((msg.from.username || msg.from.first_name) + ': ' + firstWord);
+        if (cmd.scope === Commands.SCOPE_PRIVATE && !context.isPrivateChat()) {
+            return Promise.reject(new errors.PrivateCommandUsedInChat(cmd.name));
+        } else if (cmd.scope === Commands.SCOPE_CHAT && context.isPrivateChat()) {
+            return Promise.reject(new errors.ChatCommandUsedInPrivate(cmd.name));
+        } else if (context.phase === -1) {
+            return Promise.reject(new errors.ContextEnded(cmd.name));
         }
+        return users.find(msg.from.id)
+            .then((user) => {
+                if (!user && cmd.privilege === Commands.PRIVILEGE_USER) {
+                    return Promise.reject(new errors.UserNotFound());
+                }
+                if (user) {
+                    if(cmd.privilege === Commands.PRIVILEGE_ADMIN && !user.isAdmin()) {
+                        return Promise.reject(new errors.UserNotAdmin(user));
+                    }
+                    if (!user.read_terms) {
+                        return Promise.reject(new errors.UserNotReadTerms());
+                    }
+                    if (user.read_announcements < announcements.length) {
+                        const unread_announcements = announcements.slice(user.read_announcements, announcements.length + 1);
+                        msg.sendPrivateMessage(strings.commands.blakkis.announcements.format({
+                            announcements: unread_announcements.join('\n\n')
+                        }));
+                        user.updateReadAnnouncements(announcements.length);
+                    }
+                }
+                return Promise.resolve(user);
+            })
+            .then((user) => {
+                if (cmd.type === Commands.TYPE_SINGLE) {
+                    log.debug(`executing singlephase command ${firstWord}`);
+                    return cmd.definition(context, msg, words, user);
+                } else {
+                    log.debug(`executing multiphase command ${firstWord}`);
+                    let phase = cmd.definition[context.phase];
+                    if (context.phase === 'start' && !context.fetchVariable('_started')) {
+                        context.storeVariable('_started', true);
+                        return context.sendMessage(phase.startMessage);
+                    }
+                    if (!phase.validateInput(context, msg, words, user)) {
+                        return context.sendMessage(phase.errorMessage);
+                    }
+                    return phase.onValidInput(context, msg, words, user)
+                        .then(() => {
+                            phase = cmd.definition[context.phase];
+                            if (phase.nextPhase || phase.nextPhase === 'start') {
+                                context.toPhase(phase.nextPhase);
+                                let newPhase = cmd.definition[context.phase];
+                                context.sendMessage(newPhase.startMessage);
+                            } else {
+                                context.end();
+                            }
+                            log.debug('Executing phase ' + context.phase + ' of usercmd ' + cmd.name);
+                            log.debug('Words: ' + words);
+                            log.debug('Phase ' + context.phase + ' of cmd ' + cmd.name + ' executed perfectly.');
+                            return Promise.resolve(); // reject or resolve?
+                        });
+                }
+            })
+            .then(() => {
+                log.info(`executed cmd ${cmd.name}`);
+                return Promise.resolve();
+            });
     }).catch((err) => {
-        log.error('Couldn\'t execute cmd ' + cmd.name);
+        log.error(`Couldn\'t execute cmd ${cmd.name} properly`);
         log.error(err);
-        log.debug(err);
+        return sendErrorMessage(msg, err);
     });
 };

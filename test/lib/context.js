@@ -37,7 +37,7 @@ describe('context.js', function() {
             assert(context instanceof contexts.Context);
             assert(context.cmd);
             assert(context.msg);
-            assert.equal(context.phase, 0);
+            assert.equal(context.phase, 'start');
             assert(context.variables);
         });
     });
@@ -71,7 +71,7 @@ describe('context.js', function() {
         it('should change context\'s phase', function() {
             const context = new contexts.Context({}, {});
             assert(context instanceof contexts.Context);
-            assert.equal(context.phase, 0);
+            assert.equal(context.phase, 'start');
             context.toPhase('test');
             assert.equal(context.phase, 'test');
         });
@@ -82,7 +82,7 @@ describe('context.js', function() {
             const context = new contexts.Context({}, {});
             context.storeVariable('test', Math.PI);
             assert.equal(context.fetchVariable('test'), Math.PI);
-            assert.equal(context.phase, 0);
+            assert.equal(context.phase, 'start');
 
             context.end();
             assert(context.fetchVariable('test') === undefined);
@@ -143,13 +143,17 @@ describe('context.js', function() {
     });
 
     describe('Context.sendMessage()', function() {
-        it('should do nothing with a invalid message object', function() {
+        it('should do nothing with a invalid message object', function(done) {
             const mocked = blakkistest.mockMsgAndBot();
             const context = new contexts.Context({}, mocked.msg);
-            context.sendMessage();
-            assert.equal(mocked.internals.sentChatId, false);
-            assert.equal(mocked.internals.sentText, false);
-            assert.equal(mocked.internals.sentOptions, false);
+            context.sendMessage()
+                .then(() => done(new Error(`should't execute`)))
+                .catch((err) => {
+                    assert.equal(mocked.internals.sentChatId, false);
+                    assert.equal(mocked.internals.sentText, false);
+                    assert.equal(mocked.internals.sentOptions, false);
+                    done();
+                });
         });
 
         it('should send a private message with message.PrivateMessage', function() {

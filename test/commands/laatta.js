@@ -38,14 +38,10 @@ describe('laatta.js', function() {
         mocked.msg.from.id = blakkistest.realIds[0];
         Commands.call('/laatta', mocked.msg, ['/laatta'])
             .then(() => {
-                try {
-                    assert.equal(mocked.internals.sentChatId, mocked.msg.from.id);
-                    assert.equal(mocked.internals.sentText, strings.commands.laatta.start_text);
-                    assert.notEqual(mocked.internals.sentOptions.reply_markup.keyboard.length, 0);
-                    done();
-                } catch (err) {
-                    return Promise.reject((err));
-                }
+                assert.equal(mocked.internals.sentChatId, mocked.msg.from.id);
+                assert.equal(mocked.internals.sentText, strings.commands.laatta.start_text);
+                assert.notEqual(mocked.internals.sentOptions.reply_markup.keyboard.length, 0);
+                done();
             })
             .catch((err) => done(err));
     });
@@ -55,24 +51,16 @@ describe('laatta.js', function() {
         mocked.msg.from.id = blakkistest.realIds[0];
         Commands.call('/laatta', mocked.msg, ['/laatta'])
             .then(() => {
-                try {
-                    assert.equal(mocked.internals.sentChatId, mocked.msg.from.id);
-                    assert.equal(mocked.internals.sentText, strings.commands.laatta.start_text);
-                    assert.notEqual(mocked.internals.sentOptions.reply_markup.keyboard.length, 0);
-                    return Commands.call('test', mocked.msg, ['test']);
-                } catch (err) {
-                    return Promise.reject(err);
-                }
+                assert.equal(mocked.internals.sentChatId, mocked.msg.from.id);
+                assert.equal(mocked.internals.sentText, strings.commands.laatta.start_text);
+                assert.notEqual(mocked.internals.sentOptions.reply_markup.keyboard.length, 0);
+                return Commands.call('test', mocked.msg, ['test']);
             })
             .then(() => {
-                try {
-                    assert.equal(mocked.internals.sentChatId, mocked.msg.from.id);
-                    assert.equal(mocked.internals.sentText, strings.commands.laatta.error_text);
-                    assert.notEqual(mocked.internals.sentOptions.reply_markup.keyboard.length, 0);
-                    done();
-                } catch (err) {
-                    return Promise.reject(err);
-                }
+                assert.equal(mocked.internals.sentChatId, mocked.msg.from.id);
+                assert.equal(mocked.internals.sentText, strings.commands.laatta.error_text);
+                assert.notEqual(mocked.internals.sentOptions.reply_markup.keyboard.length, 0);
+                done();
             })
             .catch((err) => done(err));
     });
@@ -84,24 +72,16 @@ describe('laatta.js', function() {
 
         user.getBooze()
             .then((rows) => {
-                try {
-                    assert.equal(rows.length, 2);
-                    return Commands.call('/laatta', mocked.msg, ['/laatta']);
-                } catch (err) {
-                    return Promise.reject(err);
-                }
+                assert.equal(rows.length, 2);
+                return Commands.call('/laatta', mocked.msg, ['/laatta']);
             })
             .then(() => {
                 return Commands.call(strings.commands.laatta.start_answer_yes, mocked.msg, [strings.commands.laatta.start_answer_yes]);
             }) // yes option)
             .then(() => user.getBooze())
             .then((rows) => {
-                try {
-                    assert.equal(rows.length, 1);
-                    done();
-                } catch (err) {
-                    return Promise.reject(err);
-                }
+                assert.equal(rows.length, 1);
+                done();
             })
             .catch((err) => done(err));
     });
@@ -113,24 +93,16 @@ describe('laatta.js', function() {
 
         user.getBooze()
             .then((rows) => {
-                try {
-                    assert.equal(rows.length, 2);
-                    return Commands.call('/laatta', mocked.msg, ['/laatta']);
-                } catch (err) {
-                    return Promise.reject(err);
-                }
+                assert.equal(rows.length, 2);
+                return Commands.call('/laatta', mocked.msg, ['/laatta']);
             })
             .then(() => {
                 return Commands.call(strings.commands.laatta.start_answer_no, mocked.msg, [strings.commands.laatta.start_answer_no]);
             }) // no option)
             .then(() => user.getBooze())
             .then((rows) => {
-                try {
-                    assert.equal(rows.length, 2);
-                    done();
-                } catch (err) {
-                    return Promise.reject(err);
-                }
+                assert.equal(rows.length, 2);
+                done();
             })
             .catch((err) => done(err));
     });

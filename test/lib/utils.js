@@ -98,12 +98,8 @@ describe('utils', function() {
             newRelicEnd = false;
             utils.hookNewRelic('lol', () => {})
                 .then(() => {
-                    try {
-                        assert.equal(newRelicStart, false);
-                        assert.equal(newRelicEnd, false);
-                    } catch (err) {
-                        return Promise.reject(err);
-                    }
+                    assert.equal(newRelicStart, false);
+                    assert.equal(newRelicEnd, false);
                     done();
                 }).catch((err) => done(err));
         });
@@ -117,12 +113,8 @@ describe('utils', function() {
             };
             utils.hookNewRelic('lol', () => {})
                 .then(() => {
-                    try {
-                        assert.equal(newRelicStart, true);
-                        assert.equal(newRelicEnd, true);
-                    } catch (err) {
-                        return Promise.reject(err);
-                    }
+                    assert.equal(newRelicStart, true);
+                    assert.equal(newRelicEnd, true);
                     done();
                 }).catch((err) => done(err));
         });

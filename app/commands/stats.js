@@ -28,7 +28,7 @@ const groups = require('../db/groups.js');
 const STANDARD_DRINK_GRAMS = require('../constants.js').STANDARD_DRINK_GRAMS;
 const strings = require('../strings.js');
 
-function printStats(context, user, msg, words) {
+function printStats(context, msg, words, user) {
     const hours = (words[1] && parseInt(words[1])) ? parseInt(words[1]) * 24 : 4 * 365 * 24;
     if (context.isPrivateChat()) {
         return user.getDrinkSumForXHours(hours)
@@ -38,12 +38,12 @@ function printStats(context, user, msg, words) {
                 const oneDay = 24 * 60 * 60 * 1000; // hours*minutes*seconds*milliseconds
                 const daysBetween = (words[1] && parseInt(words[1])) ? parseInt(words[1]) : Math.round((new Date().getTime() - created.getTime()) / oneDay);
                 const grams = sum / 1000.0;
-                return Promise.resolve(context.privateReply(strings.commands.stats.private.format({
+                return context.privateReply(strings.commands.stats.private.format({
                     days_count: daysBetween,
                     grams: utils.roundTo(grams, 1),
                     standard_drinks: utils.roundTo(grams / STANDARD_DRINK_GRAMS, 1),
                     avg_standard_drinks: utils.roundTo((grams / daysBetween / STANDARD_DRINK_GRAMS), 1)
-                })));
+                }));
             });
     } else {
         const group = new groups.Group(msg.chat.id);
@@ -56,19 +56,22 @@ function printStats(context, user, msg, words) {
                 const oneDay = 24 * 60 * 60 * 1000; // hours*minutes*seconds*milliseconds
                 const daysBetween = (words[1] && parseInt(words[1])) ? parseInt(words[1]) : Math.round((new Date().getTime() - firstDrinkCreated.getTime()) / oneDay);
                 const grams = groupDrinkSum.sum / 1000.0;
-                return Promise.resolve(context.chatReply(strings.commands.stats.group.format({
+                return context.chatReply(strings.commands.stats.group.format({
                     day_count: daysBetween,
                     grams: utils.roundTo(grams, 1),
                     standard_drinks: utils.roundTo(grams / STANDARD_DRINK_GRAMS, 1),
                     avg_standard_drinks: utils.roundTo((grams / daysBetween / STANDARD_DRINK_GRAMS), 1),
                     top10List: top10text
-                })));
+                }));
             });
     }
 }
 
-Commands.registerUserCommand(
+Commands.register(
     '/stats',
     strings.commands.stats.cmd_description,
-    Commands.TYPE_ALL, [printStats]
+    Commands.SCOPE_ALL,
+    Commands.PRIVILEGE_USER,
+    Commands.TYPE_SINGLE,
+    printStats
 );

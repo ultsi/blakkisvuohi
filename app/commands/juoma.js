@@ -59,32 +59,31 @@ function saveDrink(context, user, milligrams, drinkName) {
                 permilles: utils.roundTo(permilles, 2),
                 permilles30Min: utils.roundTo(permilles30Min, 2)
             });
-            return Promise.resolve(context.privateReply(text));
+            return context.privateReply(text);
         });
 }
 
 let command = {
-    [0]: {
+    start: {
         startMessage: message.PrivateKeyboardMessage(strings.commands.juoma.start, drinkCommand.startKeyboard),
-        validateInput: (context, user, msg, words) => {
-            console.log(msg);
+        validateInput: (context, msg, words, user) => {
             return drinkCommand.startKeyboard[0].find((x) => x.toLowerCase() === msg.text.toLowerCase());
         },
-        onValidInput: (context, user, msg, words) => {
+        onValidInput: (context, msg, words, user) => {
             context.toPhase(words[0].toLowerCase());
             return Promise.resolve();
         },
-        nextPhase: 0,
+        nextPhase: 'start',
         errorMessage: message.PrivateKeyboardMessage(strings.commands.juoma.start_error, drinkCommand.startKeyboard)
     },
     miedot: {
         startMessage: message.PrivateKeyboardMessage(drinkCommand.miedotReply.text, drinkCommand.miedotReply.keyboard),
-        validateInput: (context, user, msg, words) => {
+        validateInput: (context, msg, words, user) => {
             return drinkCommand.miedotReply.keyboard.find((row) => row.find((col) => col.toLowerCase() === msg.text.toLowerCase()));
         },
-        onValidInput: (context, user, msg, words) => {
+        onValidInput: (context, msg, words, user) => {
             if (words[0].toLowerCase() === drinkCommand.toStartText.toLowerCase()) {
-                context.toPhase(0);
+                context.toPhase('start');
                 return Promise.resolve();
             }
             const milds = constants.milds;
@@ -102,12 +101,12 @@ let command = {
     },
     tiukat: {
         startMessage: message.PrivateKeyboardMessage(drinkCommand.tiukatReply.text, drinkCommand.tiukatReply.keyboard),
-        validateInput: (context, user, msg, words) => {
+        validateInput: (context, msg, words, user) => {
             return drinkCommand.tiukatReply.keyboard.find((row) => row.find((col) => col.toLowerCase() === msg.text.toLowerCase()));
         },
-        onValidInput: (context, user, msg, words) => {
+        onValidInput: (context, msg, words, user) => {
             if (words[0].toLowerCase() === drinkCommand.toStartText.toLowerCase()) {
-                context.toPhase(0);
+                context.toPhase('start');
                 return Promise.resolve();
             }
 
@@ -127,11 +126,11 @@ let command = {
     },
     oma: {
         startMessage: message.PrivateMessage(strings.commands.juoma.self_define_vol),
-        validateInput: (context, user, msg, words) => {
+        validateInput: (context, msg, words, user) => {
             let vol = parseFloat(words[0]);
             return utils.isValidFloat(vol) && vol > 0 || vol < 100;
         },
-        onValidInput: (context, user, msg, words) => {
+        onValidInput: (context, msg, words, user) => {
             context.storeVariable('vol', parseFloat(words[0]));
             context.toPhase('omacl');
             return Promise.resolve();
@@ -141,11 +140,11 @@ let command = {
     },
     omacl: {
         startMessage: message.PrivateMessage(strings.commands.juoma.self_define_cl),
-        validateInput: (context, user, msg, words) => {
+        validateInput: (context, msg, words, user) => {
             let cl = parseInt(words[0]);
-            return utils.isValidInt(cl) && cl > 0 ||  cl < 250;
+            return utils.isValidInt(cl) && cl > 0 || cl < 250;
         },
-        onValidInput: (context, user, msg, words) => {
+        onValidInput: (context, msg, words, user) => {
             let vol = context.fetchVariable('vol');
             let cl = parseInt(words[0]);
             let mg = constants.calcAlcoholMilligrams(vol / 100.0, cl / 100.0);
@@ -160,9 +159,11 @@ let command = {
     }
 };
 
-Commands.registerUserCommandV2(
+Commands.register(
     '/juoma',
     strings.commands.juoma.cmd_description,
-    Commands.TYPE_PRIVATE,
+    Commands.SCOPE_PRIVATE,
+    Commands.PRIVILEGE_USER,
+    Commands.TYPE_MULTI,
     command
 );

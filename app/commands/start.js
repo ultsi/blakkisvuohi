@@ -29,8 +29,11 @@ function startCommand(context, msg, words) {
     return msg.sendPrivateMessage(strings.commands.blakkis.help_text);
 }
 
-Commands.registerSimple(
+Commands.register(
     '/start',
     strings.commands.start.cmd_description,
-    Commands.TYPE_PRIVATE, startCommand
+    Commands.SCOPE_PRIVATE,
+    Commands.PRIVILEGE_ALL,
+    Commands.TYPE_SINGLE,
+    startCommand
 );

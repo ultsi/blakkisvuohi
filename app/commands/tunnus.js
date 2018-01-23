@@ -32,7 +32,7 @@ const message = require('../lib/message.js');
 const strings = require('../strings.js');
 
 let command = {
-    [0]: {
+    start: {
         startMessage: message.PrivateMessage(strings.commands.tunnus.start),
         validateInput: (context, msg, words) => {
             let weight = parseInt(words[0], 10);
@@ -102,7 +102,7 @@ let command = {
             let read = words[0].toLowerCase();
             if (read === strings.commands.tunnus.terms_answer_no.toLowerCase()) {
                 context.end();
-                return Promise.resolve(context.privateReply(strings.commands.tunnus.terms_on_reject));
+                return context.privateReply(strings.commands.tunnus.terms_on_reject);
             }
 
             const userId = context.fetchVariable('userId');
@@ -115,20 +115,16 @@ let command = {
                     if (user) {
                         return user.updateInfo(username, weight, gender, height, true)
                             .then(() => {
-                                return Promise.resolve(context.privateReply(strings.commands.tunnus.update));
+                                return context.privateReply(strings.commands.tunnus.update);
                             });
                     } else {
                         return users.new(userId, username, weight, gender, height, true)
                             .then((user) => {
-                                return Promise.resolve(context.privateReply(strings.commands.tunnus.new_user.format({
+                                return context.privateReply(strings.commands.tunnus.new_user.format({
                                     username: user.username
-                                })));
+                                }));
                             });
                     }
-                }).catch((err) => {
-                    log.error('Error creating new user! ' + err);
-                    log.error(err.stack);
-                    return Promise.reject('Isompi ongelma, ota yhteyttä adminiin.');
                 });
         },
         errorMessage: message.PrivateKeyboardMessage(strings.commands.tunnus.terms_error, [
@@ -141,5 +137,8 @@ let command = {
 Commands.register(
     '/tunnus',
     strings.commands.tunnus.cmd_description,
-    Commands.TYPE_PRIVATE, command
+    Commands.SCOPE_PRIVATE,
+    Commands.PRIVILEGE_ALL,
+    Commands.TYPE_MULTI,
+    command
 );

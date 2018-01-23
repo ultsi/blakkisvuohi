@@ -56,7 +56,7 @@ function makeDrinksString(drinks) {
     return list.join('\n');
 }
 
-function listPermilles(context, user, msg, words) {
+function listPermilles(context, msg, words, user) {
     if (msg.chat.type === 'private') {
         return Promise.all([
             user.getBooze(),
@@ -82,7 +82,7 @@ function listPermilles(context, user, msg, words) {
                 drinkList72h: makeDrinksString(drinks72h)
             });
             context.end();
-            return Promise.resolve(context.privateReply(text));
+            return context.privateReply(text);
         });
     } else {
         let group = new groups.Group(msg.chat.id);
@@ -98,9 +98,16 @@ function listPermilles(context, user, msg, words) {
                     chat_title: msg.chat.title,
                     list: listText.join('\n')
                 });
-                return Promise.resolve(context.chatReply(text));
+                return context.chatReply(text);
             });
     }
 }
 
-Commands.registerUserCommand('/promillet', strings.commands.promillet.cmd_description, Commands.TYPE_ALL, [listPermilles]);
+Commands.register(
+    '/promillet',
+    strings.commands.promillet.cmd_description,
+    Commands.SCOPE_ALL,
+    Commands.PRIVILEGE_USER,
+    Commands.TYPE_SINGLE,
+    listPermilles
+);

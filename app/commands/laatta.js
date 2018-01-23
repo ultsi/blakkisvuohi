@@ -27,15 +27,15 @@ const message = require('../lib/message.js');
 const strings = require('../strings.js');
 
 let command = {
-    [0]: {
+    start: {
         startMessage: message.PrivateKeyboardMessage(strings.commands.laatta.start_text, [
             [strings.commands.laatta.start_answer_yes, strings.commands.laatta.start_answer_no]
         ]),
-        validateInput: (context, user, msg, words) => {
+        validateInput: (context, msg, words, user) => {
             let answer = words[0].toLowerCase();
             return answer === strings.commands.laatta.start_answer_yes.toLowerCase() || answer === strings.commands.laatta.start_answer_no.toLowerCase();
         },
-        onValidInput: (context, user, msg, words) => {
+        onValidInput: (context, msg, words, user) => {
             if (words[0].toLowerCase() === strings.commands.laatta.start_answer_yes.toLowerCase()) {
                 return user.undoDrink()
                     .then(() => user.getBooze())
@@ -43,13 +43,13 @@ let command = {
                         let ebac = alcomath.calculateEBACFromDrinks(user, drinks);
                         let permilles = ebac.permilles;
                         let permilles30Min = ebac.permilles30Min;
-                        return Promise.resolve(context.privateReply(strings.commands.laatta.success.format({
+                        return context.privateReply(strings.commands.laatta.success.format({
                             permilles: permilles,
                             permilles30Min: permilles30Min
-                        })));
+                        }));
                     });
             } else {
-                return Promise.resolve(context.privateReply(strings.commands.laatta.cancel));
+                return context.privateReply(strings.commands.laatta.cancel);
             }
         },
         errorMessage: message.PrivateKeyboardMessage(strings.commands.laatta.error_text, [
@@ -58,8 +58,11 @@ let command = {
     }
 };
 
-Commands.registerUserCommandV2(
+Commands.register(
     '/laatta',
     strings.commands.laatta.cmd_description,
-    Commands.TYPE_PRIVATE, command
+    Commands.SCOPE_PRIVATE,
+    Commands.PRIVILEGE_USER,
+    Commands.TYPE_MULTI,
+    command
 );

@@ -27,6 +27,7 @@ const log = require('loglevel').getLogger('db');
 const utils = require('../lib/utils.js');
 const alcomath = require('../lib/alcomath.js');
 const announcements = require('../announcements.js');
+const settings = require('../settings.js');
 query.connectionParameters = process.env.DATABASE_URL;
 
 let users = module.exports = {};
@@ -83,6 +84,10 @@ users.find = function find(userId) {
             log.error(err.stack);
             return Promise.reject(err);
         });
+};
+
+User.prototype.isAdmin = function() {
+    return settings.admin_id !== this.userId;
 };
 
 User.prototype.drinkBooze = function(amount, description) {

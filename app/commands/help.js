@@ -36,8 +36,11 @@ function helpCommand(context, msg, words) {
     return msg.sendPrivateMessage(strings.commands.blakkis.help_text + '\n\n' + cmdStr);
 }
 
-Commands.registerSimple(
+Commands.register(
     '/help',
     strings.commands.help.cmd_description,
-    Commands.TYPE_PRIVATE, helpCommand
+    Commands.SCOPE_PRIVATE,
+    Commands.PRIVILEGE_ALL,
+    Commands.TYPE_SINGLE,
+    helpCommand
 );

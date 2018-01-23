@@ -35,13 +35,9 @@ describe('linegraph.js', function() {
         it('should return a png buffer with empty data', function(done) {
             linechart.getLineGraphBuffer([], '')
                 .then((buffer) => {
-                    try {
-                        assert.notEqual(buffer, undefined);
-                        assert.equal(typeof buffer, 'object');
-                        assert(buffer instanceof Buffer);
-                    } catch (err) {
-                        return Promise.reject(err);
-                    }
+                    assert.notEqual(buffer, undefined);
+                    assert.equal(typeof buffer, 'object');
+                    assert(buffer instanceof Buffer);
                     done();
                 })
                 .catch((err) => {
@@ -52,13 +48,9 @@ describe('linegraph.js', function() {
         it('should return a png buffer with some data and text', function(done) {
             linechart.getLineGraphBuffer([1, 2, 3, 4, 5, 6], 'test text')
                 .then((buffer) => {
-                    try {
-                        assert.notEqual(buffer, undefined);
-                        assert.equal(typeof buffer, 'object');
-                        assert(buffer instanceof Buffer);
-                    } catch (err) {
-                        return Promise.reject(err);
-                    }
+                    assert.notEqual(buffer, undefined);
+                    assert.equal(typeof buffer, 'object');
+                    assert(buffer instanceof Buffer);
                     done();
                 })
                 .catch((err) => {

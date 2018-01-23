@@ -27,11 +27,11 @@ const stats = require('../db/stats.js');
 const utils = require('../lib/utils.js');
 const strings = require('../strings.js');
 
-function printAdminStats(context, user, msg, words) {
+function printAdminStats(context, msg, words, user) {
     return stats.getGlobalStats()
         .then((res) => {
             let top10text = res.top10UserStats.map((stats) => utils.decrypt(stats.nick) + ' - ' + stats.count).join('\n');
-            context.privateReply(strings.commands.admin_stats.stats_text.format({
+            return context.privateReply(strings.commands.admin_stats.stats_text.format({
                 usersCount: res.usersCount,
                 activeUsers14DaysCount: res.activeUsers14DaysCount,
                 activeUsers7DaysCount: res.activeUsers7DaysCount,
@@ -40,7 +40,6 @@ function printAdminStats(context, user, msg, words) {
                 activeGroups7DaysCount: res.activeGroups7DaysCount,
                 top10List: top10text
             }));
-            return Promise.resolve();
         }).catch((err) => {
             log.error(err);
             context.privateReply(strings.commands.admin_stats.error);
@@ -48,8 +47,11 @@ function printAdminStats(context, user, msg, words) {
         });
 }
 
-Commands.registerAdminCommand(
+Commands.register(
     '/admin_stats',
     strings.commands.admin_stats.cmd_description,
-    Commands.TYPE_PRIVATE, [printAdminStats]
+    Commands.SCOPE_PRIVATE,
+    Commands.PRIVILEGE_ADMIN,
+    Commands.TYPE_SINGLE,
+    printAdminStats
 );

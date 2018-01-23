@@ -36,8 +36,11 @@ function cmdListCommand(context, msg, words) {
     return msg.sendPrivateMessage(cmdStr);
 }
 
-Commands.registerSimple(
+Commands.register(
     '/komennot',
     strings.commands.komennot.cmd_description,
-    Commands.TYPE_PRIVATE, cmdListCommand
+    Commands.SCOPE_PRIVATE,
+    Commands.PRIVILEGE_ALL,
+    Commands.TYPE_SINGLE,
+    cmdListCommand
 );

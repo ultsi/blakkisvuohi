@@ -44,24 +44,16 @@ describe('moro.js', function() {
 
         group.getDrinkSum()
             .then((res) => {
-                try {
-                    assert.equal(res.sum, 0);
-                } catch (err) {
-                    return Promise.reject(err);
-                }
+                assert.equal(res.sum, 0);
                 return Commands.call('/moro', mocked.msg, ['/moro']);
             })
             .then(() => group.getDrinkSum())
             .then((res) => {
-                try {
-                    assert.equal(mocked.internals.sentChatId, mocked.msg.chat.id);
-                    assert.equal(mocked.internals.sentText, strings.commands.moro.join_text.format({
-                        chat_title: mocked.msg.chat.title
-                    }));
-                    assert.equal(res.sum, 12347 * 2);
-                } catch (err) {
-                    return Promise.reject(err);
-                }
+                assert.equal(mocked.internals.sentChatId, mocked.msg.chat.id);
+                assert.equal(mocked.internals.sentText, strings.commands.moro.join_text.format({
+                    chat_title: mocked.msg.chat.title
+                }));
+                assert.equal(res.sum, 12347 * 2);
                 done();
             })
             .catch((err) => done(err));

@@ -40,14 +40,10 @@ describe('promillet.js', function() {
         mocked.msg.chat.id = blakkistest.groups[0].realId;
         Commands.call('/promillet', mocked.msg, ['/promillet'])
             .then(() => {
-                try {
-                    assert.equal(mocked.internals.sentChatId, mocked.msg.chat.id);
-                    assert.notEqual(mocked.internals.sentText.indexOf(strings.commands.promillet.text_group.unformat()), -1);
-                    assert.equal(mocked.internals.sentText.match(/\n/g).length, 4); // 1 header line + 2 breaks + 2 users separated by 1 linebreak
-                    done();
-                } catch (err) {
-                    return Promise.reject(err);
-                }
+                assert.equal(mocked.internals.sentChatId, mocked.msg.chat.id);
+                assert.notEqual(mocked.internals.sentText.indexOf(strings.commands.promillet.text_group.unformat()), -1);
+                assert.equal(mocked.internals.sentText.match(/\n/g).length, 4); // 1 header line + 2 breaks + 2 users separated by 1 linebreak
+                done();
             })
             .catch((err) => done(err));
     });
@@ -58,14 +54,10 @@ describe('promillet.js', function() {
         mocked.msg.chat.type = 'chat';
         Commands.call('/promillet', mocked.msg, ['/promillet'])
             .then(() => {
-                try {
-                    assert.equal(mocked.internals.sentChatId, mocked.msg.chat.id);
-                    assert.notEqual(mocked.internals.sentText.indexOf(strings.commands.promillet.text_group.unformat()), -1);
-                    assert.equal(mocked.internals.sentText.match(/\n/g).length, 3); // 1 header line + 2 breaks + 0 users
-                    done();
-                } catch (err) {
-                    return Promise.reject(err);
-                }
+                assert.equal(mocked.internals.sentChatId, mocked.msg.chat.id);
+                assert.notEqual(mocked.internals.sentText.indexOf(strings.commands.promillet.text_group.unformat()), -1);
+                assert.equal(mocked.internals.sentText.match(/\n/g).length, 3); // 1 header line + 2 breaks + 0 users
+                done();
             })
             .catch((err) => done(err));
     });
@@ -75,13 +67,9 @@ describe('promillet.js', function() {
         mocked.msg.from.id = blakkistest.realIds[0];
         Commands.call('/promillet', mocked.msg, ['/promillet'])
             .then(() => {
-                try {
-                    assert.equal(mocked.internals.sentChatId, mocked.msg.from.id); // 1 header line + 2 breaks + 0 users
-                    assert.notEqual(mocked.internals.sentText.match('‰'), null);
-                    done();
-                } catch (err) {
-                    return Promise.reject(err);
-                }
+                assert.equal(mocked.internals.sentChatId, mocked.msg.from.id); // 1 header line + 2 breaks + 0 users
+                assert.notEqual(mocked.internals.sentText.match('‰'), null);
+                done();
             })
             .catch((err) => done(err));
     });

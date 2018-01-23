@@ -32,7 +32,7 @@ const linechart = require('../lib/linechart.js');
 const strings = require('../strings.js');
 
 
-function kuvaaja(context, user, msg, words) {
+function kuvaaja(context, msg, words, user) {
     log.debug('Trying to form graph image');
 
     let graphTitle = strings.commands.kuvaaja.graph_title.format({
@@ -125,8 +125,11 @@ function kuvaaja(context, user, msg, words) {
         .then((buffer) => context.photoReply(buffer, graphTitle));
 }
 
-Commands.registerUserCommand(
+Commands.register(
     '/kuvaaja',
     strings.commands.kuvaaja.cmd_description,
-    Commands.TYPE_ALL, [kuvaaja]
+    Commands.SCOPE_ALL,
+    Commands.PRIVILEGE_USER,
+    Commands.TYPE_SINGLE,
+    kuvaaja
 );

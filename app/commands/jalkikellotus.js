@@ -32,13 +32,13 @@ const strings = require('../strings.js');
 
 let command = {
 
-    [0]: {
+    start: {
         startMessage: message.PrivateMessage(strings.commands.jalkikellotus.start),
-        validateInput: (context, user, msg, words) => {
+        validateInput: (context, msg, words, user) => {
             let hours = parseFloat(words[0]);
             return utils.isValidFloat(hours) && hours > 0 && hours < 24;
         },
-        onValidInput: (context, user, msg, words) => {
+        onValidInput: (context, msg, words, user) => {
             context.storeVariable('hours', parseFloat(words[0]));
             context.storeVariable('drinks', []);
             return Promise.resolve();
@@ -49,7 +49,7 @@ let command = {
 
     inputDrinks: {
         startMessage: message.PrivateMessage(strings.commands.jalkikellotus.input_drinks_start),
-        validateInput: (context, user, msg, words) => {
+        validateInput: (context, msg, words, user) => {
             if (words[0].toLowerCase() === 'stop') {
                 return true;
             }
@@ -74,7 +74,7 @@ let command = {
 
             return true;
         },
-        onValidInput: (context, user, msg, words) => {
+        onValidInput: (context, msg, words, user) => {
             // Skip to end if first word is 'stop'
             if (words[0] !== 'stop') {
                 let drinks = context.fetchVariable('drinks');
@@ -86,29 +86,28 @@ let command = {
                     });
                 }
                 context.storeVariable('drinks', drinks);
-                context.privateReply(strings.commands.jalkikellotus.input_drinks_drink_saved);
-                return Promise.resolve();
-            } else {
-                let hours = context.fetchVariable('hours');
-                let drinks = context.fetchVariable('drinks');
-                drinks = drinks.map((d) => {
-                    return {
-                        text: d.name + ' ' + d.centiliters + 'cl ' + d.vol + '%',
-                        mg: constants.calcAlcoholMilligrams(d.vol / 100, d.centiliters / 100)
-                    };
-                });
-
-                context.toPhase('END');
-                return user.drinkBoozeLate(drinks, hours)
-                    .then((ebac) => {
-                        const permilles = ebac.permilles;
-                        const permilles30Min = ebac.permilles30Min;
-                        return Promise.resolve(context.privateReply(utils.getRandomFromArray(strings.drink_responses) + ' ' + strings.short_permilles_text.format({
-                            permilles: utils.roundTo(permilles, 2),
-                            permilles30Min: utils.roundTo(permilles30Min, 2)
-                        })));
-                    });
+                return context.privateReply(strings.commands.jalkikellotus.input_drinks_drink_saved);
             }
+
+            let hours = context.fetchVariable('hours');
+            let drinks = context.fetchVariable('drinks');
+            drinks = drinks.map((d) => {
+                return {
+                    text: d.name + ' ' + d.centiliters + 'cl ' + d.vol + '%',
+                    mg: constants.calcAlcoholMilligrams(d.vol / 100, d.centiliters / 100)
+                };
+            });
+
+            context.toPhase('END');
+            return user.drinkBoozeLate(drinks, hours)
+                .then((ebac) => {
+                    const permilles = ebac.permilles;
+                    const permilles30Min = ebac.permilles30Min;
+                    return context.privateReply(utils.getRandomFromArray(strings.drink_responses) + ' ' + strings.short_permilles_text.format({
+                        permilles: utils.roundTo(permilles, 2),
+                        permilles30Min: utils.roundTo(permilles30Min, 2)
+                    }));
+                });
         },
         nextPhase: 'inputDrinks',
         errorMessage: message.PrivateMessage(strings.commands.jalkikellotus.input_drinks_error)
@@ -118,9 +117,11 @@ let command = {
     }
 };
 
-Commands.registerUserCommandV2(
+Commands.register(
     '/jalkikellotus',
     strings.commands.jalkikellotus.cmd_description,
-    Commands.TYPE_PRIVATE,
+    Commands.SCOPE_PRIVATE,
+    Commands.PRIVILEGE_USER,
+    Commands.TYPE_MULTI,
     command
 );

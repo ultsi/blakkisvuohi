@@ -41,12 +41,15 @@ module.exports = {
             please_update_user_info: 'Päivitä käyttäjätietosi käyttämällä komentoa /tunnus.',
             announcements: 'Ilmoituksia:\n\n{announcements}',
             unauthorized: 'Ei käyttöoikeutta.',
+            user404: 'Rekisteröidy ensiksi käyttämällä komentoa /tunnus.',
             help_text: 'BläkkisVuohi auttaa sinua ja ystäviäsi seuraamaan rippauksesi (lue: promillejesi) tasoa. Luo ensimmäiseksi tunnus komennolla /tunnus. Tunnuksen luomisen jälkeen voit alkaa kellottamaan juomia sisään komennolla /juoma. Annan sinulle arvioita rippauksesta komennolla /promillet. Minut voi myös lisätä ryhmään, jolloin kerron /promillet-komennolla kaikkien ryhmässä olevien rippitasot. Jokaisen ryhmäläisen täytyy kuitenkin sanoa ryhmässä /moro, jotta he pääsevät rippilistaukseen mukaan.',
             cmd_list: 'Komennot\n\n{cmd_list}',
             use_only_in_private: 'Käytä komentoa vain minun kanssa privaviestinä!',
+            use_only_in_chats: 'Käytä komentoa vain chateissa!',
             command_not_found: 'Mitä? Jos kaipaat apua käyttämiseen, kirjoita /help',
             command_error: 'Virhe! Komennon käyttöohje: {cmd_help}',
-            error: 'Vakava virhe! Ota yhteyttä @ultsi, niin minut saadaan korjattua.'
+            error: 'Vakava virhe! Ota yhteyttä @ultsi, niin minut saadaan korjattua.',
+            on_cmd_register: 'Registered command {name}, scope: {scope}, privilege: {privilege}, type: {type}, definition: {definition}'
         },
 
         /* /about */

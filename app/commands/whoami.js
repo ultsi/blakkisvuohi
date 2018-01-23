@@ -25,7 +25,7 @@
 const Commands = require('../lib/commands.js');
 const strings = require('../strings.js');
 
-function whoAmI(context, user, msg, words) {
+function whoAmI(context, msg, words, user) {
     return context.privateReply(strings.commands.whoami.reply.format({
         username: user.username,
         user_id: user.userId,
@@ -36,8 +36,11 @@ function whoAmI(context, user, msg, words) {
     }));
 }
 
-Commands.registerUserCommand(
+Commands.register(
     '/whoami',
     strings.commands.whoami.cmd_description,
-    Commands.TYPE_PRIVATE, [whoAmI]
+    Commands.SCOPE_PRIVATE,
+    Commands.PRIVILEGE_USER,
+    Commands.TYPE_SINGLE,
+    whoAmI
 );

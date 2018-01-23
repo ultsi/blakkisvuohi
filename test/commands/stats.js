@@ -39,13 +39,9 @@ describe('stats.js', function() {
         mocked.msg.chat.id = blakkistest.groups[0].realId;
         Commands.call('/stats', mocked.msg, ['/stats'])
             .then(() => {
-                try {
-                    assert.equal(mocked.internals.sentChatId, mocked.msg.chat.id);
-                    assert.equal(mocked.internals.sentText.match(/\n/g).length, 7); // Tilastoja\n\nStats...\n\nTop10 tilastot:\n\n1\n2
-                    done();
-                } catch (err) {
-                    return Promise.reject(err);
-                }
+                assert.equal(mocked.internals.sentChatId, mocked.msg.chat.id);
+                assert.equal(mocked.internals.sentText.match(/\n/g).length, 7); // Tilastoja\n\nStats...\n\nTop10 tilastot:\n\n1\n2
+                done();
             })
             .catch((err) => done(err));
     });
@@ -56,13 +52,9 @@ describe('stats.js', function() {
         mocked.msg.chat.type = 'chat';
         Commands.call('/stats', mocked.msg, ['/stats'])
             .then(() => {
-                try {
-                    assert.equal(mocked.internals.sentChatId, mocked.msg.chat.id);
-                    assert.equal(mocked.internals.sentText.match(/\n/g).length, 6); // Tilastoja\n\nStats...\n\nTop10 tilastot:\n\n
-                    done();
-                } catch (err) {
-                    return Promise.reject(err);
-                }
+                assert.equal(mocked.internals.sentChatId, mocked.msg.chat.id);
+                assert.equal(mocked.internals.sentText.match(/\n/g).length, 6); // Tilastoja\n\nStats...\n\nTop10 tilastot:\n\n
+                done();
             })
             .catch((err) => done(err));
     });
@@ -72,13 +64,9 @@ describe('stats.js', function() {
         mocked.msg.from.id = blakkistest.realIds[0];
         Commands.call('/stats', mocked.msg, ['/stats'])
             .then(() => {
-                try {
-                    assert.equal(mocked.internals.sentChatId, mocked.msg.from.id);
-                    assert.equal(mocked.internals.sentText.match(/\n/g), null); // Tilastoja\n\nStats...\n\nTop10 tilastot:\n\n
-                    done();
-                } catch (err) {
-                    return Promise.reject(err);
-                }
+                assert.equal(mocked.internals.sentChatId, mocked.msg.from.id);
+                assert.equal(mocked.internals.sentText.match(/\n/g), null); // Tilastoja\n\nStats...\n\nTop10 tilastot:\n\n
+                done();
             })
             .catch((err) => done(err));
     });

@@ -36,13 +36,9 @@ describe('terms.js', function() {
         const mocked = blakkistest.mockMsgAndBot();
         Commands.call('/terms', mocked.msg, ['/terms'])
             .then(() => {
-                try {
-                    assert.equal(mocked.internals.sentChatId, mocked.privateId);
-                    assert.equal(mocked.internals.sentText, strings.commands.terms.reply);
-                    done();
-                } catch (err) {
-                    return Promise.reject(err);
-                }
+                assert.equal(mocked.internals.sentChatId, mocked.privateId);
+                assert.equal(mocked.internals.sentText, strings.commands.terms.reply);
+                done();
             })
             .catch((err) => done(err));
     });

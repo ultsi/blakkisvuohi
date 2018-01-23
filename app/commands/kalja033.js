@@ -28,7 +28,7 @@ const utils = require('../lib/utils.js');
 const constants = require('../constants.js');
 const strings = require('../strings.js');
 
-function kaljaCommand(context, user, msg, words) {
+function kaljaCommand(context, msg, words, user) {
     return user.drinkBoozeReturnEBAC(constants.KALJA033, '/kalja033', msg)
         .then((ebac) => {
             const permilles = ebac.permilles;
@@ -37,12 +37,15 @@ function kaljaCommand(context, user, msg, words) {
                 permilles: utils.roundTo(permilles, 2),
                 permilles30Min: utils.roundTo(permilles30Min, 2)
             });
-            return Promise.resolve(context.privateReply(text));
+            return context.privateReply(text);
         });
 }
 
-Commands.registerUserCommand(
+Commands.register(
     '/kalja033',
     strings.commands.kalja033.cmd_description,
-    Commands.TYPE_PRIVATE, [kaljaCommand]
+    Commands.SCOPE_PRIVATE,
+    Commands.PRIVILEGE_USER,
+    Commands.TYPE_SINGLE,
+    kaljaCommand
 );

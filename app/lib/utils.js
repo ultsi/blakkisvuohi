@@ -112,7 +112,6 @@ utils.hookNewRelic = function(url, func) {
             let p = func();
             if (p && p.then) {
                 p.then(() => {
-                    global.newrelic.getTransaction().end();
                     resolve();
                 }).catch((err) => reject(err));
             } else {
