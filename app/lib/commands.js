@@ -167,7 +167,7 @@ Commands.call = function call(firstWord, msg, words) {
                         return Promise.reject(new errors.UserNotAdmin(user));
                     }
                     if (!user.read_terms) {
-                        return Promise.reject(new errors.UserNotReadTerms());
+                        return Promise.reject(new errors.UserNotReadTerms(user));
                     }
                     if (user.read_announcements < announcements.length) {
                         const unread_announcements = announcements.slice(user.read_announcements, announcements.length + 1);
