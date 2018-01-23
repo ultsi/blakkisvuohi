@@ -39,7 +39,7 @@ function printStats(context, msg, words, user) {
                 const daysBetween = (words[1] && parseInt(words[1])) ? parseInt(words[1]) : Math.round((new Date().getTime() - created.getTime()) / oneDay);
                 const grams = sum / 1000.0;
                 return context.privateReply(strings.commands.stats.private.format({
-                    days_count: daysBetween,
+                    day_count: daysBetween,
                     grams: utils.roundTo(grams, 1),
                     standard_drinks: utils.roundTo(grams / STANDARD_DRINK_GRAMS, 1),
                     avg_standard_drinks: utils.roundTo((grams / daysBetween / STANDARD_DRINK_GRAMS), 1)
