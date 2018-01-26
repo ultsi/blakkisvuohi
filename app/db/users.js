@@ -118,9 +118,14 @@ User.prototype.getBoozeForLastHours = function(hours) {
 
 User.prototype.joinGroup = function(groupId) {
     let groupIdHash = utils.hashSha256(groupId);
-    return query('insert into users_in_groups (userId, groupId) values ($1, $2)', [this.userId, groupIdHash])
+    return query('select userId, groupId from users_in_groups where userId=$1 and groupId=$2', [this.userId, groupIdHash])
         .then((res) => {
-            return Promise.resolve(res[0]);
+            const rows = res[0];
+            if (rows > 0) {
+                return Promise.resolve(true);
+            } else {
+                return query('insert into users_in_groups (userId, groupId) values ($1, $2)');
+            }
         });
 };
 
