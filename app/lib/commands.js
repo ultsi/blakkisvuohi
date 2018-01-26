@@ -166,7 +166,7 @@ Commands.call = function call(firstWord, msg, words) {
                     if(cmd.privilege === Commands.PRIVILEGE_ADMIN && !user.isAdmin()) {
                         return Promise.reject(new errors.UserNotAdmin(user));
                     }
-                    if (!user.read_terms) {
+                    if (!user.read_terms && cmd.privilege !== Commands.PRIVILEGE_ALL) {
                         return Promise.reject(new errors.UserNotReadTerms(user));
                     }
                     if (user.read_announcements < announcements.length) {
