@@ -100,6 +100,7 @@ utils.hookNewRelic = function(url, func) {
                         global.newrelic.getTransaction().end();
                         resolve();
                     }).catch((err) => {
+                        global.newrelic.noticeError(err);
                         global.newrelic.getTransaction().end();
                         reject(err);
                     });

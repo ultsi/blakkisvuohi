@@ -110,7 +110,8 @@ describe('utils', function() {
             newRelicEnd = false;
             global.newrelic = {
                 startWebTransaction: startWebTransaction,
-                getTransaction: getTransaction
+                getTransaction: getTransaction,
+                noticeError: () => {}
             };
             utils.hookNewRelic('lol', () => {})
                 .then(() => {
@@ -125,7 +126,8 @@ describe('utils', function() {
             newRelicEnd = false;
             global.newrelic = {
                 startWebTransaction: startWebTransaction,
-                getTransaction: getTransaction
+                getTransaction: getTransaction,
+                noticeError: () => {}
             };
             utils.hookNewRelic('lol', () => {
                     throw new Error('test');
