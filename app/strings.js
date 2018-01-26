@@ -135,7 +135,7 @@ module.exports = {
 
         /* /laatta */
         laatta: {
-            cmd_description: '/laatta - Näyttää ryhmän 24h tapahtumat kuvaajana.',
+            cmd_description: '/laatta - Poista viimeksi merkattu juoma tilastoista.',
             start_text: 'Olet laattaamassa viimeksi juodun juomasi. Oletko varma?',
             start_answer_yes: 'Kyllä',
             start_answer_no: 'En',
