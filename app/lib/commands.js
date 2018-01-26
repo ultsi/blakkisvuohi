@@ -166,6 +166,11 @@ Commands.call = function call(firstWord, msg, words) {
                     if(cmd.privilege === Commands.PRIVILEGE_ADMIN && !user.isAdmin()) {
                         return Promise.reject(new errors.UserNotAdmin(user));
                     }
+                    /*
+                        TODO: write test case for this:
+                        user has not read terms
+                        /tunnus should go through
+                    */
                     if (!user.read_terms && cmd.privilege !== Commands.PRIVILEGE_ALL) {
                         return Promise.reject(new errors.UserNotReadTerms(user));
                     }
