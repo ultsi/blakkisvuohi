@@ -76,7 +76,7 @@ let command = {
         },
         onValidInput: (context, msg, words, user) => {
             // Skip to end if first word is 'stop'
-            if (words[0] !== 'stop') {
+            if (words[0].toLowerCase() !== 'stop') {
                 let drinks = context.fetchVariable('drinks');
                 for (let i = 0; i < words.length; i += 3) {
                     drinks.push({
