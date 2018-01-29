@@ -25,6 +25,7 @@ const Commands = require('../lib/commands.js');
 const stats = require('../db/stats.js');
 const utils = require('../lib/utils.js');
 const strings = require('../strings.js');
+const constants = require('../constants.js');
 
 function printAdminStats(context, msg, words, user) {
     return stats.getGlobalStats()
@@ -38,7 +39,8 @@ function printAdminStats(context, msg, words, user) {
                 activeGroups14DaysCount: res.activeGroups14DaysCount,
                 activeGroups7DaysCount: res.activeGroups7DaysCount,
                 top10List: top10text,
-                global_drinks_count: res.drinkCount
+                global_drinks_count: res.drinkCount,
+                global_standard_drinks: res.alcoholSum / constants.STANDARD_DRINK_GRAMS
             }));
         });
 }
