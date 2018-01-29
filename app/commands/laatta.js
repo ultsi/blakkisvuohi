@@ -25,6 +25,7 @@ const Commands = require('../lib/commands.js');
 const alcomath = require('../lib/alcomath.js');
 const message = require('../lib/message.js');
 const strings = require('../strings.js');
+const utils = require('../lib/utils.js');
 
 let command = {
     start: {
