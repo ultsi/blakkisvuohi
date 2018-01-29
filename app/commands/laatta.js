@@ -44,8 +44,8 @@ let command = {
                         let permilles = ebac.permilles;
                         let permilles30Min = ebac.permilles30Min;
                         return context.privateReply(strings.commands.laatta.success.format({
-                            permilles: permilles,
-                            permilles30Min: permilles30Min
+                            permilles: utils.roundTo(permilles, 2),
+                            permilles30Min: utils.roundTo(permilles30Min, 2)
                         }));
                     });
             } else {
