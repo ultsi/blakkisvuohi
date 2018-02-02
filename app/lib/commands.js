@@ -202,8 +202,10 @@ Commands.call = function call(firstWord, msg, words) {
                     return phase.onValidInput(context, msg, words, user)
                         .then(() => {
                             phase = cmd.definition[context.phase];
-
-                            if (!context.hasEnded() && phase.nextPhase || phase.nextPhase === 'start') {
+                            log.debug('Command executed. New phase & context:');
+                            log.debug(phase);
+                            log.debug(context);
+                            if (!context.hasEnded() && phase && phase.nextPhase || phase.nextPhase === 'start') {
                                 context.toPhase(phase.nextPhase);
                                 let newPhase = cmd.definition[context.phase];
                                 return context.sendMessage(newPhase.startMessage);
