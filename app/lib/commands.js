@@ -205,7 +205,7 @@ Commands.call = function call(firstWord, msg, words) {
                             log.debug('Command executed. New phase & context:');
                             log.debug(phase);
                             log.debug(context);
-                            if (!context.hasEnded() && phase && phase.nextPhase || phase.nextPhase === 'start') {
+                            if (!context.hasEnded() && phase && phase.nextPhase && phase.nextPhase !== 'start') {
                                 context.toPhase(phase.nextPhase);
                                 let newPhase = cmd.definition[context.phase];
                                 return context.sendMessage(newPhase.startMessage);
