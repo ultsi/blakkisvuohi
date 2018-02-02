@@ -203,7 +203,7 @@ Commands.call = function call(firstWord, msg, words) {
                         .then(() => {
                             phase = cmd.definition[context.phase];
 
-                            if (phase && phase.nextPhase || phase.nextPhase === 'start') {
+                            if (!context.hasEnded() && phase.nextPhase || phase.nextPhase === 'start') {
                                 context.toPhase(phase.nextPhase);
                                 let newPhase = cmd.definition[context.phase];
                                 return context.sendMessage(newPhase.startMessage);

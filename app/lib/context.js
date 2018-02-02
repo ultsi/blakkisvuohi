@@ -148,9 +148,13 @@ contexts.Context.prototype.toPhase = function(phase) {
 contexts.Context.prototype.end = function() {
     this.phase = -1;
     this.variables = 0;
-    return Promise.resolve();;
+    return Promise.resolve();
 };
 
 contexts.Context.prototype.isPrivateChat = function() {
     return this.msg.chat.type === 'private';
+};
+
+contexts.Context.prototype.hasEnded = function() {
+    return this.phase === -1;
 };
