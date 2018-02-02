@@ -198,14 +198,12 @@ Commands.call = function call(firstWord, msg, words) {
                     if (!phase.validateInput(context, msg, words, user)) {
                         return context.sendMessage(phase.errorMessage);
                     }
+                    log.debug('Executing phase ' + context.phase + ' of usercmd ' + cmd.name);
                     return phase.onValidInput(context, msg, words, user)
                         .then(() => {
                             phase = cmd.definition[context.phase];
-                            log.debug('Executing phase ' + context.phase + ' of usercmd ' + cmd.name);
-                            log.debug('Words: ' + words);
-                            log.debug('Phase ' + context.phase + ' of cmd ' + cmd.name + ' executed perfectly.');
 
-                            if (phase.nextPhase || phase.nextPhase === 'start') {
+                            if (phase && phase.nextPhase || phase.nextPhase === 'start') {
                                 context.toPhase(phase.nextPhase);
                                 let newPhase = cmd.definition[context.phase];
                                 return context.sendMessage(newPhase.startMessage);
