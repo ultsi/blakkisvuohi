@@ -130,12 +130,12 @@ describe('commands.js', function() {
             mocked.msg.from.id = blakkistest.realIds[0];
             mocked.msg.chat.type = 'private';
             Commands.register('/testusercommand3', 'help', Commands.SCOPE_CHAT, Commands.PRIVILEGE_USER, Commands.TYPE_SINGLE, () => {
-                done(new Error('chat command /testusercommand2 used in chat'));
+                done(new Error('chat command /testusercommand3 used in chat'));
                 return Promise.resolve();
             });
             Commands.call('/testusercommand3', mocked.msg, ['/testusercommand3'])
                 .then(() => {
-                    assert.equal(mocked.internals.sentText, strings.commands.blakkis.use_only_in_chat);
+                    assert.equal(mocked.internals.sentText, strings.commands.blakkis.use_only_in_chats);
                     done();
                 }).catch((err) => done(err));
         });
