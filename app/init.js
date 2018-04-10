@@ -49,7 +49,7 @@ module.exports = function(bot) {
         if (!msg.text) {
             return;
         }
-        const words = msg.text.split(' ');
+        const words = msg.text.split(/\s/g);
         const cmd_only = words[0].replace(/@.+/, '').toLowerCase(); // remove trailing @username
 
         utils.attachMethods(msg, bot);
