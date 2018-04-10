@@ -22,5 +22,6 @@ module.exports = [
     'Lisätty ilmoitukset. Ilmoituksia tulee BläkkisVuohen päivityksien yhteydessä, ja ne näkee ekaa kertaa päivityksen jälkeen jotain komentoa käytettäessä.',
     '15.1.2018 - korjattu /moro bugi, joka aiheutti sen, ettei uusiin ryhmiin voinut liittyä.',
     '17.1.2018 - korjattu /tunnus bugi, jolloin uusia käyttäjiä ei pystynyt tekemään.',
-    '23.1.2018 - useita taustamuutoksia jotta virhetilanteet saadaan korjattua nopeammin.'
+    '23.1.2018 - useita taustamuutoksia jotta virhetilanteet saadaan korjattua nopeammin.',
+    '10.4.2018\n\n- /juoma ja /jalkikellotus hyväksyy nyt pilkut desimaalinumeroissa.\n- /jalkikellotus -komentoon ei tarvitse kirjoittaa enää juoman nimeä. \n- korjattu /jalkikellotus -bugi, jonka takia usean rivin syöttö ei toiminut.'
 ];
