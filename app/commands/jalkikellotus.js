@@ -53,20 +53,20 @@ let command = {
             if (words[0].toLowerCase() === 'stop') {
                 return true;
             }
-            if (words.length < 3 || words.length % 3 !== 0) {
+            if (words.length < 2 || words.length % 2 !== 0) {
                 return false;
             }
 
-            // Validate each word triple
-            for (let i = 0; i < words.length; i += 3) {
-                let name = words[i];
-                let centiliters = utils.parseFloat(words[i + 1]);
-                let vol = utils.parseFloat(words[i + 2]);
+            // Validate each word tuple
+            for (let i = 0; i < words.length; i += 2) {
+                let name = strings.commands.jalkikellotus.drink_name;
+                let centiliters = utils.parseFloat(words[i]);
+                let vol = utils.parseFloat(words[i + 1]);
                 if (!utils.isValidFloat(centiliters) || !utils.isValidFloat(vol) ||
                     centiliters < 0 || centiliters > 250 ||
                     vol < 0 || vol >= 100) {
                     context.privateReply(strings.commands.jalkikellotus.input_drinks_drink_error.format({
-                        drink: name
+                        drink: i/2+1
                     }));
                     return false;
                 }
@@ -78,11 +78,11 @@ let command = {
             // Skip to end if first word is 'stop'
             if (words[0].toLowerCase() !== 'stop') {
                 let drinks = context.fetchVariable('drinks');
-                for (let i = 0; i < words.length; i += 3) {
+                for (let i = 0; i < words.length; i += 2) {
                     drinks.push({
-                        name: words[i],
-                        centiliters: utils.parseFloat(words[1]),
-                        vol: utils.parseFloat(words[2])
+                        name: strings.commands.jalkikellotus.drink_name,
+                        centiliters: utils.parseFloat(words[i]),
+                        vol: utils.parseFloat(words[i+1])
                     });
                 }
                 context.storeVariable('drinks', drinks);

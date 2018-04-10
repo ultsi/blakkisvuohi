@@ -95,10 +95,11 @@ module.exports = {
             cmd_description: '/jalkikellotus - Kellota unohtuneet juomat mukaan tilastoihin',
             start: 'Kuinka pitkältä aikaväliltä haluat syöttää unohtuneita juomia? Syötä aikaväli tunneissa. \n\nEsimerkiksi kaksi ja puoli tuntia: 2.5 \nYksi tunti ja 15 minuuttia: 1.25.',
             hours_error: 'Tunnit väärin. Mahdolliset arvot välillä 0-24.',
-            input_drinks_start: 'Kirjoita juomia seuraavassa muodossa: \nJuomannimi Senttilitrat Tilavuusprosentti. \nEsimerkiksi: kalja 33 4.7. \n\nErota eri juomat joko rivinvaihdolla tai kirjoita useampi viesti. Lopeta kirjoittamalla stop.',
+            input_drinks_start: 'Kirjoita juomia seuraavassa muodossa: \nSenttilitrat Tilavuusprosentti. \nEsimerkiksi: 33 4.7. \n\nErota eri juomat joko rivinvaihdolla, tai kirjoita useampi viesti. Lopeta ja tallenna juomat kirjoittamalla stop.',
             input_drinks_error: 'Kirjoititko varmasti ohjeiden mukaisesti?',
             input_drinks_drink_error: 'Tarkista juoman {drink} senttilitrat ja tilavuus!',
-            input_drinks_drink_saved: 'Juoma tallennettu!'
+            input_drinks_drink_saved: 'Juoma tallennettu!',
+            drink_name: 'Jälkikellotus'
         },
 
         /* /juoma */
