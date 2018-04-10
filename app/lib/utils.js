@@ -145,9 +145,31 @@ utils.isValidInt = function(num) {
 };
 
 utils.isValidFloat = function(num) {
-    const n = Number(num);
-    const float = parseFloat(num);
+    const n = utils.toNumber(num);
+    const float = utils.parseFloat(num);
     return !isNaN(float) && (typeof float === 'number' || float instanceof Number) && float === n;
+};
+
+utils.parseFloat = function(num) {
+    if(typeof num === 'string') {
+        // convert , to .
+        return parseFloat(num.replace(/\,/g, '.'));
+    } else if (typeof num === 'number') {
+        return parseFloat(num);
+    } else {
+        return NaN;
+    }
+};
+
+utils.toNumber = function(num) {
+    if(typeof num === 'string') {
+        // convert , to .
+        return Number(num.replace(/\,/g, '.'));
+    } else if (typeof num === 'number') {
+        return Number(num);
+    } else {
+        return NaN;
+    }
 };
 
 /*

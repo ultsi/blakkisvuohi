@@ -205,12 +205,13 @@ describe('utils', function() {
     });
 
     describe('isValidFloat()', function() {
-        it('should return true with 0, -1210.40, PI, \'0\', \'-3.14\'', function() {
+        it('should return true with 0, -1210.40, PI, \'0\', \'-3.14\', \'2,5\'', function() {
             assert(utils.isValidFloat(0));
             assert(utils.isValidFloat(-1210.40));
             assert(utils.isValidFloat(Math.PI));
             assert(utils.isValidFloat('0'));
             assert(utils.isValidFloat('-3.14'));
+            assert(utils.isValidFloat('2,5'));
         });
 
         it('should return false with \'s\', \'-\', null, {}', function() {

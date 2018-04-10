@@ -127,11 +127,11 @@ let command = {
     oma: {
         startMessage: message.PrivateMessage(strings.commands.juoma.self_define_vol),
         validateInput: (context, msg, words, user) => {
-            let vol = parseFloat(words[0]);
+            let vol = utils.parseFloat(words[0]);
             return utils.isValidFloat(vol) && vol > 0 || vol < 100;
         },
         onValidInput: (context, msg, words, user) => {
-            context.storeVariable('vol', parseFloat(words[0]));
+            context.storeVariable('vol', utils.parseFloat(words[0]));
             context.toPhase('omacl');
             return Promise.resolve();
         },

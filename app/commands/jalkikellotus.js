@@ -35,11 +35,11 @@ let command = {
     start: {
         startMessage: message.PrivateMessage(strings.commands.jalkikellotus.start),
         validateInput: (context, msg, words, user) => {
-            let hours = parseFloat(words[0]);
+            let hours = utils.parseFloat(words[0]);
             return utils.isValidFloat(hours) && hours > 0 && hours < 24;
         },
         onValidInput: (context, msg, words, user) => {
-            context.storeVariable('hours', parseFloat(words[0]));
+            context.storeVariable('hours', utils.parseFloat(words[0]));
             context.storeVariable('drinks', []);
             return Promise.resolve();
         },
@@ -60,8 +60,8 @@ let command = {
             // Validate each word triple
             for (let i = 0; i < words.length; i += 3) {
                 let name = words[i];
-                let centiliters = parseFloat(words[i + 1]);
-                let vol = parseFloat(words[i + 2]);
+                let centiliters = utils.parseFloat(words[i + 1]);
+                let vol = utils.parseFloat(words[i + 2]);
                 if (!utils.isValidFloat(centiliters) || !utils.isValidFloat(vol) ||
                     centiliters < 0 || centiliters > 250 ||
                     vol < 0 || vol >= 100) {
@@ -81,8 +81,8 @@ let command = {
                 for (let i = 0; i < words.length; i += 3) {
                     drinks.push({
                         name: words[i],
-                        centiliters: parseFloat(words[1]),
-                        vol: parseFloat(words[2])
+                        centiliters: utils.parseFloat(words[1]),
+                        vol: utils.parseFloat(words[2])
                     });
                 }
                 context.storeVariable('drinks', drinks);

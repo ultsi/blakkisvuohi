@@ -52,8 +52,8 @@ describe('jalkikellotus.js', function() {
             })
             .then(() => {
                 assert.equal(mocked.internals.sentText, strings.commands.jalkikellotus.input_drinks_start);
-                mocked.msg.text = 'kalja 33 4.7';
-                return Commands.call('kalja', mocked.msg, ['kalja', '33', '4.7']);
+                mocked.msg.text = 'kalja 33 4,7'; // testing comma instead of dot
+                return Commands.call('kalja', mocked.msg, ['kalja', '33', '4,7']);
             })
             .then(() => {
                 assert.equal(mocked.internals.sentText, strings.commands.jalkikellotus.input_drinks_start);
