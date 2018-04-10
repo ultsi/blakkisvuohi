@@ -151,7 +151,7 @@ utils.isValidFloat = function(num) {
 };
 
 utils.parseFloat = function(num) {
-    if(typeof num === 'string') {
+    if (typeof num === 'string') {
         // convert , to .
         return parseFloat(num.replace(/\,/g, '.'));
     } else if (typeof num === 'number') {
@@ -162,7 +162,7 @@ utils.parseFloat = function(num) {
 };
 
 utils.toNumber = function(num) {
-    if(typeof num === 'string') {
+    if (typeof num === 'string') {
         // convert , to .
         return Number(num.replace(/\,/g, '.'));
     } else if (typeof num === 'number') {
