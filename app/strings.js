@@ -161,8 +161,15 @@ module.exports = {
         /* /stats */
         stats: {
             cmd_description: '/stats - listaa ryhmän tai sinun kulutustilastoja. Lisäämällä numeron komennon perään voit valita, kuinka monelta päivältä taaksepäin haluat tilastot',
-            private: 'Olet {day_count} päivän aikana tuhonnut {grams} grammaa alkoholia, joka vastaa {standard_drinks} annosta. Keskimäärin olet juonut {avg_standard_drinks} annosta per päivä. Hienosti.',
+            private: 'Olet {day_count} päivän aikana tuhonnut {grams} grammaa alkoholia, joka vastaa {standard_drinks} annosta. Keskimäärin olet juonut {avg_standard_drinks} annosta per päivä. .',
             group: 'Tilastoja:\n\nRyhmän jäsenet ovat {day_count} päivän aikana tuhonneet {grams} grammaa alkoholia, joka vastaa {standard_drinks} annosta. Keskimäärin on juotu {avg_standard_drinks} annosta per päivä. Lisäksi kaikki käyttäjät globaalisti ovat yhteensä tilastoineet {global_drinks_count} juomaa. Hienosti.\n\nTop10 tilastot:\n\n{top10List}'
+        },
+
+        /* /wappu */
+        wappu: {
+            cmd_description: '/wappu - Listaa Otaniemen termisestä wapusta alkaen (10.4.) juodut juomat sekä keskiarvon globaalisti',
+            private: 'Olet {day_count} päivän aikana tuhonnut {grams} grammaa alkoholia, joka vastaa {standard_drinks} annosta. Keskimäärin olet juonut {avg_standard_drinks} annosta per päivä. Hyvää wappua!',
+            group: 'Wapputilastoja:\n\nWappupäiviä: {day_count}\nAlkoholia tuhottu: {count}kpl, {grams}g, {standard_drinks} annosta.\nJuotu per päivä: {avg_count}kpl, {avg_standard_drinks} annosta.\nKaikki käyttäjät tuhonneet: {global_drinks_count}kpl, {global_drinks_grams}g, {global_drinks_standard} annosta. Hyvää wappua!\n\nTop10 tilastot:\n\n{top10List}'
         },
 
         /* /terms */
