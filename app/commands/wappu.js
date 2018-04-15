@@ -63,7 +63,7 @@ function printWappuStats(context, msg, words, user) {
                     avg_count: utils.roundTo(count / daysBetween, 1),
                     avg_standard_drinks: utils.roundTo((grams / daysBetween / STANDARD_DRINK_GRAMS), 1),
                     global_drinks_count: res.drinkCount.count,
-                    global_drinks_grams: utils.roundTo(res.drinkCount.sum / 1000.0, 1),
+                    global_drinks_grams: utils.roundTo(res.drinkCount.sum / 1000.0, 0),
                     global_drinks_standard: utils.roundTo(res.drinkCount.sum / 1000.0 / STANDARD_DRINK_GRAMS),
                     top10List: top10text
                 }));

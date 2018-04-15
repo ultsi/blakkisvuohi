@@ -85,7 +85,7 @@ stats.getWappuStats = function(group, hours) {
     return Promise.all([
         query('select drinks.userid, nick, count from (select userid, count(*) as count from users_drinks where users_drinks.created >= $2 group by userid) as drinks left outer join users on users.userid=drinks.userid left outer join users_in_groups on users_in_groups.userid=users.userid where users_in_groups.groupid=$1 order by count desc limit 10', [group.groupId, hoursAgo]),
         query('select sum(alcohol) as sum, count(alcohol) as count, min(created) as created from users_in_groups left outer join users_drinks on users_drinks.userid=users_in_groups.userid and users_in_groups.groupid=$1 and users_drinks.created >= $2', [group.groupId, hoursAgo]),
-        query('select count(distinct id) as count, sum(alcohol) as sum from users_drinks')
+        query('select count(distinct id) as count, sum(alcohol) as sum from users_drinks where users_drinks.created >= $1', [hoursAgo])
     ]).then((res) => {
         return Promise.resolve({
             top10UserStats: res[0][0],
