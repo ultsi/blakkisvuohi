@@ -169,7 +169,7 @@ module.exports = {
         wappu: {
             cmd_description: '/wappu - Listaa Otaniemen termisestä wapusta alkaen (10.4.) juodut juomat sekä keskiarvon globaalisti',
             private: 'Olet {day_count} päivän aikana tuhonnut {grams} grammaa alkoholia, joka vastaa {standard_drinks} annosta. Keskimäärin olet juonut {avg_standard_drinks} annosta per päivä. Hyvää wappua!',
-            group: 'Wapputilastoja:\n\nWappupäiviä: {day_count}\nAlkoholia tuhottu: {count}kpl, {grams}g, {standard_drinks} annosta.\nJuotu per päivä: {avg_count}kpl, {avg_standard_drinks} annosta.\nKaikki käyttäjät tuhonneet: {global_drinks_count}kpl, {global_drinks_grams}g, {global_drinks_standard} annosta. Hyvää wappua!\n\nTop10 tilastot:\n\n{top10List}'
+            group: 'Wapputilastoja:\n\nWappupäiviä: {day_count}\nAlkoholia tuhottu: {count}kpl / {grams}g / {standard_drinks} annosta.\nJuotu per päivä: {avg_count}kpl / {avg_standard_drinks} annosta.\nKaikki käyttäjät tuhonneet: {global_drinks_count}kpl / {global_drinks_grams}g / {global_drinks_standard} annosta. \n\nHyvää wappua!\n\nTop10 tilastot:\n\n{top10List}'
         },
 
         /* /terms */
