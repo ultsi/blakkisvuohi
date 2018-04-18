@@ -69,6 +69,7 @@ module.exports = function(bot) {
     require('./commands/kuvaaja.js');
     require('./commands/laatta.js');
     require('./commands/moro.js');
+    require('./commands/poistu.js');
     require('./commands/promillet.js')
     require('./commands/start.js');;
     require('./commands/stats.js');
