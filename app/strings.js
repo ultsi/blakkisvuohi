@@ -151,6 +151,12 @@ module.exports = {
             join_text: 'Rippaa rauhassa kera {chat_title} -kavereiden.'
         },
 
+        /* /poistu */
+        poistu: {
+            cmd_description: '/poistu - Poistu ryhmästä.',
+            leave_text: 'Ei enää rippausta kera {chat_title} -kavereiden.'
+        },
+
         /* /promillet */
         promillet: {
             cmd_description: '/promillet - näytä sinun tai ryhmän promillet. Yksityisviestinä käytettynä listaa myös viimeisen 3pv tapahtumat.',

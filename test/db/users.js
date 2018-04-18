@@ -218,13 +218,15 @@ describe('users.js', function() {
                 .then(() => query('select * from users_in_groups where userid=$1', [user.userId]))
                 .then((res) => {
                     let rows = res[0];
+                    assert.equal(rows.length, 2);
                     assert(rows.find(x => x.userid === user.userId && x.groupid === utils.hashSha256(12347)));
                     return user.leaveGroup(12347);
                 })
                 .then(() => query('select * from users_in_groups where userid=$1', [user.userId]))
                 .then((res) => {
                     let rows = res[0];
-                    assert.equal(rows.length, 0);
+                    assert.equal(rows.length, 1);
+                    assert(!rows.find(x => x.groupid === utils.hashSha256(12347)));
                     done();
                 })
                 .catch((err) => done(err));
