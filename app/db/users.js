@@ -129,6 +129,19 @@ User.prototype.joinGroup = function(groupId) {
         });
 };
 
+User.prototype.leaveGroup = function(groupId) {
+    let groupIdHash = utils.hashSha256(groupId);
+    return query('select userId, groupId from users_in_groups where userId=$1 and groupId=$2', [this.userId, groupIdHash])
+        .then((res) => {
+            const rows = res[0];
+            if (rows.length > 0) {
+                return query('delete from users_in_groups where userId=$1 and groupId=$2', [this.userId, groupIdHash]);
+            } else {
+                return Promise.resolve(true);
+            }
+        });
+};
+
 User.prototype.drinkBoozeReturnEBAC = function(amount, description) {
     let self = this;
     return self.drinkBooze(amount, description)

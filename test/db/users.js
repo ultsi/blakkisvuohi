@@ -211,6 +211,26 @@ describe('users.js', function() {
         });
     });
 
+    describe('User.leaveGroup()', function() {
+        it('should delete user from a group in db', function(done) {
+            const user = blakkistest.users[0];
+            user.joinGroup(12347)
+                .then(() => query('select * from users_in_groups where userid=$1', [user.userId]))
+                .then((res) => {
+                    let rows = res[0];
+                    assert(rows.find(x => x.userid === user.userId && x.groupid === utils.hashSha256(12347)));
+                    return user.leaveGroup(12347);
+                })
+                .then(() => query('select * from users_in_groups where userid=$1', [user.userId]))
+                .then((res) => {
+                    let rows = res[0];
+                    assert.equal(rows.length, 0);
+                    done();
+                })
+                .catch((err) => done(err));
+        });
+    });
+
     describe('User.drinkBoozeReturnEBAC()', function() {
         it('should insert drink to the db and return ebac after that', function(done) {
             const user = blakkistest.users[3];
