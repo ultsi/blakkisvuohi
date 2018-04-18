@@ -40,7 +40,7 @@ describe('wappu.js', function() {
         Commands.call('/wappu', mocked.msg, ['/wappu'])
             .then(() => {
                 assert.equal(mocked.internals.sentChatId, mocked.msg.chat.id);
-                assert.equal(mocked.internals.sentText.match(/\n/g).length, 10); // Tilastoja\n\nStats...\n\nTop10 tilastot:\n\n1\n2
+                assert.equal(mocked.internals.sentText.match(/\n/g).length, 12); // Tilastoja\n\nStats...\n\nTop10 tilastot:\n\n1\n2
                 done();
             })
             .catch((err) => done(err));
@@ -52,8 +52,9 @@ describe('wappu.js', function() {
         mocked.msg.chat.type = 'chat';
         Commands.call('/wappu', mocked.msg, ['/wappu'])
             .then(() => {
+                console.log(mocked.internals.sentText)
                 assert.equal(mocked.internals.sentChatId, mocked.msg.chat.id);
-                assert.equal(mocked.internals.sentText.match(/\n/g).length, 9); // Tilastoja\n\nStats...\n\nTop10 tilastot:\n\n
+                assert.equal(mocked.internals.sentText.match(/\n/g).length, 11); // Tilastoja\n\nStats...\n\nTop10 tilastot:\n\n
                 done();
             })
             .catch((err) => done(err));
