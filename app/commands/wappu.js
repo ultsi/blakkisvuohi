@@ -29,7 +29,7 @@ const STANDARD_DRINK_GRAMS = require('../constants.js').STANDARD_DRINK_GRAMS;
 const strings = require('../strings.js');
 
 function printWappuStats(context, msg, words, user) {
-    const hours = (Date.now()-1523307600*1000)/1000/60/60; // from 10.4. 00:00
+    const hours = (Date.now() - 1523307600 * 1000) / 1000 / 60 / 60; // from 10.4. 00:00
     if (context.isPrivateChat()) {
         return user.getDrinkSumForXHours(hours)
             .then((res) => {
@@ -52,7 +52,7 @@ function printWappuStats(context, msg, words, user) {
                 const top10Stats = res.top10UserStats;
                 const top10text = top10Stats.map((stats) => utils.decrypt(stats.nick) + ' - ' + stats.count).join('\n');
                 const groupDrinkSum = res.groupDrinkSum;
-                const daysBetween = utils.roundTo(hours/24, 1);
+                const daysBetween = utils.roundTo(hours / 24, 1);
                 const grams = groupDrinkSum.sum / 1000.0;
                 const count = groupDrinkSum.count;
                 return context.chatReply(strings.commands.wappu.group.format({

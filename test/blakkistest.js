@@ -28,8 +28,11 @@ const users = require('../app/db/users.js');
 const groups = require('../app/db/groups.js');
 const announcements = require('../app/announcements.js');
 const log = require('loglevel');
-const query = require('pg-query');
-query.connectionParameters = process.env.DATABASE_URL;
+
+const pg = require('pg');
+const pool = new pg.Pool({
+    connectionString: process.env.DATABASE_URL
+});;
 
 const blakkistest = module.exports = {};
 
@@ -111,9 +114,9 @@ blakkistest.mockMsgAndBot = () => {
 */
 blakkistest.clearDb = function(done) {
     Promise.all([
-        query('delete from users'),
-        query('delete from users_drinks'),
-        query('delete from users_in_groups')
+        pool.query('delete from users'),
+        pool.query('delete from users_drinks'),
+        pool.query('delete from users_in_groups')
     ]).then(() => {
         done();
     }).catch((err) => {
@@ -123,13 +126,13 @@ blakkistest.clearDb = function(done) {
 
 blakkistest.resetDbWithTestUsersAndGroups = function(done) {
     Promise.all([
-        query('delete from users'),
-        query('delete from users_drinks'),
-        query('delete from users_in_groups')
+        pool.query('delete from users'),
+        pool.query('delete from users_drinks'),
+        pool.query('delete from users_in_groups')
     ]).then(() => {
         Promise.all([
-                query('insert into users (userid, nick, weight, gender, height, read_terms, read_announcements) values ' + userInsertValuesStr.join(', ')),
-                query('insert into users_in_groups (groupid, userid) values ' + userInGroupsValuesStr.join(', '))
+                pool.query('insert into users (userid, nick, weight, gender, height, read_terms, read_announcements) values ' + userInsertValuesStr.join(', ')),
+                pool.query('insert into users_in_groups (groupid, userid) values ' + userInGroupsValuesStr.join(', '))
             ])
             .then(() => done()).catch((err) => done(new Error(err)));
     }).catch((err) => {
@@ -139,14 +142,14 @@ blakkistest.resetDbWithTestUsersAndGroups = function(done) {
 
 blakkistest.resetDbWithTestUsersAndGroupsAndDrinks = function(done) {
     Promise.all([
-        query('delete from users'),
-        query('delete from users_drinks'),
-        query('delete from users_in_groups')
+        pool.query('delete from users'),
+        pool.query('delete from users_drinks'),
+        pool.query('delete from users_in_groups')
     ]).then(() => {
         Promise.all([
-                query('insert into users (userid, nick, weight, gender, height, read_terms, read_announcements) values ' + userInsertValuesStr.join(', ')),
-                query('insert into users_in_groups (groupid, userid) values ' + userInGroupsValuesStr.join(', ')),
-                query(`insert into users_drinks (userid, alcohol, description, created) values ('${blakkistest.users[0].userId}', 12347, 'kalja', now()), ('${blakkistest.users[0].userId}', 12347, 'kalja', now() - interval '1 second'), ('${blakkistest.users[1].userId}', 12347, 'kalja', now())`)
+                pool.query('insert into users (userid, nick, weight, gender, height, read_terms, read_announcements) values ' + userInsertValuesStr.join(', ')),
+                pool.query('insert into users_in_groups (groupid, userid) values ' + userInGroupsValuesStr.join(', ')),
+                pool.query(`insert into users_drinks (userid, alcohol, description, created) values ('${blakkistest.users[0].userId}', 12347, 'kalja', now()), ('${blakkistest.users[0].userId}', 12347, 'kalja', now() - interval '1 second'), ('${blakkistest.users[1].userId}', 12347, 'kalja', now())`)
             ])
             .then(() => done()).catch((err) => done(new Error(err)));
     }).catch((err) => {

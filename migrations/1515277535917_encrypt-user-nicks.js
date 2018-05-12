@@ -17,15 +17,17 @@
 */
 
 'use strict';
-const query = require('pg-query');
+const pg = require('pg');
+const pool = new pg.Pool({
+    connectionString: process.env.DATABASE_URL
+});
 const utils = require('../app/lib/utils.js');
-query.connectionParameters = process.env.DATABASE_URL;
 
 exports.up = () => {
-    return query('select userid, nick from users')
+    return pool.query('select userid, nick from users')
         .then((res) => {
             try {
-                const rows = res[0];
+                const rows = res.rows;
                 if (rows.length > 0) {
                     const valuePairs = rows.map((u, key) => '($' + (2 * key + 1) + ', $' + (2 * key + 2) + ')');
                     const params = rows.reduce((arr, u) => {
@@ -34,7 +36,7 @@ exports.up = () => {
                         return arr;
                     }, []);
                     const queryStr = 'UPDATE users set nick = u.value from (VALUES ' + valuePairs.join(', ') + ') as u(id, value) WHERE u.id = users.userid';
-                    return query(queryStr, params)
+                    return pool.query(queryStr, params)
                         .then(() => {
                             return Promise.resolve();
                         }).catch((err) => {
@@ -55,10 +57,10 @@ exports.up = () => {
 };
 
 exports.down = () => {
-    query('select userid, nick from users')
+    return pool.query('select userid, nick from users')
         .then((res) => {
             try {
-                const rows = res[0];
+                const rows = res.rows;
                 const valuePairs = rows.map((u, key) => '($' + (2 * key + 1) + ', $' + (2 * key + 2) + ')');
                 const params = rows.reduce((arr, u) => {
                     arr.push(u.userid);
@@ -66,7 +68,7 @@ exports.down = () => {
                     return arr;
                 }, []);
                 const queryStr = 'UPDATE users set nick = u.value from (VALUES ' + valuePairs.join(', ') + ') as u(id, value) WHERE u.id = users.userid';
-                return query(queryStr, params)
+                return pool.query(queryStr, params)
                     .then(() => {
                         return Promise.resolve();
                     }).catch((err) => {

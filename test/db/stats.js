@@ -28,8 +28,11 @@
 const assert = require('assert');
 const blakkistest = require('../blakkistest.js');
 const stats = require('../../app/db/stats.js');
-const query = require('pg-query');
-query.connectionParameters = process.env.DATABASE_URL;
+
+const pg = require('pg');
+const pool = new pg.Pool({
+    connectionString: process.env.DATABASE_URL
+});;
 
 
 describe('stats.js', function() {

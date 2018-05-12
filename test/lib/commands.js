@@ -68,32 +68,32 @@ describe('commands.js', function() {
         it('should send help string msg privately with /start', function(done) {
             const mocked = blakkistest.mockMsgAndBot();
             Commands.call('/start', mocked.msg, ['/start'])
-            .then(() => {
-                assert.equal(mocked.internals.sentChatId, mocked.privateId);
-                assert.equal(mocked.internals.sentText, strings.commands.blakkis.help_text);
-                done();
-            }).catch((err) => done(err));
+                .then(() => {
+                    assert.equal(mocked.internals.sentChatId, mocked.privateId);
+                    assert.equal(mocked.internals.sentText, strings.commands.blakkis.help_text);
+                    done();
+                }).catch((err) => done(err));
         });
 
         it('should send cmds string msg privately with /komennot', function(done) {
             const mocked = blakkistest.mockMsgAndBot();
             Commands.call('/komennot', mocked.msg, ['/komennot'])
-            .then(() => {
-                assert.equal(mocked.internals.sentChatId, mocked.privateId);
-                assert.notEqual(mocked.internals.sentText.indexOf(strings.commands.blakkis.cmd_list.unformat()), -1);
-                done();
-            }).catch((err) => done(err));
+                .then(() => {
+                    assert.equal(mocked.internals.sentChatId, mocked.privateId);
+                    assert.notEqual(mocked.internals.sentText.indexOf(strings.commands.blakkis.cmd_list.unformat()), -1);
+                    done();
+                }).catch((err) => done(err));
         });
 
         it('should send help string and cmds string msg privately with /help', function(done) {
             const mocked = blakkistest.mockMsgAndBot();
             Commands.call('/help', mocked.msg, ['/help'])
-            .then(() => {
-                assert.equal(mocked.internals.sentChatId, mocked.privateId);
-                assert.notEqual(mocked.internals.sentText.indexOf(strings.commands.blakkis.cmd_list.unformat()), -1);
-                assert.notEqual(mocked.internals.sentText.indexOf(strings.commands.blakkis.help_text.unformat()), -1);
-                done();
-            }).catch((err) => done(err));
+                .then(() => {
+                    assert.equal(mocked.internals.sentChatId, mocked.privateId);
+                    assert.notEqual(mocked.internals.sentText.indexOf(strings.commands.blakkis.cmd_list.unformat()), -1);
+                    assert.notEqual(mocked.internals.sentText.indexOf(strings.commands.blakkis.help_text.unformat()), -1);
+                    done();
+                }).catch((err) => done(err));
         });
 
         it('a user command should not be able to be called by a non-user and a user404 string should be sent', function(done) {
@@ -143,7 +143,9 @@ describe('commands.js', function() {
         it('an admin command should not be able to called by a non-admin and a msg is sent to the initiating user', function(done) {
             const mocked = blakkistest.mockMsgAndBot();
             mocked.msg.chat.type = 'private';
-            Commands.register('/admin_command', 'help', Commands.SCOPE_ALL, Commands.PRIVILEGE_ADMIN, Commands.TYPE_SINGLE, () => {throw  new Error('You shouldn\'t see this error')});
+            Commands.register('/admin_command', 'help', Commands.SCOPE_ALL, Commands.PRIVILEGE_ADMIN, Commands.TYPE_SINGLE, () => {
+                throw new Error('You shouldn\'t see this error')
+            });
             Commands.call('/admin_command', mocked.msg, ['/admin_command'])
                 .then(() => {
                     assert.equal(mocked.internals.sentChatId, mocked.privateId);
@@ -164,7 +166,9 @@ describe('commands.js', function() {
 
         it('should send general error if command itself is erroneous', function(done) {
             const mocked = blakkistest.mockMsgAndBot();
-            Commands.register('/testfail', '/testfail',  Commands.SCOPE_ALL, Commands.PRIVILEGE_ALL, Commands.TYPE_SINGLE, () => {throw new Error('You should see this error from /testfail');});
+            Commands.register('/testfail', '/testfail', Commands.SCOPE_ALL, Commands.PRIVILEGE_ALL, Commands.TYPE_SINGLE, () => {
+                throw new Error('You should see this error from /testfail');
+            });
             Commands.call('/testfail', mocked.msg, ['/testfail'])
                 .then(() => {
                     assert.equal(mocked.internals.sentText, strings.commands.blakkis.error);
