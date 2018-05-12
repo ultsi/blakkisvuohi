@@ -29,8 +29,11 @@ const blakkistest = require('../blakkistest.js');
 const assert = require('assert');
 const groups = require('../../app/db/groups.js');
 const utils = require('../../app/lib/utils.js');
-const query = require('pg-query');
-query.connectionParameters = process.env.DATABASE_URL;
+
+const pg = require('pg');
+const pool = new pg.Pool({
+    connectionString: process.env.DATABASE_URL
+});;
 
 describe('groups.js', function() {
     beforeEach(blakkistest.resetDbWithTestUsersAndGroupsAndDrinks);

@@ -66,7 +66,7 @@ let command = {
                     centiliters < 0 || centiliters > 250 ||
                     vol < 0 || vol >= 100) {
                     context.privateReply(strings.commands.jalkikellotus.input_drinks_drink_error.format({
-                        drink: i/2+1
+                        drink: i / 2 + 1
                     }));
                     return false;
                 }
@@ -82,7 +82,7 @@ let command = {
                     drinks.push({
                         name: strings.commands.jalkikellotus.drink_name,
                         centiliters: utils.parseFloat(words[i]),
-                        vol: utils.parseFloat(words[i+1])
+                        vol: utils.parseFloat(words[i + 1])
                     });
                 }
                 context.storeVariable('drinks', drinks);

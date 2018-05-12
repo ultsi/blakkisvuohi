@@ -22,13 +22,16 @@
 */
 
 'use strict';
-const query = require('pg-query');
+
+const pg = require('pg');
+const pool = new pg.Pool({
+    connectionString: process.env.DATABASE_URL
+});;
 const log = require('loglevel').getLogger('db');
 const utils = require('../lib/utils.js');
 const alcomath = require('../lib/alcomath.js');
 const announcements = require('../announcements.js');
 const settings = require('../settings.js');
-query.connectionParameters = process.env.DATABASE_URL;
 
 let users = module.exports = {};
 
@@ -50,7 +53,7 @@ users.new = function(userId, nick, weight, gender, height, read_terms) {
 
     log.debug('Creating user... params:');
     log.debug(params);
-    return query('insert into users (userId, nick, weight, gender, height, read_terms, read_announcements) values ($1, $2, $3, $4, $5, $6, $7)', params)
+    return pool.query('insert into users (userId, nick, weight, gender, height, read_terms, read_announcements) values ($1, $2, $3, $4, $5, $6, $7)', params)
         .then(() => {
             console.log('created new user ' + nick);
             return Promise.resolve(new User(params[0], utils.decrypt(params[1]), params[2], gender, params[4], params[5], Date.now()));
@@ -63,12 +66,11 @@ users.new = function(userId, nick, weight, gender, height, read_terms) {
 
 users.find = function find(userId) {
     userId = utils.hashSha256(userId);
-    return query('select userId, nick, weight, gender, height, read_terms, read_announcements, created from users where userId=$1', [userId])
+    return pool.query('select userId, nick, weight, gender, height, read_terms, read_announcements, created from users where userId=$1', [userId])
         .then((res) => {
             log.debug('Finding user... ' + userId);
-            let rows = res[0];
-            let info = res[1];
-            if (rows.length > 0 && info.rowCount > 0) {
+            let rows = res.rows;
+            if (rows.length > 0) {
                 let found = rows[0];
                 let nick = utils.decrypt(found.nick);
                 return Promise.resolve(new User(found.userid, nick, found.weight, found.gender, found.height, found.read_terms, found.read_announcements, found.created));
@@ -83,59 +85,59 @@ User.prototype.isAdmin = function() {
 };
 
 User.prototype.drinkBooze = function(amount, description) {
-    return query('insert into users_drinks (userId, alcohol, description) values($1, $2, $3)', [this.userId, amount, description]);
+    return pool.query('insert into users_drinks (userId, alcohol, description) values($1, $2, $3)', [this.userId, amount, description]);
 };
 
 User.prototype.getBooze = function() {
-    return query('select alcohol, description, created from users_drinks where userId = $1 order by created asc', [this.userId])
+    return pool.query('select alcohol, description, created from users_drinks where userId = $1 order by created asc', [this.userId])
         .then((res) => {
-            return Promise.resolve(res[0]);
+            return Promise.resolve(res.rows);
         });
 };
 
 User.prototype.getDrinkSumForXHours = function(hours) {
     let hoursAgo = utils.getDateMinusHours(hours);
-    return query('select sum(alcohol) as sum, min(created) as created from users_drinks where userId = $1 and created > $2 ', [this.userId, hoursAgo])
+    return pool.query('select sum(alcohol) as sum, min(created) as created from users_drinks where userId = $1 and created > $2 ', [this.userId, hoursAgo])
         .then((res) => {
-            return Promise.resolve(res[0][0]);
+            return Promise.resolve(res.rows[0]);
         });
 };
 
 User.prototype.undoDrink = function() {
-    return query('delete from users_drinks where created=(select created from users_drinks where userid = $1 order by created desc limit 1)', [this.userId])
+    return pool.query('delete from users_drinks where created=(select created from users_drinks where userid = $1 order by created desc limit 1)', [this.userId])
         .then((res) => {
-            return Promise.resolve(res[0]);
+            return Promise.resolve(res.rows);
         });
 };
 
 User.prototype.getBoozeForLastHours = function(hours) {
     let hoursAgo = utils.getDateMinusHours(hours);
-    return query('select alcohol, description, created from users_drinks where userId = $1 and created > $2 order by created desc', [this.userId, hoursAgo.toISOString()])
+    return pool.query('select alcohol, description, created from users_drinks where userId = $1 and created > $2 order by created desc', [this.userId, hoursAgo.toISOString()])
         .then((res) => {
-            return Promise.resolve(res[0]);
+            return Promise.resolve(res.rows);
         });
 };
 
 User.prototype.joinGroup = function(groupId) {
     let groupIdHash = utils.hashSha256(groupId);
-    return query('select userId, groupId from users_in_groups where userId=$1 and groupId=$2', [this.userId, groupIdHash])
+    return pool.query('select userId, groupId from users_in_groups where userId=$1 and groupId=$2', [this.userId, groupIdHash])
         .then((res) => {
-            const rows = res[0];
+            const rows = res.rows;
             if (rows.length > 0) {
                 return Promise.resolve(true);
             } else {
-                return query('insert into users_in_groups (userId, groupId) values ($1, $2)', [this.userId, groupIdHash]);
+                return pool.query('insert into users_in_groups (userId, groupId) values ($1, $2)', [this.userId, groupIdHash]);
             }
         });
 };
 
 User.prototype.leaveGroup = function(groupId) {
     let groupIdHash = utils.hashSha256(groupId);
-    return query('select userId, groupId from users_in_groups where userId=$1 and groupId=$2', [this.userId, groupIdHash])
+    return pool.query('select userId, groupId from users_in_groups where userId=$1 and groupId=$2', [this.userId, groupIdHash])
         .then((res) => {
-            const rows = res[0];
+            const rows = res.rows;
             if (rows.length > 0) {
-                return query('delete from users_in_groups where userId=$1 and groupId=$2', [this.userId, groupIdHash]);
+                return pool.query('delete from users_in_groups where userId=$1 and groupId=$2', [this.userId, groupIdHash]);
             } else {
                 return Promise.resolve(true);
             }
@@ -161,7 +163,7 @@ User.prototype.drinkBoozeLate = function(drinks, hours) {
         let drink = drinks[i];
         let hoursAgo = utils.getDateMinusHours(hours - hours / Math.max(drinks.length - 1, 1) * i);
         log.debug(hoursAgo);
-        queries.push(query('insert into users_drinks (userId, alcohol, description, created) values($1, $2, $3, $4)', [this.userId, drink.mg, drink.text, hoursAgo]));
+        queries.push(pool.query('insert into users_drinks (userId, alcohol, description, created) values($1, $2, $3, $4)', [this.userId, drink.mg, drink.text, hoursAgo]));
     }
     return Promise.all(queries)
         .then(() => self.getBooze())
@@ -174,14 +176,14 @@ User.prototype.drinkBoozeLate = function(drinks, hours) {
 User.prototype.updateInfo = function(username, weight, gender, height, read_terms) {
     let self = this;
     username = utils.encrypt(username);
-    return query('update users set nick=$1, weight=$2, gender=$3, height=$4, read_terms=$5 where userId=$6 returning userId, nick, weight, gender, read_terms, created', [username, weight, gender, height, read_terms, self.userId])
+    return pool.query('update users set nick=$1, weight=$2, gender=$3, height=$4, read_terms=$5 where userId=$6 returning userId, nick, weight, gender, read_terms, created', [username, weight, gender, height, read_terms, self.userId])
         .then((res) => {
-            const found = res[0][0];
+            const found = res.rows[0];
             return Promise.resolve(new User(found.userid, utils.decrypt(found.nick), found.weight, found.gender, found.height, found.read_terms, found.read_announcements, found.created));
         });
 };
 
 User.prototype.updateReadAnnouncements = function(read_announcements_count) {
     const self = this;
-    return query('update users set read_announcements=$1 where userId=$2', [read_announcements_count, self.userId]);
+    return pool.query('update users set read_announcements=$1 where userId=$2', [read_announcements_count, self.userId]);
 };

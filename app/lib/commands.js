@@ -156,14 +156,16 @@ Commands.call = function call(firstWord, msg, words) {
             .then((user) => {
                 if (!user) {
                     if (cmd.privilege === Commands.PRIVILEGE_ADMIN && msg.from.id !== settings.admin_id) {
-                        return Promise.reject(new errors.UserNotAdmin({userId: msg.from.id}));
+                        return Promise.reject(new errors.UserNotAdmin({
+                            userId: msg.from.id
+                        }));
                     }
-                    if(cmd.privilege === Commands.PRIVILEGE_USER) {
+                    if (cmd.privilege === Commands.PRIVILEGE_USER) {
                         return Promise.reject(new errors.UserNotFound(user));
                     }
                 }
                 if (user) {
-                    if(cmd.privilege === Commands.PRIVILEGE_ADMIN && !user.isAdmin()) {
+                    if (cmd.privilege === Commands.PRIVILEGE_ADMIN && !user.isAdmin()) {
                         return Promise.reject(new errors.UserNotAdmin(user));
                     }
                     /*

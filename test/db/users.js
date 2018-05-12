@@ -30,8 +30,11 @@ const assert = require('assert');
 const users = require('../../app/db/users.js');
 const utils = require('../../app/lib/utils.js');
 const announcements = require('../../app/announcements.js');
-const query = require('pg-query');
-query.connectionParameters = process.env.DATABASE_URL;
+
+const pg = require('pg');
+const pool = new pg.Pool({
+    connectionString: process.env.DATABASE_URL
+});
 
 describe('users.js', function() {
     beforeEach(blakkistest.resetDbWithTestUsersAndGroupsAndDrinks);
@@ -55,10 +58,10 @@ describe('users.js', function() {
             users.new('1', 'nick', 90, 'mies', 190, true, 1, Date.now())
                 .then((user) => {
                     assert.equal(user.username, 'nick');
-                    return query('select * from users');
+                    return pool.query('select * from users');
                 })
                 .then((res) => {
-                    assert.notEqual(res[0].find(x => x.userid === utils.hashSha256('1')), undefined);
+                    assert.notEqual(res.rows.find(x => x.userid === utils.hashSha256('1')), undefined);
                     done();
                 })
                 .catch((err) => done(err));
@@ -66,9 +69,9 @@ describe('users.js', function() {
 
         it('should hash user id and encrypt user nick', function(done) {
             users.new('1', 'nick', 90, 'mies', 190, true, 1, Date.now())
-                .then((user) => query('select * from users where userid=$1', [user.userId]))
+                .then((user) => pool.query('select * from users where userid=$1', [user.userId]))
                 .then((res) => {
-                    const found = res[0][0];
+                    const found = res.rows[0];
                     assert.notEqual(found.userid, '1');
                     assert.notEqual(found.nick, 'nick');
                     assert.equal(found.userid, utils.hashSha256('1'));
@@ -110,9 +113,9 @@ describe('users.js', function() {
     describe('User.drinkBooze()', function() {
         it('should insert a correct amount of drink to db', function(done) {
             const user = blakkistest.users[2];
-            query('select * from users_drinks where userid=$1', [user.userId])
+            pool.query('select * from users_drinks where userid=$1', [user.userId])
                 .then((res) => {
-                    const rows = res[0];
+                    const rows = res.rows;
                     if (rows.length > 0) {
                         const err = new Error('user doesn\'t have 0 drinks in db');
                         done(err);
@@ -120,9 +123,9 @@ describe('users.js', function() {
                     }
                     return user.drinkBooze(12347, 'kalja');
                 })
-                .then(() => query('select * from users_drinks where userId=$1', [user.userId]))
+                .then(() => pool.query('select * from users_drinks where userId=$1', [user.userId]))
                 .then((res) => {
-                    const rows = res[0];
+                    const rows = res.rows;
                     if (rows.length !== 1) {
                         const err = new Error('user doesn\'t have 1 drinks in db');
                         done(err);
@@ -201,9 +204,9 @@ describe('users.js', function() {
         it('should insert user to a group in db as a hash of the groupid', function(done) {
             const user = blakkistest.users[0];
             user.joinGroup(12347)
-                .then(() => query('select * from users_in_groups where userid=$1', [user.userId]))
+                .then(() => pool.query('select * from users_in_groups where userid=$1', [user.userId]))
                 .then((res) => {
-                    let rows = res[0];
+                    let rows = res.rows;
                     assert(rows.find(x => x.userid === user.userId && x.groupid === utils.hashSha256(12347)));
                     done();
                 })
@@ -215,16 +218,16 @@ describe('users.js', function() {
         it('should delete user from a group in db', function(done) {
             const user = blakkistest.users[0];
             user.joinGroup(12347)
-                .then(() => query('select * from users_in_groups where userid=$1', [user.userId]))
+                .then(() => pool.query('select * from users_in_groups where userid=$1', [user.userId]))
                 .then((res) => {
-                    let rows = res[0];
+                    let rows = res.rows;
                     assert.equal(rows.length, 2);
                     assert(rows.find(x => x.userid === user.userId && x.groupid === utils.hashSha256(12347)));
                     return user.leaveGroup(12347);
                 })
-                .then(() => query('select * from users_in_groups where userid=$1', [user.userId]))
+                .then(() => pool.query('select * from users_in_groups where userid=$1', [user.userId]))
                 .then((res) => {
-                    let rows = res[0];
+                    let rows = res.rows;
                     assert.equal(rows.length, 1);
                     assert(!rows.find(x => x.groupid === utils.hashSha256(12347)));
                     done();
@@ -258,9 +261,9 @@ describe('users.js', function() {
     describe('User.updateInfo', function() {
         it('should update user info in db', function(done) {
             const user = blakkistest.users[0];
-            query('select * from users where userId=$1', [user.userId])
+            pool.query('select * from users where userId=$1', [user.userId])
                 .then((res) => {
-                    const found = res[0][0];
+                    const found = res.rows[0];
                     assert.equal(utils.decrypt(found.nick), '0');
                     assert.equal(found.weight, 80);
                     assert.equal(found.gender, 'mies');
@@ -268,9 +271,9 @@ describe('users.js', function() {
                     assert.equal(found.read_terms, true);
                     return user.updateInfo('nick', 90, 'nainen', 200, false);
                 })
-                .then(() => query('select * from users where userId=$1', [user.userId]))
+                .then(() => pool.query('select * from users where userId=$1', [user.userId]))
                 .then((res) => {
-                    const found = res[0][0];
+                    const found = res.rows[0];
                     assert.equal(utils.decrypt(found.nick), 'nick');
                     assert.equal(found.weight, 90);
                     assert.equal(found.gender, 'nainen');
@@ -285,15 +288,15 @@ describe('users.js', function() {
     describe('User.updateReadAnnouncements', function() {
         it('should update user read announcements value in db', function(done) {
             const user = blakkistest.users[0];
-            query('select * from users where userId=$1', [user.userId])
+            pool.query('select * from users where userId=$1', [user.userId])
                 .then((res) => {
-                    const found = res[0][0];
+                    const found = res.rows[0];
                     assert.equal(found.read_announcements, announcements.length);
                     return user.updateReadAnnouncements(announcements.length + 1);
                 })
-                .then(() => query('select * from users where userId=$1', [user.userId]))
+                .then(() => pool.query('select * from users where userId=$1', [user.userId]))
                 .then((res) => {
-                    const found = res[0][0];
+                    const found = res.rows[0];
                     assert.equal(found.read_announcements, announcements.length + 1);
                     done();
                 })
