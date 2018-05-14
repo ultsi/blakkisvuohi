@@ -32,6 +32,10 @@ contexts.Context = class {
         this.msg = msg;
         this.phase = 'start';
         this.variables = {};
+        this.inline_ui = {
+            state: null,
+            parent: null
+        };
     }
 
     privateReply(text) {
@@ -43,15 +47,7 @@ contexts.Context = class {
                 'remove_keyboard': true
             }
         };
-        return self.msg.sendMessage(self.msg.from.id, text, options)
-            .then(() => {
-                log.debug('Sent ' + text + ' to ' + self.msg.from.username);
-                return Promise.resolve();
-            }).catch((err) => {
-                log.error('couldn\'t send private msg! Err: ' + err);
-                log.debug(err.stack);
-                return Promise.reject(err);
-            });
+        return self.msg.sendMessage(self.msg.from.id, text, options);
     }
 
     privateReplyWithKeyboard(text, keyboardButtons) {
@@ -65,43 +61,41 @@ contexts.Context = class {
             },
             'reply_to_message_id': this.msg.message_id
         };
-        return self.msg.sendMessage(self.msg.from.id, text, options)
-            .then(() => {
-                log.debug('Sent ' + text + ' to ' + self.msg.from.username);
-                return Promise.resolve();
-            }).catch((err) => {
-                log.error('couldn\'t send private msg! Err: ' + err);
-                log.debug(err.stack);
-                return Promise.reject(err);
-            });
+        return self.msg.sendMessage(self.msg.from.id, text, options);
+    }
+
+    inlineKeyboardMessage(text, inlineKeyboardButtons) {
+        let self = this;
+        let options = {
+            'parse_mode': 'Markdown',
+            'reply_markup': {
+                'inline_keyboard': inlineKeyboardButtons
+            }
+        };
+        return self.msg.sendMessage(self.msg.from.id, text, options);
+    }
+
+    inlineKeyboardEdit(inline_message_id, text, inlineKeyboardButtons) {
+        let self = this;
+        let options = {
+            'inline_message_id': inline_message_id,
+            'reply_markup': {
+                'inline_keyboard': inlineKeyboardButtons
+            }
+        };
+        return self.msg.editMessage(this.msg.from.id, text, options);
     }
 
     chatReply(text) {
         let self = this;
-        return self.msg.sendMessage(self.msg.chat.id, text)
-            .then(() => {
-                log.debug('Sent ' + text + ' to chat ' + self.msg.chat.title);
-                return Promise.resolve();
-            }).catch((err) => {
-                log.error('couldn\'t send chat msg! Err: ' + err);
-                log.debug(err.stack);
-                return Promise.reject(err);
-            });
+        return self.msg.sendMessage(self.msg.chat.id, text);
     }
 
     photoReply(stream, caption) {
         let self = this;
         return self.msg.sendPhoto(self.msg.chat.id, stream, {
-                caption: caption
-            })
-            .then(() => {
-                log.debug('Sent a photo to chat ' + self.msg.chat.title);
-                return Promise.resolve();
-            }).catch((err) => {
-                log.error('couldn\'t send photo to chat! Err: ' + err);
-                log.debug(err.stack);
-                return Promise.reject(err);
-            });
+            caption: caption
+        });
     }
 
     sendMessage(message) {
@@ -111,27 +105,24 @@ contexts.Context = class {
         let self = this;
 
         if (message.type === 'photo') {
-            return self.msg.sendPhoto(self.msg.chat.id, message.buffer, message.options)
-                .then(() => {
-                    log.debug('Sent a photo to chat ' + self.msg.chat.title);
-                    return Promise.resolve();
-                }).catch((err) => {
-                    log.error('couldn\'t send photo to chat! Err: ' + err);
-                    log.debug(err.stack);
-                    return Promise.reject(err);
-                });
+            return self.msg.sendPhoto(self.msg.chat.id, message.buffer, message.options);
         } else {
             let to = message.type === 'private_message' ? self.msg.from : self.msg.chat;
-            return self.msg.sendMessage(to.id, message.text, message.options)
-                .then(() => {
-                    log.debug('Sent ' + message.text + ' to ' + to.title || to.username || to.first_name);
-                    return Promise.resolve();
-                }).catch((err) => {
-                    log.error('couldn\'t send msg! Err: ' + err);
-                    log.debug(err.stack);
-                    return Promise.reject(err);
-                });
+            return self.msg.sendMessage(to.id, message.text, message.options);
         }
+    }
+
+    setInlineState(state) {
+        this.inline_ui.parent = this.inline_ui.state;
+        this.inline_ui.state = state;
+    }
+
+    get state() {
+        return this.inline_ui.state;
+    }
+
+    get parent() {
+        return this.inline_ui.parent;
     }
 
     storeVariable(key, value) {
