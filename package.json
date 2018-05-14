@@ -11,7 +11,8 @@
     "switch_to_dev": "export $(cat .env | xargs) && wget --spider https://api.telegram.org/bot$TOKEN/setWebhook?url= --delete-after && node index.js",
     "migrate": "export $(cat .env) && ./node_modules/node-pg-migrate/bin/node-pg-migrate up",
     "test": "export $(cat .env) && ./node_modules/mocha/bin/mocha -w test/*",
-    "test-with-coverage": "export $(cat .env) && nyc --reporter=text mocha --exit test/*"
+    "test-with-coverage": "export $(cat .env) && nyc --reporter=text mocha --exit test/*",
+    "test-only": "export $(cat .env) && ./node_modules/mocha/bin/mocha -w"
   },
   "engines": {
     "node": "8.9.4"
