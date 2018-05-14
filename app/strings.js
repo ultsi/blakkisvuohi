@@ -35,6 +35,9 @@ module.exports = {
         'male': 'Mies',
         'female': 'Nainen'
     },
+    yes: 'Kyllä',
+    no: 'Ei',
+    no_1st: 'En',
     commands: {
         /* System messages */
         blakkis: {
@@ -49,7 +52,8 @@ module.exports = {
             command_not_found: 'Mitä? Jos kaipaat apua käyttämiseen, kirjoita /help',
             command_error: 'Virhe! Komennon käyttöohje: {cmd_help}',
             error: 'Vakava virhe! Ota yhteyttä @ultsi, niin minut saadaan korjattua.',
-            on_cmd_register: 'Registered command {name}, scope: {scope}, privilege: {privilege}, type: {type}, definition: {definition}'
+            on_cmd_register: 'Registered command {name}, scope: {scope}, privilege: {privilege}, type: {type}, definition: {definition}',
+            back: '« Takaisin'
         },
 
         /* /about */
@@ -76,6 +80,66 @@ module.exports = {
             cmd_description: '/annokset - kertoo ryhmän kulutetut annokset viimeisen 48h ajalta',
             text_group: '{chat_title} -käyttäjien rippitaso:\nKäyttäjä...annoksia (yht. 12h/24h)\n\n{list}',
             text_group_list_item: '{username}... {standard_drinks}kpl ({drinks12h}/{drinks24h})'
+        },
+
+        beta: {
+            juo: {
+                button_text: 'Juo',
+                on_select_permilles: '*Nyt:* {permilles}‰, *30min:* {permilles30Min}‰.\nVeressäsi on {grams} grammaa alkoholia, joka vastaa {standard_drinks} annosta. Olet selvinpäin {hours}h {minutes}min päästä.',
+                on_select_drinks3h: '\n\nViimeisen kolmen tunnin tapahtumat:\n{drinkList3h}',
+                kumoa: {
+                    confirm: 'Olet kumoamassa viimeksi juodun juomasi. Oletko varma?',
+                    yes: 'Kyllä'
+                }
+            },
+            tunnus: {
+                button_text: 'Tunnus',
+                on_select: 'Tässä nykyiset tietosi:\n*Käyttäjä* {username}\n*ID:* {user_id}\n*Paino:* {weight}kg\n*Pituus:* {height}cm\n*Sukupuoli:* {gender}\n*Käyttäjä luotu:* {created}',
+                on_select_new_user: 'Voit luoda itsellesi tunnuksen valitsemalla Luo tunnus. Tarvitset tunnusta käyttääksesi suurinta osaa botin ominaisuuksista.',
+                luo: {
+                    button_text: 'Luo tunnus',
+                    on_select: 'Aloita tunnuksen luominen syöttämällä painosi kilogrammoissa ja kokonaislukuna:',
+                    weight_error: 'Syötä paino uudelleen. Painon pitää olla kokonaisluku ja ala- ja ylärajat ovat 20kg ja 250kg.',
+                    height: 'Paino syötetty. Syötä seuraavaksi pituus senttimetreissä:',
+                    height_error: 'Syötä pituus uudelleen. Pituuden täytyy olla kokonaisluku ja ala- ja ylärajat ovat 120cm ja 240cm.',
+                    gender: 'Pituus syötetty. Syötä seuraavaksi biologinen sukupuoli:',
+                    gender_error: 'Syötä joko mies tai nainen:',
+                    terms: 'Sukupuoli syötetty. \n\n{terms}\n\nOletko lukenut ja hyväksynyt käyttöehdot?',
+                    terms_answer_yes: 'Kyllä',
+                    terms_answer_no: 'En',
+                    terms_on_reject: 'Lue käyttöehdot ja hyväksy ne, ennen kuin voit käyttää muita komentoja.',
+                    terms_error: 'Oletko lukenut ja hyväksynyt käyttöehdot?',
+                    update: 'Olet jo rekisteröitynyt. Tiedot päivitetty.',
+                    update_error: 'Olet jo rekisteröitynyt, mutta tietojen päivityksessä tuli ongelma. Ota yhteyttä adminiin.',
+                    new_user: 'Moikka {username}! Tunnuksesi luotiin onnistuneesti. Muista, että kaikki antamani luvut ovat vain arvioita, eikä niihin voi täysin luottaa.\n\nJa eikun juomaan!'
+                },
+                muokkaa: {
+                    button_text: 'Muokkaa tunnusta',
+                    on_select: 'Voit muokata tässä tunnuksesi painoa, pituutta ja sukupuolta. Nimimerkin muokkaaminen onnistuu Telegramin tunnuksesi omista asetuksista.',
+                    paino: {
+                        button_text: 'Muokkaa painoa',
+                        on_select: '*Paino nyt:* {weight}\n\nSyötä uusi painosi kokonaislukuna.',
+                        on_change: 'Paino muutettu!'
+                    },
+                    pituus: {
+                        button_text: 'Muokkaa pituutta',
+                        on_select: '*Pituus nyt:* {height}\n\nSyötä uusi pituutesi kokonaislukuna.',
+                        on_change: 'Pituus muutettu!'
+                    },
+                    sukupuoli: {
+                        button_text: 'Muokkaa sukupuolta',
+                        on_select: '*Sukupuoli nyt:* {gender}\n\nValitse uusi biologinen sukupuolesi alta:',
+                        on_change: 'Sukupuoli muutettu!'
+                    }
+                },
+                poista: {
+                    button_text: 'Poista tunnus',
+                    on_select: 'Olet poistamassa tunnuksesi. Hyväksymällä poistat kaiken sinuun liittyvän tiedon Bläkkisvuohen tietokannoista eikä sinua enää ole mahdollista listata missään listauksissa.\n\nOletko varma, että haluat poistaa tunnuksesi?',
+                    double_confirm: 'Oletko aivan varma? Kaikki tietosi ollaan poistamassa.',
+                    canceled: 'Peruit tunnuksen poistamisen.',
+                    deleted: 'Kaikki tietosi on nyt poistettu. Rippaa rauhassa.'
+                }
+            }
         },
 
         help: {

@@ -56,7 +56,7 @@ users.new = function(userId, nick, weight, gender, height, read_terms) {
     return pool.query('insert into users (userId, nick, weight, gender, height, read_terms, read_announcements) values ($1, $2, $3, $4, $5, $6, $7)', params)
         .then(() => {
             console.log('created new user ' + nick);
-            return Promise.resolve(new User(params[0], utils.decrypt(params[1]), params[2], gender, params[4], params[5], Date.now()));
+            return new User(params[0], utils.decrypt(params[1]), params[2], gender, params[4], params[5], Date.now());
         }).catch((err) => {
             log.error(err);
             log.error(err.stack);
@@ -73,9 +73,9 @@ users.find = function find(userId) {
             if (rows.length > 0) {
                 let found = rows[0];
                 let nick = utils.decrypt(found.nick);
-                return Promise.resolve(new User(found.userid, nick, found.weight, found.gender, found.height, found.read_terms, found.read_announcements, found.created));
+                return new User(found.userid, nick, found.weight, found.gender, found.height, found.read_terms, found.read_announcements, found.created);
             } else {
-                return Promise.resolve();
+                return null;
             }
         });
 };
@@ -124,7 +124,7 @@ User.prototype.joinGroup = function(groupId) {
         .then((res) => {
             const rows = res.rows;
             if (rows.length > 0) {
-                return Promise.resolve(true);
+                return true;
             } else {
                 return pool.query('insert into users_in_groups (userId, groupId) values ($1, $2)', [this.userId, groupIdHash]);
             }
@@ -139,7 +139,7 @@ User.prototype.leaveGroup = function(groupId) {
             if (rows.length > 0) {
                 return pool.query('delete from users_in_groups where userId=$1 and groupId=$2', [this.userId, groupIdHash]);
             } else {
-                return Promise.resolve(true);
+                return true;
             }
         });
 };
@@ -150,7 +150,7 @@ User.prototype.drinkBoozeReturnEBAC = function(amount, description) {
         .then(() => self.getBooze())
         .then((drinks) => {
             let ebac = alcomath.calculateEBACFromDrinks(self, drinks);
-            return Promise.resolve(ebac);
+            return ebac;
         });
 };
 
@@ -169,7 +169,7 @@ User.prototype.drinkBoozeLate = function(drinks, hours) {
         .then(() => self.getBooze())
         .then((drinks) => {
             let ebac = alcomath.calculateEBACFromDrinks(self, drinks);
-            return Promise.resolve(ebac);
+            return ebac;
         });
 };
 
@@ -179,7 +179,7 @@ User.prototype.updateInfo = function(username, weight, gender, height, read_term
     return pool.query('update users set nick=$1, weight=$2, gender=$3, height=$4, read_terms=$5 where userId=$6 returning userId, nick, weight, gender, read_terms, created', [username, weight, gender, height, read_terms, self.userId])
         .then((res) => {
             const found = res.rows[0];
-            return Promise.resolve(new User(found.userid, utils.decrypt(found.nick), found.weight, found.gender, found.height, found.read_terms, found.read_announcements, found.created));
+            return new User(found.userid, utils.decrypt(found.nick), found.weight, found.gender, found.height, found.read_terms, found.read_announcements, found.created);
         });
 };
 

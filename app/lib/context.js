@@ -42,7 +42,6 @@ contexts.Context = class {
         let self = this;
         let options = {
             'parse_mode': 'Markdown',
-            'reply_to_message_id': this.msg.message_id,
             'reply_markup': {
                 'remove_keyboard': true
             }
@@ -57,33 +56,36 @@ contexts.Context = class {
             'reply_markup': {
                 'keyboard': keyboardButtons,
                 'resize_keyboard': true,
-                'one_time_keyboard': false
-            },
-            'reply_to_message_id': this.msg.message_id
+                'one_time_keyboard': true
+            }
         };
         return self.msg.sendMessage(self.msg.from.id, text, options);
     }
 
     inlineKeyboardMessage(text, inlineKeyboardButtons) {
         let self = this;
+        log.debug('inlineKeyboardMessage', text, inlineKeyboardButtons);
         let options = {
             'parse_mode': 'Markdown',
             'reply_markup': {
-                'inline_keyboard': inlineKeyboardButtons
+                'inline_keyboard': inlineKeyboardButtons,
+                'remove_keyboard': true
             }
         };
         return self.msg.sendMessage(self.msg.from.id, text, options);
     }
 
-    inlineKeyboardEdit(inline_message_id, text, inlineKeyboardButtons) {
+    inlineKeyboardEdit(text, inlineKeyboardButtons) {
         let self = this;
         let options = {
-            'inline_message_id': inline_message_id,
+            'message_id': self.msg.message.message_id,
+            'chat_id': self.msg.message.chat.id,
+            'parse_mode': 'Markdown',
             'reply_markup': {
                 'inline_keyboard': inlineKeyboardButtons
             }
         };
-        return self.msg.editMessage(this.msg.from.id, text, options);
+        return self.msg.editMessageText(text, options);
     }
 
     chatReply(text) {
@@ -113,16 +115,11 @@ contexts.Context = class {
     }
 
     setInlineState(state) {
-        this.inline_ui.parent = this.inline_ui.state;
         this.inline_ui.state = state;
     }
 
     get state() {
         return this.inline_ui.state;
-    }
-
-    get parent() {
-        return this.inline_ui.parent;
     }
 
     storeVariable(key, value) {
@@ -144,7 +141,7 @@ contexts.Context = class {
     }
 
     isPrivateChat() {
-        return this.msg.chat.type === 'private';
+        return this.msg.chat && this.msg.chat.type === 'private' || this.msg.message && this.msg.message.chat.type === 'private';
     }
 
     hasEnded() {

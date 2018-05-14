@@ -58,3 +58,9 @@ errors.UserNotReadTerms = class extends Error {
     super(`User ${user.userId} has not read terms`);
   }
 };
+
+errors.InvalidInlineCommand = class extends Error {
+  constructor(reason) {
+    super(`Inline Command is invalid: ${reason}`);
+  }
+};
