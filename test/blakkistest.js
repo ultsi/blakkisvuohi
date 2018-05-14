@@ -72,7 +72,10 @@ blakkistest.mockMsgAndBot = () => {
             sentChatId: false,
             sentText: false,
             sentOptions: false,
-            sentStream: false
+            sentStream: false,
+            editChatId: false,
+            editText: false,
+            editOptions: false
         }
     };
     mock.privateId = 99;
@@ -89,6 +92,12 @@ blakkistest.mockMsgAndBot = () => {
             mock.internals.sentChatId = chatId;
             mock.internals.sentStream = stream;
             mock.internals.sentOptions = options;
+            return Promise.resolve();
+        },
+        editMessage: (chatId, text, options) => {
+            mock.internals.editChatId = chatId;
+            mock.internals.editText = text;
+            mock.internals.editOptions = options;
             return Promise.resolve();
         }
     };
