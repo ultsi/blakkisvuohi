@@ -179,6 +179,19 @@ module.exports = {
                         });
                 }
             }
+        },
+        [str_tunnus.paivita.button_text]: {
+            _userRequired: true,
+            _onSelect: (context, user, msg, words) => {
+                return user.updateUsername(users.getUsernameFromMsg(msg))
+                    .then(() => users.find(msg.from.id))
+                    .then((updatedUser) => {
+                        context.setInlineState(context.state.parent); // go back one levels
+                        return str_tunnus.paivita.on_select.format({
+                            username: updatedUser.username
+                        });
+                    });
+            }
         }
     },
     [str_tunnus.poista.button_text]: {
@@ -204,19 +217,6 @@ module.exports = {
             _onSelect: (context, user, msg, words) => {
                 return Promise.resolve(str_tunnus.poista.canceled);
             }
-        }
-    },
-    [str_tunnus.paivita.button_text]: {
-        _userRequired: true,
-        _onSelect: (context, user, msg, words) => {
-            return user.updateUsername(users.getUsernameFromMsg(msg))
-                .then(() => users.find(msg.from.id))
-                .then((updatedUser) => {
-                    context.setInlineState(context.state.parent); // go back one levels
-                    return str_tunnus.paivita.on_select.format({
-                        username: updatedUser.username
-                    });
-                });
         }
     }
 };
