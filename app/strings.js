@@ -94,7 +94,7 @@ module.exports = {
             },
             tunnus: {
                 button_text: 'Tunnus',
-                on_select: 'Tässä nykyiset tietosi:\n*Käyttäjä* {username}\n*ID:* {user_id}\n*Paino:* {weight}kg\n*Pituus:* {height}cm\n*Sukupuoli:* {gender}\n*Käyttäjä luotu:* {created}',
+                on_select: 'Tunnus:\n*Nimimerkki* {username}\n*ID:* {user_id}\n*Paino:* {weight}kg\n*Pituus:* {height}cm\n*Sukupuoli:* {gender}\n*Käyttäjä luotu:* {created}',
                 on_select_new_user: 'Voit luoda itsellesi tunnuksen valitsemalla Luo tunnus. Tarvitset tunnusta käyttääksesi suurinta osaa botin ominaisuuksista.',
                 luo: {
                     button_text: 'Luo tunnus',
