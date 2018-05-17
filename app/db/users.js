@@ -169,6 +169,14 @@ class User {
     updateUsername(username) {
         return pool.query('update users set nick=$1 where userId=$2', [utils.encrypt(username), this.userId]);
     }
+
+    delete() {
+        return Promise.all([
+            pool.query('delete from users_in_groups where userId=$1', [this.userId]),
+            pool.query('delete from users_drinks where userId=$1', [this.userId]),
+            pool.query('delete from users where userId=$1', [this.userId])
+        ]);
+    }
 }
 
 users.User = User;

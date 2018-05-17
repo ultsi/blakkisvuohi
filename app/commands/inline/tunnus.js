@@ -186,7 +186,6 @@ module.exports = {
                 return user.updateUsername(users.getUsernameFromMsg(msg))
                     .then(() => users.find(msg.from.id))
                     .then((updatedUser) => {
-                        context.setInlineState(context.state.parent); // go back one levels
                         return str_tunnus.paivita.on_select.format({
                             username: updatedUser.username
                         });
@@ -209,7 +208,13 @@ module.exports = {
             },
             [strings.yes]: {
                 _userRequired: true,
-                _text: str_tunnus.poista.deleted
+                _onSelect: (context, user, msg, words) => {
+                    context.setInlineState(context.state.parent.parent); // go back two levels
+                    return user.delete()
+                        .then(() => {
+                            return str_tunnus.poista.deleted;
+                        });
+                }
             }
         },
         [strings.no_1st]: {
