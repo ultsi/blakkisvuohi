@@ -120,8 +120,10 @@ module.exports = {
                 if (!utils.isValidInt(weight) || weight < 20 || weight > 250) {
                     return Promise.resolve(str_tunnus.luo.weight_error);
                 }
-                // TODO: update weight here
-                return Promise.resolve(str_tunnus.muokkaa.paino.on_change);
+                return user.updateWeight(weight)
+                    .then(() => {
+                        return str_tunnus.muokkaa.paino.on_change;
+                    });
             }
         },
         [str_tunnus.muokkaa.pituus.button_text]: {
@@ -132,12 +134,14 @@ module.exports = {
                 }));
             },
             _onText: (context, user, msg, words) => {
-                const weight = parseInt(words[0], 10);
-                if (!utils.isValidInt(weight) || weight < 40 || weight > 240) {
+                const height = parseInt(words[0], 10);
+                if (!utils.isValidInt(height) || height < 40 || height > 240) {
                     return Promise.resolve(str_tunnus.luo.height_error);
                 }
-                // TODO: update height here
-                return Promise.resolve(str_tunnus.muokkaa.pituus.on_change);
+                return user.updateHeight(height)
+                    .then(() => {
+                        return str_tunnus.muokkaa.pituus.on_change;
+                    });
             }
         },
         [str_tunnus.muokkaa.sukupuoli.button_text]: {
@@ -151,16 +155,21 @@ module.exports = {
                 _userRequired: true,
                 _onSelect: (context, user, msg, words) => {
                     context.setInlineState(context.state.parent); // go back one level
-                    // TODO: update gender here
-                    return Promise.resolve(str_tunnus.muokkaa.sukupuoli.on_change);
+                    return user.updateGender('male')
+                        .then(() => {
+                            return str_tunnus.muokkaa.sukupuoli.on_change;
+                        });
                 }
             },
             [strings.gender.female]: {
                 _userRequired: true,
                 _onSelect: (context, user, msg, words) => {
                     context.setInlineState(context.state.parent); // go back one level
-                    // TODO: update gender here
-                    return Promise.resolve(str_tunnus.muokkaa.sukupuoli.on_change);
+
+                    return user.updateGender('female')
+                        .then(() => {
+                            return str_tunnus.muokkaa.sukupuoli.on_change;
+                        });
                 }
             }
         }

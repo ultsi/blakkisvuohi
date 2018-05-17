@@ -153,6 +153,18 @@ class User {
         const self = this;
         return pool.query('update users set read_announcements=$1 where userId=$2', [read_announcements_count, self.userId]);
     }
+
+    updateWeight(weight) {
+        return pool.query('update users set weight=$1 where userId=$2', [weight, this.userId]);
+    }
+
+    updateHeight(height) {
+        return pool.query('update users set height=$1 where userId=$2', [height, this.userId]);
+    }
+
+    updateGender(gender) {
+        return pool.query('update users set gender=$1 where userId=$2', [gender, this.userId]);
+    }
 }
 
 users.User = User;
