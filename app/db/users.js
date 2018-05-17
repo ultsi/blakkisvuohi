@@ -167,7 +167,7 @@ class User {
     }
 
     updateUsername(username) {
-        return pool.query('update users set username=$1 where userId=$2', [utils.encrypt(username), this.userId]);
+        return pool.query('update users set nick=$1 where userId=$2', [utils.encrypt(username), this.userId]);
     }
 }
 
