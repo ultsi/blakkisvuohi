@@ -26,7 +26,8 @@
 const Commands = require('../lib/commands.js');
 const utils = require('../lib/utils.js');
 const constants = require('../constants.js');
-const strings = require('../strings.js').commands.beta;
+const strings = require('../strings.js');
+const str_beta = strings.commands.beta;
 const alcomath = require('../lib/alcomath.js');
 
 function makeDrinksString(drinks) {
@@ -49,37 +50,41 @@ function makeDrinksString(drinks) {
 
 const betablakkis = {
     _onSelect: (context, user, msg, words) => {
-        return Promise.all([
-            user.getBooze(),
-            user.getBoozeForLastHours(3)
-        ]).then((res) => {
-            const drinks = res[0],
-                drinks3h = res[1];
-            let ebac = alcomath.calculateEBACFromDrinks(user, drinks);
-            let permilles = ebac.permilles;
-            let permilles30Min = ebac.permilles30Min;
-            let grams = ebac.grams;
-            let metabolismRate = alcomath.getUserMetabolismRate(user);
-            let time = permilles30Min / metabolismRate;
-            time = time > 0 ? time + 0.5 : time;
-            let hours = Math.floor(time);
-            const permilles_text = strings.juo.on_select_permilles.format({
-                permilles: utils.roundTo(permilles, 2),
-                permilles30Min: utils.roundTo(permilles30Min, 2),
-                grams: utils.roundTo(grams),
-                standard_drinks: utils.roundTo(grams / constants.STANDARD_DRINK_GRAMS, 2),
-                hours: hours,
-                minutes: ('0' + Math.ceil((time - hours) * 60)).slice(-2)
+        if (user) {
+            return Promise.all([
+                user.getBooze(),
+                user.getBoozeForLastHours(3)
+            ]).then((res) => {
+                const drinks = res[0],
+                    drinks3h = res[1];
+                let ebac = alcomath.calculateEBACFromDrinks(user, drinks);
+                let permilles = ebac.permilles;
+                let permilles30Min = ebac.permilles30Min;
+                let grams = ebac.grams;
+                let metabolismRate = alcomath.getUserMetabolismRate(user);
+                let time = permilles30Min / metabolismRate;
+                time = time > 0 ? time + 0.5 : time;
+                let hours = Math.floor(time);
+                const permilles_text = str_beta.on_select.format({
+                    permilles: utils.roundTo(permilles, 2),
+                    permilles30Min: utils.roundTo(permilles30Min, 2),
+                    grams: utils.roundTo(grams),
+                    standard_drinks: utils.roundTo(grams / constants.STANDARD_DRINK_GRAMS, 2),
+                    hours: hours,
+                    minutes: ('0' + Math.ceil((time - hours) * 60)).slice(-2)
+                });
+                const drinks_text = drinks3h.length > 0 ? str_beta.on_select_drinks3h.format({
+                    drinkList3h: makeDrinksString(drinks3h)
+                }) : '';
+                return permilles_text + drinks_text;
             });
-            const drinks_text = drinks3h.length > 0 ? strings.juo.on_select_drinks3h.format({
-                drinkList3h: makeDrinksString(drinks3h)
-            }) : '';
-            return permilles_text + drinks_text;
-        });
+        } else {
+            return Promise.resolve(str_beta.on_select_nonuser);
+        }
     },
     _root: true,
-    [strings.juo.button_text]: require('./inline/juo.js'),
-    [strings.tunnus.button_text]: require('./inline/tunnus.js'),
+    [str_beta.juo.button_text]: require('./inline/juo.js'),
+    [str_beta.tunnus.button_text]: require('./inline/tunnus.js'),
     'Tilastot': {
         _text: 'lol stats'
     },
