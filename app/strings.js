@@ -115,15 +115,15 @@ module.exports = {
                 },
                 muokkaa: {
                     button_text: 'Muokkaa tunnusta',
-                    on_select: 'Voit muokata tässä tunnuksesi painoa, pituutta ja sukupuolta. Nimimerkin muokkaaminen onnistuu Telegramin tunnuksesi omista asetuksista.',
+                    on_select: 'Voit muokata tässä tunnuksesi painoa, pituutta ja sukupuolta sekä päivittää nimimerkin.\n\nNykyiset tiedot:\n*Nimimerkki:* {username}\n*Paino:* {weight}kg\n*Pituus:* {height}cm\n*Sukupuoli:* {gender}',
                     paino: {
                         button_text: 'Muokkaa painoa',
-                        on_select: '*Paino nyt:* {weight}\n\nSyötä uusi painosi kokonaislukuna.',
+                        on_select: '*Paino nyt:* {weight}kg\n\nSyötä uusi painosi kokonaislukuna.',
                         on_change: 'Paino muutettu!'
                     },
                     pituus: {
                         button_text: 'Muokkaa pituutta',
-                        on_select: '*Pituus nyt:* {height}\n\nSyötä uusi pituutesi kokonaislukuna.',
+                        on_select: '*Pituus nyt:* {height}cm\n\nSyötä uusi pituutesi kokonaislukuna.',
                         on_change: 'Pituus muutettu!'
                     },
                     sukupuoli: {
