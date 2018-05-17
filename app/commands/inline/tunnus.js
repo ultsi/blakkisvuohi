@@ -48,7 +48,7 @@ module.exports = {
         _nonUserRequired: true,
         _text: str_tunnus.luo.on_select,
         _onText: (context, user, msg, words) => {
-            const username = msg.from.username || msg.from.first_name;
+            const username = users.getUsernameFromMsg(msg);
             const userId = msg.from.id;
             let weight = context.fetchVariable('weight');
             let height = context.fetchVariable('height');
@@ -107,7 +107,14 @@ module.exports = {
     },
     [str_tunnus.muokkaa.button_text]: {
         _userRequired: true,
-        _text: str_tunnus.muokkaa.on_select,
+        _onSelect: (context, user, msg, words) => {
+            return Promise.resolve(str_tunnus.muokkaa.on_select.format({
+                username: user.username,
+                weight: user.weight,
+                height: user.height,
+                gender: user.gender
+            }));
+        },
         [str_tunnus.muokkaa.paino.button_text]: {
             _userRequired: true,
             _onSelect: (context, user, msg, words) => {
@@ -197,6 +204,19 @@ module.exports = {
             _onSelect: (context, user, msg, words) => {
                 return Promise.resolve(str_tunnus.poista.canceled);
             }
+        }
+    },
+    [str_tunnus.paivita.button_text]: {
+        _userRequired: true,
+        _onSelect: (context, user, msg, words) => {
+            return user.updateUsername(users.getUsernameFromMsg(msg))
+                .then(() => users.find(msg.from.id))
+                .then((updatedUser) => {
+                    context.setInlineState(context.state.parent); // go back one levels
+                    return str_tunnus.paivita.on_select.format({
+                        username: updatedUser.username
+                    });
+                });
         }
     }
 };

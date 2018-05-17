@@ -165,6 +165,10 @@ class User {
     updateGender(gender) {
         return pool.query('update users set gender=$1 where userId=$2', [gender, this.userId]);
     }
+
+    updateUsername(username) {
+        return pool.query('update users set username=$1 where userId=$2', [utils.encrypt(username), this.userId]);
+    }
 }
 
 users.User = User;
@@ -199,4 +203,15 @@ users.find = (userId) => {
                 return null;
             }
         });
+};
+
+users.getUsernameFromMsg = (msg) => {
+    let username = msg.from.username;
+    if (!username) {
+        username = msg.from.first_name;
+        if (msg.from.last_name) {
+            username = username + ' ' + msg.from.last_name;
+        }
+    }
+    return username;
 };

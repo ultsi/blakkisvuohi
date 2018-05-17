@@ -138,6 +138,10 @@ module.exports = {
                     double_confirm: 'Oletko aivan varma? Kaikki tietosi ollaan poistamassa.',
                     canceled: 'Peruit tunnuksen poistamisen.',
                     deleted: 'Kaikki tietosi on nyt poistettu. Rippaa rauhassa.'
+                },
+                paivita: {
+                    button_text: 'Päivitä nimi',
+                    on_select: 'Nimi päivitetty! Nimesi on nyt: *{username}*. Voit päivittää nimeäsi vaihtamalla sen ensiksi Telegramin asetuksista, ja sen jälkeen päivittämällä sen tällä komennolla.'
                 }
             }
         },
