@@ -155,7 +155,7 @@ module.exports = {
                 _userRequired: true,
                 _onSelect: (context, user, msg, words) => {
                     context.setInlineState(context.state.parent); // go back one level
-                    return user.updateGender('male')
+                    return user.updateGender('mies')
                         .then(() => {
                             return str_tunnus.muokkaa.sukupuoli.on_change;
                         });
@@ -166,7 +166,7 @@ module.exports = {
                 _onSelect: (context, user, msg, words) => {
                     context.setInlineState(context.state.parent); // go back one level
 
-                    return user.updateGender('female')
+                    return user.updateGender('nainen')
                         .then(() => {
                             return str_tunnus.muokkaa.sukupuoli.on_change;
                         });
