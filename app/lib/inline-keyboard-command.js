@@ -41,6 +41,7 @@ class InlineKeyboardCommand {
         this.text = definition._text ? definition._text : false;
         this.onSelectAction = definition._onSelect ? definition._onSelect : false;
         this.onTextAction = definition._onText ? definition._onText : false;
+        this.onExitAction = definition._onExit ? definition._onExit : false;
         this.children = {};
         this.childrenArray = [];
 
@@ -138,6 +139,11 @@ class InlineKeyboardCommand {
         }
     }
 
+    onExit(context, user) {
+        if (this.onExitAction) {
+            this.onExitAction(context, user);
+        }
+    }
 }
 
 module.exports = InlineKeyboardCommand;

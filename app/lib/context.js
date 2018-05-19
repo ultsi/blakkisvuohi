@@ -130,6 +130,10 @@ contexts.Context = class {
         return this.variables[key];
     }
 
+    forgetVariable(key) {
+        this.variables[key] = undefined;
+    }
+
     toPhase(phase) {
         this.phase = phase;
     }

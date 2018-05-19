@@ -278,6 +278,7 @@ Commands.callInline = (cmd, context, user, msg, words) => {
             }
 
             context.setInlineState(nextState);
+            curState.onExit(context, user);
             return nextState.onSelect(context, user, msg, words);
         }
     }
