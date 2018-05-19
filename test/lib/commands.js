@@ -65,15 +65,6 @@ describe('commands.js', function() {
     });
 
     describe('Commands.call()', function() {
-        it('should send help string msg privately with /start', function(done) {
-            const mocked = blakkistest.mockMsgAndBot();
-            Commands.call('/start', mocked.msg, ['/start'])
-                .then(() => {
-                    assert.equal(mocked.internals.sentChatId, mocked.privateId);
-                    assert.equal(mocked.internals.sentText, strings.commands.blakkis.help_text);
-                    done();
-                }).catch((err) => done(err));
-        });
 
         it('should send cmds string msg privately with /komennot', function(done) {
             const mocked = blakkistest.mockMsgAndBot();

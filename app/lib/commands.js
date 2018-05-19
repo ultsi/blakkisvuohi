@@ -1,4 +1,4 @@
-/*
+/*a
     Bläkkisvuohi, a Telegram bot to help track estimated blood alcohol concentration.
     Copyright (C) 2017  Joonas Ulmanen
 
@@ -32,6 +32,7 @@ const log = require('loglevel').getLogger('system');
 const announcements = require('../announcements.js');
 const settings = require('../settings.js');
 const errors = require('./errors.js');
+const InlineKeyboardCommand = require('./inline-keyboard-command.js');
 
 let Commands = module.exports = {};
 let cmds = {};
@@ -47,18 +48,36 @@ Commands.PRIVILEGE_ALL = 'all';
 
 Commands.TYPE_SINGLE = 'single';
 Commands.TYPE_MULTI = 'multi';
+Commands.TYPE_INLINE = 'inline';
 
 Commands.__cmds__ = cmds;
 
-Commands.register = function(cmdName, cmdHelp, cmdScope, cmdPrivilege, cmdType, cmdDefinition) {
+function registerInlineCommand(cmdName, cmdHelp, cmdScope, cmdPrivilege, cmdType, cmdDefinition) {
+    let cmdClass = new InlineKeyboardCommand(cmdDefinition, cmdName);
+
     cmds[cmdName] = {
         name: cmdName,
         help: cmdHelp,
         scope: cmdScope,
         privilege: cmdPrivilege,
         type: cmdType,
-        definition: cmdDefinition
+        definition: cmdClass
     };
+}
+
+Commands.register = function(cmdName, cmdHelp, cmdScope, cmdPrivilege, cmdType, cmdDefinition) {
+    if (cmdType === Commands.TYPE_INLINE) {
+        registerInlineCommand(cmdName, cmdHelp, cmdScope, cmdPrivilege, cmdType, cmdDefinition);
+    } else {
+        cmds[cmdName] = {
+            name: cmdName,
+            help: cmdHelp,
+            scope: cmdScope,
+            privilege: cmdPrivilege,
+            type: cmdType,
+            definition: cmdDefinition
+        };
+    }
     const definitionText = typeof cmdDefinition;
     log.info(strings.commands.blakkis.on_cmd_register.format({
         name: cmdName,
@@ -117,7 +136,31 @@ Commands.call = function call(firstWord, msg, words) {
 
     // Find out cmd and context first
     let cmd, context;
-    if (cmds[firstWord]) {
+    if (msg.data) {
+        // inline keyboard stuff, retrieve context
+        context = retrieveContext(userId, msg);
+
+        if (!context) {
+            msg.chat = msg.message.chat;
+            return msg.sendChatMessage(strings.commands.blakkis.command_not_found);
+        }
+        cmd = context.cmd;
+
+        if (!cmd) {
+            msg.chat = msg.message.chat;
+            return msg.sendChatMessage(strings.commands.blakkis.command_not_found);
+        }
+        // check that command which the data originated is the same as current context
+        const dataCmdName = msg.data.match(/\/\w+/);
+        if (dataCmdName && dataCmdName[0] !== cmd.name) {
+            // happens for example if user uses /kalja033 in between inline chat command use
+            cmd = cmds[dataCmdName];
+            context = initContext(userId, cmd, msg);
+            msg.chat = msg.message.chat;
+            msg.message = undefined; // this makes it send a new message instead of editing the old
+        }
+
+    } else if (cmds[firstWord]) {
         cmd = cmds[firstWord];
         if (msg.chat.type === 'private') {
             context = initContext(userId, cmd, msg); // reinitiate user's contexts in private
@@ -140,11 +183,12 @@ Commands.call = function call(firstWord, msg, words) {
         cmd = context.cmd;
     }
 
+
     // Command has been found with context
     // Execute command
 
     return utils.hookNewRelic('command/' + cmd.name, function() {
-        log.info((msg.from.username || msg.from.first_name) + ': ' + firstWord);
+        log.debug((msg.from.username || msg.from.first_name) + ': ' + firstWord);
         if (cmd.scope === Commands.SCOPE_PRIVATE && !context.isPrivateChat()) {
             return Promise.reject(new errors.PrivateCommandUsedInChat(cmd.name));
         } else if (cmd.scope === Commands.SCOPE_CHAT && context.isPrivateChat()) {
@@ -187,7 +231,10 @@ Commands.call = function call(firstWord, msg, words) {
                 return Promise.resolve(user);
             })
             .then((user) => {
-                if (cmd.type === Commands.TYPE_SINGLE) {
+
+                if (cmd.type === Commands.TYPE_INLINE) {
+                    return Commands.callInline(cmd, context, user, msg, words);
+                } else if (cmd.type === Commands.TYPE_SINGLE) {
                     log.debug(`executing singlephase command ${firstWord}`);
                     return cmd.definition(context, msg, words, user);
                 } else {
@@ -225,4 +272,34 @@ Commands.call = function call(firstWord, msg, words) {
         log.error(`Couldn\'t execute cmd ${cmd.name} properly, err message: ${err.message}`);
         return sendErrorMessage(msg, err);
     });
+};
+
+Commands.callInline = (cmd, context, user, msg, words) => {
+    if (!context.state) {
+        // set current state to root object in command tree
+        // show root _text
+        context.setInlineState(cmd.definition);
+        return context.state.onSelect(context, user, msg, words);
+    }
+    const curState = context.state;
+    // button was pressed, update the keyboard and text
+    if (msg.data) {
+        const cmdStripped = msg.data.replace(/\/\w+ /, '');
+        const nextState = cmdStripped === strings.commands.blakkis.back ? curState.getParent() : curState.getChild(cmdStripped);
+
+        if (nextState) {
+            // Check for proper rights here too (do not allow malicious inline command data)
+            if (!nextState.isAvailableForUser(context, user)) {
+                return;
+            }
+
+            context.setInlineState(nextState);
+            curState.onExit(context, user, nextState);
+            return nextState.onSelect(context, user, msg, words);
+        }
+    }
+
+    if (msg.text) {
+        return curState.onText(context, user, msg, words);
+    }
 };

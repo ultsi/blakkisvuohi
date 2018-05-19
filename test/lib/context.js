@@ -98,7 +98,6 @@ describe('context.js', function() {
             context.privateReply(text);
             assert.equal(mocked.internals.sentChatId, mocked.privateId);
             assert.equal(mocked.internals.sentText, text);
-            assert.equal(mocked.internals.sentOptions.reply_to_message_id, mocked.messageId);
         });
     });
 
@@ -113,7 +112,6 @@ describe('context.js', function() {
             context.privateReplyWithKeyboard(text, kb);
             assert.equal(mocked.internals.sentChatId, mocked.privateId);
             assert.equal(mocked.internals.sentText, text);
-            assert.equal(mocked.internals.sentOptions.reply_to_message_id, mocked.messageId);
             assert.equal(mocked.internals.sentOptions.reply_markup.keyboard, kb);
         });
     });

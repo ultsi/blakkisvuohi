@@ -57,6 +57,12 @@ module.exports = function(bot) {
         Commands.call(cmd_only, msg, words);
     });
 
+    bot.on('callback_query', (msg) => {
+        syslog.debug(msg);
+        utils.attachMethods(msg, bot);
+        Commands.call('', msg, []);
+    });
+
     // Enable commands here.
     require('./commands/about.js');
     require('./commands/annokset.js');
@@ -70,8 +76,8 @@ module.exports = function(bot) {
     require('./commands/laatta.js');
     require('./commands/moro.js');
     require('./commands/poistu.js');
-    require('./commands/promillet.js')
-    require('./commands/start.js');;
+    require('./commands/promillet.js');
+    require('./commands/start.js');
     require('./commands/stats.js');
     require('./commands/terms.js');
     require('./commands/tunnus.js');

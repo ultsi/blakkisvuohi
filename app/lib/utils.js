@@ -90,6 +90,20 @@ function createSendPhotoFunction(msg, bot) {
     };
 }
 
+function createEditMessageTextFunction(msg, bot) {
+    return function(text, options) {
+        return bot.editMessageText(text, options)
+            .then(() => {
+                log.debug('edited message');
+                return Promise.resolve();
+            }).catch((err) => {
+                log.error('couldn\'t edit message! Err: ' + err);
+                log.debug(err.stack);
+                return Promise.reject(err);
+            });
+    };
+}
+
 utils.hookNewRelic = function(url, func) {
     return new Promise(function(resolve, reject) {
         if (global.newrelic && global.newrelic.startWebTransaction) {
@@ -127,6 +141,7 @@ utils.attachMethods = function attachMethods(msg, bot) {
     msg.sendChatMessage = createSendChatMsgFunction(msg, bot);
     msg.sendMessage = createSendMsgToFunction(msg, bot);
     msg.sendPhoto = createSendPhotoFunction(msg, bot);
+    msg.editMessageText = createEditMessageTextFunction(msg, bot);
 };
 
 utils.roundTo = (n, t) => {
