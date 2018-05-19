@@ -32,7 +32,16 @@ strings.emoji = {
     glasses: '🥂',
     shot: '🥃',
     pencil: '✏',
-    memo: '📝'
+    memo: '📝',
+    cross: '❌',
+    gear: '⚙',
+    person_silhouette: '👤',
+    scale: '⚖',
+    ruler: '📏',
+    female: '♀',
+    male: '♂',
+    trash: '🗑',
+    refresh: '🔃'
 };
 
 strings.drink_responses = [
@@ -95,10 +104,10 @@ strings.commands = {
 
     beta: {
         on_select: '*Nyt:* {permilles}‰, *30min:* {permilles30Min}‰.\nVeressäsi on {grams} grammaa alkoholia, joka vastaa {standard_drinks} annosta. Olet selvinpäin {hours}h {minutes}min päästä.',
-        on_select_nonuser: 'BläkkisVuohi auttaa sinua ja ystäviäsi seuraamaan rippauksesi (lue: promillejesi) tasoa. Luo ensimmäiseksi tunnus valitsemalla Tunnus. Tunnuksen luomisen jälkeen voit alkaa kellottamaan juomia sisään juomavalikosta. Annan sinulle arvioita rippauksesta promillejen muodossa. Minut voi myös lisätä ryhmään, jolloin kerron /promillet-komennolla kaikkien ryhmässä olevien rippitasot. Jokaisen ryhmäläisen täytyy kuitenkin sanoa ryhmässä /moro, jotta he pääsevät rippilistaukseen mukaan.',
+        on_select_nonuser: 'BläkkisVuohi auttaa sinua ja ystäviäsi seuraamaan rippauksesi (lue: promillejesi) tasoa. Luo ensimmäiseksi tunnus valitsemalla Luo tunnus. Tunnuksen luomisen jälkeen voit alkaa kellottamaan juomia sisään juomavalikosta. Annan sinulle arvioita rippauksesta promillejen muodossa. Minut voi myös lisätä ryhmään, jolloin kerron /promillet-komennolla kaikkien ryhmässä olevien rippitasot. Jokaisen ryhmäläisen täytyy kuitenkin sanoa ryhmässä /moro, jotta he pääsevät rippilistaukseen mukaan.',
         on_select_drinks3h: '\n\nViimeisen kolmen tunnin tapahtumat:\n{drinkList3h}',
         juo: {
-            button_text: 'Juo',
+            button_text: strings.emoji.glasses + ' Juo',
             on_select: 'Valitse juomasi alla olevista valikoista. Jos et löydä, klikkaa Oma juoma. Jos olet unohtanut lisätä juomia, voit lisätä ne takautuvasti valitsemalla Jälkikellotus.',
             miedot: {
                 button_text: strings.emoji.beers + ' Miedot',
@@ -119,15 +128,15 @@ strings.commands = {
                 error_words: 'Liian paljon tai vähän sanoja. {help_example}',
                 error_cl: 'Senttilitrat ei ole numero. {help_example}',
                 error_vol: 'Prosentti ei ole numero. {help_example}'
-
             },
             kumoa: {
-                confirm: 'Olet kumoamassa viimeksi juodun juomasi. Oletko varma?',
+                button_text: strings.emoji.cross + ' Kumoa',
+                on_select: 'Olet kumoamassa viimeksi juodun juomasi. Oletko varma?',
                 yes: 'Kyllä'
             }
         },
         tunnus: {
-            button_text: 'Tunnus',
+            button_text: strings.emoji.gear + ' Asetukset',
             on_select: 'Tunnus:\n*Nimimerkki* {username}\n*ID:* {user_id}\n*Paino:* {weight}kg\n*Pituus:* {height}cm\n*Sukupuoli:* {gender}\n*Käyttäjä luotu:* {created}',
             on_select_new_user: 'Voit luoda itsellesi tunnuksen valitsemalla Luo tunnus. Tarvitset tunnusta käyttääksesi suurinta osaa botin ominaisuuksista.',
             luo: {
@@ -148,33 +157,33 @@ strings.commands = {
                 new_user: 'Moikka {username}! Tunnuksesi luotiin onnistuneesti. Muista, että kaikki antamani luvut ovat vain arvioita, eikä niihin voi täysin luottaa.\n\nJa eikun juomaan!'
             },
             muokkaa: {
-                button_text: 'Muokkaa tunnusta',
+                button_text: strings.emoji.person_silhouette + ' Muokkaa tunnusta',
                 on_select: 'Voit muokata tässä tunnuksesi painoa, pituutta ja sukupuolta sekä päivittää nimimerkin.\n\nNykyiset tiedot:\n*Nimimerkki:* {username}\n*Paino:* {weight}kg\n*Pituus:* {height}cm\n*Sukupuoli:* {gender}',
                 paino: {
-                    button_text: 'Muokkaa painoa',
+                    button_text: strings.emoji.scale + ' Muokkaa painoa',
                     on_select: '*Paino nyt:* {weight}kg\n\nSyötä uusi painosi kokonaislukuna.',
                     on_change: 'Paino muutettu!'
                 },
                 pituus: {
-                    button_text: 'Muokkaa pituutta',
+                    button_text: strings.emoji.ruler + ' Muokkaa pituutta',
                     on_select: '*Pituus nyt:* {height}cm\n\nSyötä uusi pituutesi kokonaislukuna.',
                     on_change: 'Pituus muutettu!'
                 },
                 sukupuoli: {
-                    button_text: 'Muokkaa sukupuolta',
+                    button_text: strings.emoji.female + strings.emoji.male + ' Muokkaa sukupuolta',
                     on_select: '*Sukupuoli nyt:* {gender}\n\nValitse uusi biologinen sukupuolesi alta:',
                     on_change: 'Sukupuoli muutettu!'
                 }
             },
             poista: {
-                button_text: 'Poista tunnus',
+                button_text: strings.emoji.trash + ' Poista tunnus',
                 on_select: 'Olet poistamassa tunnuksesi. Hyväksymällä poistat kaiken sinuun liittyvän tiedon Bläkkisvuohen tietokannoista eikä sinua enää ole mahdollista listata missään listauksissa.\n\nOletko varma, että haluat poistaa tunnuksesi?',
                 double_confirm: 'Oletko aivan varma? Kaikki tietosi ollaan poistamassa.',
                 canceled: 'Peruit tunnuksen poistamisen.',
                 deleted: 'Kaikki tietosi on nyt poistettu. Rippaa rauhassa.'
             },
             paivita: {
-                button_text: 'Päivitä nimi',
+                button_text: strings.emoji.refresh + ' Päivitä nimi',
                 on_select: 'Nimi päivitetty! Nimesi on nyt: *{username}*. Voit päivittää nimeäsi vaihtamalla sen ensiksi Telegramin asetuksista, ja sen jälkeen päivittämällä sen tällä komennolla.'
             }
         }

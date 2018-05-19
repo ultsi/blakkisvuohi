@@ -97,6 +97,12 @@ module.exports = {
                 return Promise.resolve(str_tunnus.luo.terms_on_reject);
             }
 
+            // forget variables
+            context.storeVariable('weight', undefined);
+            context.storeVariable('height', undefined);
+            context.storeVariable('gender', undefined);
+            context.storeVariable('userId', undefined);
+
             return users.new(userId, username, weight, gender, height, true)
                 .then((user) => {
                     return str_tunnus.luo.new_user.format({

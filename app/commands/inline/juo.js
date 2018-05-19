@@ -110,10 +110,10 @@ module.exports = {
                 });
         }
     },
-    Kumoa: {
-        _text: strings.commands.beta.juo.kumoa.confirm,
+    [str_juo.kumoa.button_text]: {
+        _text: str_juo.kumoa.on_select,
         _userRequired: true,
-        [strings.commands.beta.juo.kumoa.yes]: {
+        [strings.yes]: {
             _userRequired: true,
             _onSelect: (context, user, msg, words) => {
                 return user.undoDrink()
