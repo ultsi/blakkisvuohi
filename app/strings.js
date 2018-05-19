@@ -41,7 +41,8 @@ strings.emoji = {
     female: '♀',
     male: '♂',
     trash: '🗑',
-    refresh: '🔃'
+    refresh: '🔃',
+    glowing_star: '🌟'
 };
 
 strings.drink_responses = [
@@ -138,24 +139,6 @@ strings.commands = {
         tunnus: {
             button_text: strings.emoji.gear + ' Asetukset',
             on_select: 'Tunnus:\n*Nimimerkki* {username}\n*ID:* {user_id}\n*Paino:* {weight}kg\n*Pituus:* {height}cm\n*Sukupuoli:* {gender}\n*Käyttäjä luotu:* {created}',
-            on_select_new_user: 'Voit luoda itsellesi tunnuksen valitsemalla Luo tunnus. Tarvitset tunnusta käyttääksesi suurinta osaa botin ominaisuuksista.',
-            luo: {
-                button_text: 'Luo tunnus',
-                on_select: 'Aloita tunnuksen luominen syöttämällä painosi kilogrammoissa ja kokonaislukuna:',
-                weight_error: 'Syötä paino uudelleen. Painon pitää olla kokonaisluku ja ala- ja ylärajat ovat 20kg ja 250kg.',
-                height: 'Paino syötetty. Syötä seuraavaksi pituus senttimetreissä:',
-                height_error: 'Syötä pituus uudelleen. Pituuden täytyy olla kokonaisluku ja ala- ja ylärajat ovat 120cm ja 240cm.',
-                gender: 'Pituus syötetty. Syötä seuraavaksi biologinen sukupuoli:',
-                gender_error: 'Syötä joko mies tai nainen:',
-                terms: 'Sukupuoli syötetty. \n\n{terms}\n\nOletko lukenut ja hyväksynyt käyttöehdot?',
-                terms_answer_yes: 'Kyllä',
-                terms_answer_no: 'En',
-                terms_on_reject: 'Lue käyttöehdot ja hyväksy ne, ennen kuin voit käyttää muita komentoja.',
-                terms_error: 'Oletko lukenut ja hyväksynyt käyttöehdot?',
-                update: 'Olet jo rekisteröitynyt. Tiedot päivitetty.',
-                update_error: 'Olet jo rekisteröitynyt, mutta tietojen päivityksessä tuli ongelma. Ota yhteyttä adminiin.',
-                new_user: 'Moikka {username}! Tunnuksesi luotiin onnistuneesti. Muista, että kaikki antamani luvut ovat vain arvioita, eikä niihin voi täysin luottaa.\n\nJa eikun juomaan!'
-            },
             muokkaa: {
                 button_text: strings.emoji.person_silhouette + ' Muokkaa tunnusta',
                 on_select: 'Voit muokata tässä tunnuksesi painoa, pituutta ja sukupuolta sekä päivittää nimimerkin.\n\nNykyiset tiedot:\n*Nimimerkki:* {username}\n*Paino:* {weight}kg\n*Pituus:* {height}cm\n*Sukupuoli:* {gender}',
@@ -186,6 +169,23 @@ strings.commands = {
                 button_text: strings.emoji.refresh + ' Päivitä nimi',
                 on_select: 'Nimi päivitetty! Nimesi on nyt: *{username}*. Voit päivittää nimeäsi vaihtamalla sen ensiksi Telegramin asetuksista, ja sen jälkeen päivittämällä sen tällä komennolla.'
             }
+        },
+        luo_tunnus: {
+            button_text: strings.emoji.glowing_star + ' Luo tunnus',
+            on_select: 'Tarvitset tunnusta käyttääksesi suurinta osaa botin ominaisuuksista. Aloita tunnuksen luominen syöttämällä painosi kilogrammoissa ja kokonaislukuna:',
+            weight_error: 'Syötä paino uudelleen. Painon pitää olla kokonaisluku ja ala- ja ylärajat ovat 20kg ja 250kg.',
+            height: 'Paino syötetty. Syötä seuraavaksi pituus senttimetreissä:',
+            height_error: 'Syötä pituus uudelleen. Pituuden täytyy olla kokonaisluku ja ala- ja ylärajat ovat 120cm ja 240cm.',
+            gender: 'Pituus syötetty. Syötä seuraavaksi biologinen sukupuoli:',
+            gender_error: 'Syötä joko mies tai nainen:',
+            terms: 'Sukupuoli syötetty. \n\n{terms}\n\nOletko lukenut ja hyväksynyt käyttöehdot?',
+            terms_answer_yes: 'Kyllä',
+            terms_answer_no: 'En',
+            terms_on_reject: 'Lue käyttöehdot ja hyväksy ne, ennen kuin voit käyttää muita komentoja.',
+            terms_error: 'Oletko lukenut ja hyväksynyt käyttöehdot?',
+            update: 'Olet jo rekisteröitynyt. Tiedot päivitetty.',
+            update_error: 'Olet jo rekisteröitynyt, mutta tietojen päivityksessä tuli ongelma. Ota yhteyttä adminiin.',
+            new_user: 'Moikka {username}! Tunnuksesi luotiin onnistuneesti. Muista, että kaikki antamani luvut ovat vain arvioita, eikä niihin voi täysin luottaa.\n\nJa eikun juomaan!'
         }
     },
 

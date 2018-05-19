@@ -25,7 +25,6 @@
 
 const strings = require('../../strings.js');
 const str_tunnus = strings.commands.beta.tunnus;
-const terms = strings.commands.terms.reply;
 const utils = require('../../lib/utils.js');
 const users = require('../../db/users.js');
 
@@ -43,73 +42,6 @@ module.exports = {
         } else {
             return Promise.resolve(str_tunnus.on_select_new_user);
         }
-    },
-    [str_tunnus.luo.button_text]: {
-        _nonUserRequired: true,
-        _text: str_tunnus.luo.on_select,
-        _onText: (context, user, msg, words) => {
-            const username = users.getUsernameFromMsg(msg);
-            const userId = msg.from.id;
-            let weight = context.fetchVariable('weight');
-            let height = context.fetchVariable('height');
-            let gender = context.fetchVariable('gender');
-
-            context.storeVariable('userId', msg.from.id);
-
-            if (!weight) {
-                weight = parseInt(words[0], 10);
-                if (!utils.isValidInt(weight) || weight < 20 || weight > 250) {
-                    return Promise.resolve(str_tunnus.luo.weight_error);
-                }
-                context.storeVariable('weight', weight);
-                return Promise.resolve(str_tunnus.luo.height);
-            }
-
-            if (!height) {
-                height = parseInt(words[0], 10);
-                if (!utils.isValidInt(height) || height < 120 || height > 240) {
-                    return Promise.resolve(str_tunnus.luo.height_error);
-                }
-                context.storeVariable('height', height);
-                return Promise.resolve({
-                    text: str_tunnus.luo.gender,
-                    keyboard: [
-                        [strings.gender.male, strings.gender.female]
-                    ]
-                });
-            }
-
-            if (!gender) {
-                gender = words[0];
-                context.storeVariable('gender', gender);
-                return Promise.resolve({
-                    text: str_tunnus.luo.terms.format({
-                        terms: terms
-                    }),
-                    keyboard: [
-                        [strings.yes, strings.no]
-                    ]
-                });
-            }
-
-            const terms_answer = words[0];
-            if (terms_answer.toLowerCase() !== strings.yes.toLowerCase()) {
-                return Promise.resolve(str_tunnus.luo.terms_on_reject);
-            }
-
-            // forget variables
-            context.storeVariable('weight', undefined);
-            context.storeVariable('height', undefined);
-            context.storeVariable('gender', undefined);
-            context.storeVariable('userId', undefined);
-
-            return users.new(userId, username, weight, gender, height, true)
-                .then((user) => {
-                    return str_tunnus.luo.new_user.format({
-                        username: user.username
-                    });
-                });
-        },
     },
     [str_tunnus.muokkaa.button_text]: {
         _userRequired: true,
