@@ -145,9 +145,12 @@ Commands.call = function call(firstWord, msg, words) {
         }
         cmd = context.cmd;
 
+        if (!cmd) {
+            return msg.sendChatMessage(strings.commands.blakkis.command_not_found);
+        }
         // check that command which the data originated is the same as current context
-        const dataCmdName = msg.data.match(/\/\w+/)[0];
-        if (cmd.name !== dataCmdName) {
+        const dataCmdName = msg.data.match(/\/\w+/);
+        if (dataCmdName && dataCmdName[0] !== cmd.name) {
             // happens for example if user uses /kalja033 in between inline chat command use
             cmd = cmds[dataCmdName];
             context = initContext(userId, cmd, msg);

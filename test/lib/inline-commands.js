@@ -94,7 +94,7 @@ describe('commands.js (inline)', () => {
                     assert.notEqual(mocked.internals.sentOptions.reply_markup, undefined);
                     assert.notEqual(mocked.internals.sentOptions.reply_markup.inline_keyboard, undefined);
                     assert(mocked.internals.sentOptions.reply_markup.inline_keyboard[0].find(x => x.text === 'button1'));
-                    mocked.msg.data = 'button1';
+                    mocked.msg.data = '/testinline button1';
                     mocked.msg.addMessageObj();
                     return Commands.call('button1', mocked.msg, ['button1']);
                 }).then(() => {
@@ -113,7 +113,7 @@ describe('commands.js (inline)', () => {
                     assert.notEqual(mocked.internals.sentOptions.reply_markup, undefined);
                     assert.notEqual(mocked.internals.sentOptions.reply_markup.inline_keyboard, undefined);
                     assert(mocked.internals.sentOptions.reply_markup.inline_keyboard[0].find(x => x.text === 'button1'));
-                    mocked.msg.data = 'button1';
+                    mocked.msg.data = '/testinline button1';
                     mocked.msg.addMessageObj();
                     return Commands.call('', mocked.msg, ['']);
                 }).then(() => {
@@ -144,13 +144,13 @@ describe('commands.js (inline)', () => {
                     assert(mocked.internals.sentOptions.reply_markup.inline_keyboard[0].find(x => x.text === 'nonUserButton'));
                     assert(!mocked.internals.sentOptions.reply_markup.inline_keyboard[0].find(x => x.text === 'userButton'));
                     assert(!mocked.internals.sentOptions.reply_markup.inline_keyboard[0].find(x => x.text === 'adminButton'));
-                    mocked.msg.data = 'userButton';
+                    mocked.msg.data = '/testinline userButton';
                     mocked.msg.addMessageObj();
                     return Commands.call('', mocked.msg, ['']);
                 }).then(() => {
                     assert.equal(mocked.internals.editText, false);
                     assert.equal(mocked.internals.editOptions, false);
-                    mocked.msg.data = 'adminButton';
+                    mocked.msg.data = '/testinline adminButton';
                     return Commands.call('', mocked.msg, ['']);
                 }).then(() => {
                     assert.equal(mocked.internals.editText, false);
@@ -171,7 +171,7 @@ describe('commands.js (inline)', () => {
                     assert(mocked.internals.sentOptions.reply_markup.inline_keyboard[0].find(x => x.text === 'userButton'));
                     assert(!mocked.internals.sentOptions.reply_markup.inline_keyboard[0].find(x => x.text === 'adminButton'));
                     assert(!mocked.internals.sentOptions.reply_markup.inline_keyboard[0].find(x => x.text === 'nonUserButton'));
-                    mocked.msg.data = 'userButton';
+                    mocked.msg.data = '/testinline userButton';
                     mocked.msg.addMessageObj();
                     return Commands.call('', mocked.msg, ['']);
                 }).then(() => {
@@ -185,7 +185,7 @@ describe('commands.js (inline)', () => {
                     assert(mocked.internals.sentOptions.reply_markup.inline_keyboard[0].find(x => x.text === 'button1'));
                     assert(mocked.internals.sentOptions.reply_markup.inline_keyboard[0].find(x => x.text === 'userButton'));
                     assert(!mocked.internals.sentOptions.reply_markup.inline_keyboard[0].find(x => x.text === 'nonUserButton'));
-                    mocked.msg.data = 'adminButton';
+                    mocked.msg.data = '/testinline adminButton';
                     return Commands.call('', mocked.msg, ['']);
                 }).then(() => {
                     assert.equal(mocked.internals.editText, mockCmdDefinition._text);
@@ -193,7 +193,7 @@ describe('commands.js (inline)', () => {
                     assert(mocked.internals.sentOptions.reply_markup.inline_keyboard[0].find(x => x.text === 'button1'));
                     assert(mocked.internals.sentOptions.reply_markup.inline_keyboard[0].find(x => x.text === 'userButton'));
                     assert(!mocked.internals.sentOptions.reply_markup.inline_keyboard[0].find(x => x.text === 'nonUserButton'));
-                    mocked.msg.data = 'nonUserButton';
+                    mocked.msg.data = '/testinline nonUserButton';
                     return Commands.call('', mocked.msg, ['']);
                 }).then(() => {
                     assert.equal(mocked.internals.editText, mockCmdDefinition._text);

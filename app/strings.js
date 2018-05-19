@@ -108,9 +108,9 @@ strings.commands = {
         text_group_list_item: '{username}... {standard_drinks}kpl ({drinks12h}/{drinks24h})'
     },
 
-    beta: {
-        on_select: strings.emoji.goat + ' Bäää. *Nyt:* {permilles}‰ - *30min:* {permilles30Min}‰\nVeressäsi on {grams} grammaa alkoholia, joka vastaa {standard_drinks} annosta. Olet selvinpäin {hours}h {minutes}min päästä.{drink_list}',
-        on_select_nonuser: strings.emoji.goat + ' Bäää. BläkkisVuohi auttaa sinua ja ystäviäsi seuraamaan rippauksesi (lue: promillejesi) tasoa. Luo ensimmäiseksi tunnus valitsemalla Luo tunnus. Tunnuksen luomisen jälkeen voit alkaa kellottamaan juomia sisään juomavalikosta. Annan sinulle arvioita rippauksesta promillejen muodossa. Minut voi myös lisätä ryhmään, jolloin kerron /promillet-komennolla kaikkien ryhmässä olevien rippitasot. Jokaisen ryhmäläisen täytyy kuitenkin sanoa ryhmässä /moro, jotta he pääsevät rippilistaukseen mukaan.',
+    start: {
+        on_select: strings.emoji.goat + ' *Bäää.* ' + strings.emoji.goat + '\n\n*Nyt:* {permilles}‰ - *30min:* {permilles30Min}‰\nVeressäsi on {grams} grammaa alkoholia, joka vastaa {standard_drinks} annosta. Olet selvinpäin {hours}h {minutes}min päästä.{drink_list}',
+        on_select_nonuser: strings.emoji.goat + ' *Bäää.* ' + strings.emoji.goat + '\n\nBläkkisVuohi auttaa sinua ja ystäviäsi seuraamaan rippauksesi (lue: promillejesi) tasoa. Luo ensimmäiseksi tunnus valitsemalla Luo tunnus. Tunnuksen luomisen jälkeen voit alkaa kellottamaan juomia sisään juomavalikosta. Annan sinulle arvioita rippauksesta promillejen muodossa. Minut voi myös lisätä ryhmään, jolloin kerron /promillet-komennolla kaikkien ryhmässä olevien rippitasot. Jokaisen ryhmäläisen täytyy kuitenkin sanoa ryhmässä /moro, jotta he pääsevät rippilistaukseen mukaan.',
         on_select_drinks3h: '\n\nViimeisen kolmen tunnin tapahtumat:\n{drinkList3h}',
         juo: {
             button_text: strings.emoji.glasses + ' Juo',
@@ -258,10 +258,6 @@ strings.commands = {
 
     komennot: {
         cmd_description: '/komennot - listaa kaikki botin komennot'
-    },
-
-    start: {
-        cmd_description: '/start - aloita botin käyttö'
     },
 
     /* jalkikellotus -strings */

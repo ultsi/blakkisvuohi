@@ -17,26 +17,26 @@
 */
 
 /*
-    beta.js
-    unit tests for betablakkis.js functions
+    start.js
+    unit tests for start.js functions
 */
 
 /* globals describe, it, beforeEach */
 
 'use strict';
-require('../../app/commands/betablakkis.js');
+require('../../app/commands/start.js');
 
 const assert = require('assert');
 const blakkistest = require('../blakkistest.js');
 const Commands = require('../../app/lib/commands.js');
 const strings = require('../../app/strings.js');
 
-describe('betablakkis.js', function() {
+describe('start.js', function() {
     beforeEach(blakkistest.resetDbWithTestUsersAndGroupsAndDrinks);
-    it('Calling /beta should print normal text', function(done) {
+    it('Calling /start should print normal text', function(done) {
         const mocked = blakkistest.mockMsgAndBot();
         mocked.msg.from.id = blakkistest.realIds[0];
-        Commands.call('/beta', mocked.msg, ['/beta'])
+        Commands.call('/start', mocked.msg, ['/start'])
             .then(() => {
                 assert.equal(mocked.internals.sentChatId, mocked.msg.from.id);
                 assert.equal(mocked.internals.sentText, 'Tämä on Bläkkisvuohi v3.0 betakomento');
@@ -50,7 +50,7 @@ describe('betablakkis.js', function() {
     it('Selecting Juo should print Juo text', function(done) {
         const mocked = blakkistest.mockMsgAndBot();
         mocked.msg.from.id = blakkistest.realIds[0];
-        Commands.call('/beta', mocked.msg, ['/beta'])
+        Commands.call('/start', mocked.msg, ['/start'])
             .then(() => {
                 assert.equal(mocked.internals.sentChatId, mocked.msg.from.id);
                 assert.equal(mocked.internals.sentText, 'Tämä on Bläkkisvuohi v3.0 betakomento');
@@ -74,7 +74,7 @@ describe('betablakkis.js', function() {
             .then((rows) => {
                 assert.equal(rows.length, 2);
                 assert(!rows.find(x => x.description === 'Kalja033'));
-                return Commands.call('/beta', mocked.msg, ['/beta']);
+                return Commands.call('/start', mocked.msg, ['/start']);
             })
             .then(() => {
                 assert.equal(mocked.internals.sentChatId, mocked.msg.from.id);
@@ -110,7 +110,7 @@ describe('betablakkis.js', function() {
             .then((rows) => {
                 assert.equal(rows.length, 2);
                 assert(!rows.find(x => x.description === 'Kalja033'));
-                return Commands.call('/beta', mocked.msg, ['/beta']);
+                return Commands.call('/start', mocked.msg, ['/start']);
             })
             .then(() => {
                 assert.equal(mocked.internals.sentChatId, mocked.msg.from.id);

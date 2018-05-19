@@ -24,7 +24,7 @@
 'use strict';
 
 const strings = require('../../strings.js');
-const str_luo_tunnus = strings.commands.beta.luo_tunnus;
+const str_luo_tunnus = strings.commands.start.luo_tunnus;
 const terms = strings.commands.terms.reply;
 const utils = require('../../lib/utils.js');
 const users = require('../../db/users.js');

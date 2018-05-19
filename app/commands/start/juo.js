@@ -18,7 +18,7 @@
 
 /*
     juo.js
-    Juo beta command, uses inline version of commands.js
+    Juo menu command, uses inline version of commands.js
 */
 
 'use strict';
@@ -26,7 +26,7 @@
 const utils = require('../../lib/utils.js');
 const constants = require('../../constants.js');
 const strings = require('../../strings.js');
-const str_juo = strings.commands.beta.juo;
+const str_juo = strings.commands.start.juo;
 const alcomath = require('../../lib/alcomath.js');
 
 function makeDrinkOption(drink_amount, drink_name) {

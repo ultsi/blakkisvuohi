@@ -17,23 +17,77 @@
 */
 
 /*
-    /start
-    Begin using the bot
+    betablakkis.js
+    Beta bläkkis command, uses inline chat for all functionality
 */
+
 'use strict';
 
 const Commands = require('../lib/commands.js');
+const utils = require('../lib/utils.js');
+const constants = require('../constants.js');
 const strings = require('../strings.js');
+const str_start = strings.commands.start;
+const alcomath = require('../lib/alcomath.js');
 
-function startCommand(context, msg, words) {
-    return msg.sendPrivateMessage(strings.commands.blakkis.help_text);
+function makeDrinksString(drinks) {
+    let list = [];
+    for (var i in drinks) {
+        let drink = drinks[i];
+        let drinkTime = new Date(Date.parse(drink.created));
+        let drinkHours = drinkTime.getHours() + '';
+        if (drinkHours.length === 1) {
+            drinkHours = '0' + drinkHours;
+        }
+        let drinkMinutes = drinkTime.getMinutes() + '';
+        if (drinkMinutes.length === 1) {
+            drinkMinutes = '0' + drinkMinutes;
+        }
+        list.push(drinkHours + ':' + drinkMinutes + ' ' + drink.description);
+    }
+    return list.join('\n');
 }
 
-Commands.register(
-    '/start',
-    strings.commands.start.cmd_description,
-    Commands.SCOPE_PRIVATE,
-    Commands.PRIVILEGE_ALL,
-    Commands.TYPE_SINGLE,
-    startCommand
-);
+const betablakkis = {
+    _onSelect: (context, user, msg, words) => {
+        if (user) {
+            return Promise.all([
+                user.getBooze(),
+                user.getBoozeForLastHours(3)
+            ]).then((res) => {
+                const drinks = res[0],
+                    drinks3h = res[1];
+                let ebac = alcomath.calculateEBACFromDrinks(user, drinks);
+                let permilles = ebac.permilles;
+                let permilles30Min = ebac.permilles30Min;
+                let grams = ebac.grams;
+                let metabolismRate = alcomath.getUserMetabolismRate(user);
+                let time = permilles30Min / metabolismRate;
+                time = time > 0 ? time + 0.5 : time;
+                let hours = Math.floor(time);
+                const drinks_text = drinks3h.length > 0 ? str_start.on_select_drinks3h.format({
+                    drinkList3h: makeDrinksString(drinks3h)
+                }) : '';
+                return str_start.on_select.format({
+                    permilles: utils.roundTo(permilles, 2),
+                    permilles30Min: utils.roundTo(permilles30Min, 2),
+                    grams: utils.roundTo(grams),
+                    standard_drinks: utils.roundTo(grams / constants.STANDARD_DRINK_GRAMS, 2),
+                    hours: hours,
+                    minutes: ('0' + Math.ceil((time - hours) * 60)).slice(-2),
+                    drink_list: drinks_text
+                });
+            });
+        } else {
+            return Promise.resolve(str_start.on_select_nonuser);
+        }
+    },
+    _root: true,
+    [str_start.juo.button_text]: require('./start/juo.js'),
+    [str_start.luo_tunnus.button_text]: require('./start/luo_tunnus.js'),
+    [str_start.tilastoja.button_text]: require('./start/tilastoja.js'),
+    [str_start.asetukset.button_text]: require('./start/asetukset.js'),
+    [str_start.help.button_text]: require('./start/help.js')
+};
+
+Commands.register('/start', 'Bläkkisvuohi v3', Commands.SCOPE_PRIVATE, Commands.PRIVILEGE_ALL, Commands.TYPE_INLINE, betablakkis);

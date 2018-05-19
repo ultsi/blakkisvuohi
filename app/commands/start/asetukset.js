@@ -18,13 +18,13 @@
 
 /*
     asetukset.js
-    asetukset beta command, uses inline-commands.js
+    asetukset menu command, uses inline-commands.js
 */
 
 'use strict';
 
 const strings = require('../../strings.js');
-const str_asetukset = strings.commands.beta.asetukset;
+const str_asetukset = strings.commands.start.asetukset;
 const utils = require('../../lib/utils.js');
 const users = require('../../db/users.js');
 

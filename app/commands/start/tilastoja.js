@@ -25,7 +25,7 @@
 
 const strings = require('../../strings.js');
 const constants = require('../../constants.js');
-const str_tilastoja = strings.commands.beta.tilastoja;
+const str_tilastoja = strings.commands.start.tilastoja;
 const utils = require('../../lib/utils.js');
 
 function statsForDays(context, user, msg, words, days) {

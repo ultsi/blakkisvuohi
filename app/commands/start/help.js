@@ -25,7 +25,7 @@
 
 const strings = require('../../strings.js');
 const constants = require('../../constants.js');
-const str_help = strings.commands.beta.help;
+const str_help = strings.commands.start.help;
 const utils = require('../../lib/utils.js');
 
 module.exports = {
