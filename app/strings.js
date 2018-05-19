@@ -110,7 +110,7 @@ strings.commands = {
     },
 
     start: {
-        on_select: strings.emoji.goat + ' *Bäää* ' + strings.emoji.goat + '\n\n*Nyt:* {permilles}‰ - *30min:* {permilles30Min}‰\nVeressäsi on {grams} grammaa alkoholia, joka vastaa {standard_drinks} annosta. Olet selvinpäin {hours}h {minutes}min päästä.{drink_list}',
+        on_select: strings.emoji.goat + ' *Bäää (beta)* ' + strings.emoji.goat + '\n\n*Nyt:* {permilles}‰ - *30min:* {permilles30Min}‰\nVeressäsi on {grams} grammaa alkoholia, joka vastaa {standard_drinks} annosta. Olet selvinpäin {hours}h {minutes}min päästä.{drink_list}',
         on_select_nonuser: strings.emoji.goat + ' *Bäää* ' + strings.emoji.goat + '\n\nBläkkisVuohi auttaa sinua ja ystäviäsi seuraamaan rippauksesi (lue: promillejesi) tasoa. Luo ensimmäiseksi tunnus valitsemalla Luo tunnus. Tunnuksen luomisen jälkeen voit alkaa kellottamaan juomia sisään juomavalikosta. Annan sinulle arvioita rippauksesta promillejen muodossa. Minut voi myös lisätä ryhmään, jolloin kerron /promillet-komennolla kaikkien ryhmässä olevien rippitasot. Jokaisen ryhmäläisen täytyy kuitenkin sanoa ryhmässä /moro, jotta he pääsevät rippilistaukseen mukaan.',
         on_select_drinks3h: '\n\nViimeisen kolmen tunnin tapahtumat:\n{drinkList3h}',
         juo: {
