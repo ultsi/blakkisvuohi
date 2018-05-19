@@ -39,9 +39,10 @@ describe('start.js', function() {
         Commands.call('/start', mocked.msg, ['/start'])
             .then(() => {
                 assert.equal(mocked.internals.sentChatId, mocked.msg.from.id);
-                assert.equal(mocked.internals.sentText, 'Tämä on Bläkkisvuohi v3.0 betakomento');
+                assert.notEqual(mocked.internals.sentText.indexOf('Bäää'), -1);
                 assert.notEqual(mocked.internals.sentOptions.reply_markup.inline_keyboard.length, 0);
-                mocked.msg.data = 'Juo';
+                mocked.msg.data = '/start ' + strings.commands.start.juo.button_text;
+                mocked.msg.addMessageObj();
                 done();
             })
             .catch((err) => done(err));
@@ -53,13 +54,14 @@ describe('start.js', function() {
         Commands.call('/start', mocked.msg, ['/start'])
             .then(() => {
                 assert.equal(mocked.internals.sentChatId, mocked.msg.from.id);
-                assert.equal(mocked.internals.sentText, 'Tämä on Bläkkisvuohi v3.0 betakomento');
+                assert.notEqual(mocked.internals.sentText.indexOf('Bäää'), -1);
                 assert.notEqual(mocked.internals.sentOptions.reply_markup.inline_keyboard.length, 0);
-                mocked.msg.data = 'Juo';
+                mocked.msg.data = '/start ' + strings.commands.start.juo.button_text;
+                mocked.msg.addMessageObj();
                 return Commands.call('', mocked.msg, '');
             })
             .then(() => {
-                assert.notEqual(mocked.internals.editText.indexOf('Viimeisen kolmen tunnin'), -1);
+                assert.notEqual(mocked.internals.editText.indexOf('Bäää - Juo'), -1);
                 done();
             })
             .catch((err) => done(err));
@@ -73,35 +75,43 @@ describe('start.js', function() {
         user.getBooze()
             .then((rows) => {
                 assert.equal(rows.length, 2);
-                assert(!rows.find(x => x.description === 'Kalja033'));
+                assert(!rows.find(x => x.description === strings.emoji.beer + ' 33cl 4.7%'));
                 return Commands.call('/start', mocked.msg, ['/start']);
             })
             .then(() => {
                 assert.equal(mocked.internals.sentChatId, mocked.msg.from.id);
-                assert.equal(mocked.internals.sentText, 'Tämä on Bläkkisvuohi v3.0 betakomento');
+                assert.notEqual(mocked.internals.sentText.indexOf('Bäää'), -1);
                 assert.notEqual(mocked.internals.sentOptions.reply_markup.inline_keyboard.length, 0);
-                mocked.msg.data = 'Juo';
+                mocked.msg.data = '/start ' + strings.commands.start.juo.button_text;
+                mocked.msg.addMessageObj();
                 return Commands.call('', mocked.msg, '');
             })
             .then(() => {
-                assert.notEqual(mocked.internals.editText.indexOf('Viimeisen kolmen tunnin'), -1);
-                mocked.msg.data = 'Kalja 33cl 4.7%';
+                assert.notEqual(mocked.internals.editText.indexOf('Bäää - Juo'), -1);
+                mocked.msg.data = '/start ' + strings.commands.start.juo.miedot.button_text;
+                mocked.msg.addMessageObj();
                 return Commands.call('', mocked.msg, '');
             })
             .then(() => {
-                assert.notEqual(mocked.internals.editText.indexOf('‰'), -1);
-                mocked.msg.data = 'Kalja 33cl 4.7%';
+                assert.notEqual(mocked.internals.editText.indexOf('Bäää - Miedot'), -1);
+                mocked.msg.data = '/start ' + strings.emoji.beer + ' 33cl 4.7%';
+                mocked.msg.addMessageObj();
+                return Commands.call('', mocked.msg, '');
+            })
+            .then(() => {
+                assert.notEqual(mocked.internals.editText.indexOf('Bäää - Juo'), -1);
                 return user.getBooze();
             })
             .then((rows) => {
+                assert.notEqual(mocked.internals.editText.indexOf('Bäää - Juo'), -1);
                 assert.equal(rows.length, 3);
-                assert(rows.find(x => x.description === 'Kalja033'));
+                assert(rows.find(x => x.description === strings.emoji.beer + ' 33cl 4.7%'));
                 done();
             })
             .catch((err) => done(err));
     });
 
-    it('Drinking one beer and pressing back twice should send back to root', function(done) {
+    it('Drinking one beer and pressing back thrice should send back to root', function(done) {
         const mocked = blakkistest.mockMsgAndBot();
         const user = blakkistest.users[0];
         mocked.msg.from.id = blakkistest.realIds[0];
@@ -109,40 +119,57 @@ describe('start.js', function() {
         user.getBooze()
             .then((rows) => {
                 assert.equal(rows.length, 2);
-                assert(!rows.find(x => x.description === 'Kalja033'));
+                assert(!rows.find(x => x.description === strings.emoji.beer + ' 33cl 4.7%'));
                 return Commands.call('/start', mocked.msg, ['/start']);
             })
             .then(() => {
                 assert.equal(mocked.internals.sentChatId, mocked.msg.from.id);
-                assert.equal(mocked.internals.sentText, 'Tämä on Bläkkisvuohi v3.0 betakomento');
+                assert.notEqual(mocked.internals.sentText.indexOf('Bäää'), -1);
                 assert.notEqual(mocked.internals.sentOptions.reply_markup.inline_keyboard.length, 0);
-                mocked.msg.data = 'Juo';
+                mocked.msg.data = '/start ' + strings.commands.start.juo.button_text;
+                mocked.msg.addMessageObj();
                 return Commands.call('', mocked.msg, '');
             })
             .then(() => {
-                assert.notEqual(mocked.internals.editText.indexOf('Viimeisen kolmen tunnin'), -1);
-                mocked.msg.data = 'Kalja 33cl 4.7%';
+                assert.notEqual(mocked.internals.editText.indexOf('Bäää - Juo'), -1);
+                mocked.msg.data = '/start ' + strings.commands.start.juo.miedot.button_text;
+                mocked.msg.addMessageObj();
                 return Commands.call('', mocked.msg, '');
             })
             .then(() => {
-                assert.notEqual(mocked.internals.editText.indexOf('‰'), -1);
-                mocked.msg.data = 'Kalja 33cl 4.7%';
+                assert.notEqual(mocked.internals.editText.indexOf('Bäää - Miedot'), -1);
+                mocked.msg.data = '/start ' + strings.emoji.beer + ' 33cl 4.7%';
+                mocked.msg.addMessageObj();
+                return Commands.call('', mocked.msg, '');
+            })
+            .then(() => {
+                assert.notEqual(mocked.internals.editText.indexOf('Bäää - Juo'), -1);
                 return user.getBooze();
             })
             .then((rows) => {
+                assert.notEqual(mocked.internals.editText.indexOf('Bäää - Juo'), -1);
                 assert.equal(rows.length, 3);
-                assert(rows.find(x => x.description === 'Kalja033'));
-                mocked.msg.data = strings.commands.blakkis.back;
+                assert(rows.find(x => x.description === strings.emoji.beer + ' 33cl 4.7%'));
+                mocked.msg.data = '/start ' + strings.commands.blakkis.back;
+                mocked.msg.addMessageObj();
                 return Commands.call('', mocked.msg, '');
             })
             .then(() => {
-                assert.notEqual(mocked.internals.editText.indexOf('Viimeisen kolmen tunnin'), -1);
-                mocked.msg.data = strings.commands.blakkis.back;
+                assert.notEqual(mocked.internals.editText.indexOf('Bäää - Miedot'), -1);
+                mocked.msg.data = '/start ' + strings.commands.blakkis.back;
+                mocked.msg.addMessageObj();
                 return Commands.call('', mocked.msg, '');
             })
             .then(() => {
-                assert.equal(mocked.internals.editText, 'Tämä on Bläkkisvuohi v3.0 betakomento');
-                mocked.msg.data = strings.commands.blakkis.back;
+                assert.notEqual(mocked.internals.editText.indexOf('Bäää - Juo'), -1);
+                mocked.msg.data = '/start ' + strings.commands.blakkis.back;
+                mocked.msg.addMessageObj();
+                return Commands.call('', mocked.msg, '');
+            })
+            .then(() => {
+                assert.notEqual(mocked.internals.editText.indexOf('Bäää (beta)'), -1);
+                mocked.msg.data = '/start ' + strings.commands.blakkis.back;
+                mocked.msg.addMessageObj();
                 done();
             })
             .catch((err) => done(err));

@@ -37,11 +37,13 @@ function makeDrinkOption(drink_amount, drink_name) {
                 .then((ebac) => {
                     const permilles = ebac.permilles;
                     const permilles30Min = ebac.permilles30Min;
-                    const text = utils.getRandomFromArray(strings.drink_responses) + ' ' + strings.short_permilles_text.format({
-                        permilles: utils.roundTo(permilles, 2),
-                        permilles30Min: utils.roundTo(permilles30Min, 2)
+                    return str_juo.on_drink.format({
+                        drink_response: utils.getRandomFromArray(strings.drink_responses),
+                        short_permilles_text: strings.short_permilles_text.format({
+                            permilles: utils.roundTo(permilles, 2),
+                            permilles30Min: utils.roundTo(permilles30Min, 2)
+                        })
                     });
-                    return text;
                 });
         }
     };
@@ -106,11 +108,13 @@ module.exports = {
                 .then((ebac) => {
                     const permilles = ebac.permilles;
                     const permilles30Min = ebac.permilles30Min;
-                    const text = utils.getRandomFromArray(strings.drink_responses) + ' ' + strings.short_permilles_text.format({
-                        permilles: utils.roundTo(permilles, 2),
-                        permilles30Min: utils.roundTo(permilles30Min, 2)
+                    return str_juo.on_drink.format({
+                        drink_response: utils.getRandomFromArray(strings.drink_responses),
+                        short_permilles_text: strings.short_permilles_text.format({
+                            permilles: utils.roundTo(permilles, 2),
+                            permilles30Min: utils.roundTo(permilles30Min, 2)
+                        })
                     });
-                    return text;
                 });
         }
     },

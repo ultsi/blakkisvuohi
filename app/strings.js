@@ -116,6 +116,7 @@ strings.commands = {
         juo: {
             button_text: strings.emoji.glasses + ' Juo',
             on_select: strings.emoji.goat + ' *Bäää - Juo* ' + strings.emoji.goat + '\n\nValitse juomasi alla olevista valikoista. Jos et löydä etsimääsi, klikkaa *Oma juoma*. Jos olet unohtanut lisätä juomia, voit lisätä ne takautuvasti valitsemalla *Jälkikellotus*. Jos lisäsit vahingossa väärän juoman, valitse *Kumoa*.',
+            on_drink: strings.emoji.goat + ' *Bäää - Juo* ' + strings.emoji.goat + '\n\n{drink_response}{short_permilles_text}',
             miedot: {
                 button_text: strings.emoji.beers + ' Miedot',
                 on_select: strings.emoji.goat + ' *Bäää - Miedot* ' + strings.emoji.goat + '\n\nValitse mieto.',
@@ -139,11 +140,11 @@ strings.commands = {
             jalkikellotus: {
                 button_text: strings.emoji.stopwatch + ' Jälkikellotus',
                 on_select: strings.emoji.goat + ' *Bäää - Jälkikellotus* ' + strings.emoji.goat + '\n\nJälkikellottamalla voit tilastoida unohtuneet juomat monta tuntia jälkikäteen.\n\nKuinka pitkältä aikaväliltä haluat syöttää unohtuneita juomia? Syötä aikaväli tunneissa.\n\nEsimerkiksi kaksi ja puoli tuntia: *2.5*\nYksi tunti ja 15 minuuttia: *1.25*',
-                hours_error: 'Tunnit väärin. Syötä arvo väliltä 0-24.',
-                input_drinks_start: 'Kirjoita juomia seuraavassa muodossa: \nSenttilitrat Tilavuusprosentti. \nEsimerkiksi: 33 4.7. \n\nErota eri juomat joko rivinvaihdolla, tai kirjoita useampi viesti.',
-                input_drinks_words_error: 'Sanojen määrän täytyy olla parillinen luku.',
-                input_drinks_drink_error: 'Tarkista juoman {drink} senttilitrat ja tilavuus!',
-                input_drinks_drinks_correct: '{drinks_amount} juoma(a) syötetty onnistuneesti. Voit jatkaa juomien lisäämistä tai painaa Tallenna tilastoidaksesi syötetyt juomat.\n\nNykyiset syötetyt juomat:\n{drinks_list}',
+                hours_error: strings.emoji.goat + ' *Bäää - Jälkikellotus* ' + strings.emoji.goat + '\n\nTunnit väärin. Syötä arvo väliltä 0-24.',
+                input_drinks_start: strings.emoji.goat + ' *Bäää - Jälkikellotus* ' + strings.emoji.goat + '\n\nKirjoita juomia seuraavassa muodossa: \nSenttilitrat Tilavuusprosentti. \nEsimerkiksi: 33 4.7. \n\nErota eri juomat joko rivinvaihdolla, tai kirjoita useampi viesti.',
+                input_drinks_words_error: strings.emoji.goat + ' *Bäää - Jälkikellotus* ' + strings.emoji.goat + '\n\nSanojen määrän täytyy olla parillinen luku.',
+                input_drinks_drink_error: strings.emoji.goat + ' *Bäää - Jälkikellotus* ' + strings.emoji.goat + '\n\nTarkista juoman {drink} senttilitrat ja tilavuus!',
+                input_drinks_drinks_correct: strings.emoji.goat + ' *Bäää - Jälkikellotus* ' + strings.emoji.goat + '\n\n{drinks_amount} juoma(a) syötetty onnistuneesti. Voit jatkaa juomien lisäämistä tai painaa Tallenna tilastoidaksesi syötetyt juomat.\n\nNykyiset syötetyt juomat:\n{drinks_list}',
                 drink_name: 'Jälkikellotus',
                 save: {
                     button_text: strings.emoji.floppy_disk + ' Tallenna',
@@ -164,24 +165,24 @@ strings.commands = {
                 paino: {
                     button_text: strings.emoji.scale + ' Muokkaa painoa',
                     on_select: strings.emoji.goat + ' *Bäää - Muokkaa painoa* ' + strings.emoji.goat + '\n\n*Paino nyt:* {weight}kg\n\nSyötä uusi painosi kokonaislukuna.',
-                    on_change: 'Paino muutettu!'
+                    on_change: strings.emoji.goat + ' *Bäää - Muokkaa painoa* ' + strings.emoji.goat + '\n\nPaino muutettu!'
                 },
                 pituus: {
                     button_text: strings.emoji.ruler + ' Muokkaa pituutta',
                     on_select: strings.emoji.goat + ' *Bäää - Muokkaa pituutta* ' + strings.emoji.goat + '\n\n*Pituus nyt:* {height}cm\n\nSyötä uusi pituutesi kokonaislukuna.',
-                    on_change: 'Pituus muutettu!'
+                    on_change: strings.emoji.goat + ' *Bäää - Muokkaa painoa* ' + strings.emoji.goat + '\n\nPituus muutettu!'
                 },
                 sukupuoli: {
                     button_text: strings.emoji.female + strings.emoji.male + ' Muokkaa sukupuolta',
                     on_select: strings.emoji.goat + ' *Bäää - Muokkaa sukupuolta* ' + strings.emoji.goat + '\n\n*Sukupuoli nyt:* {gender}\n\nValitse uusi biologinen sukupuolesi alta:',
-                    on_change: 'Sukupuoli muutettu!'
+                    on_change: strings.emoji.goat + ' *Bäää - Muokkaa sukupuolta* ' + strings.emoji.goat + '\n\nSukupuoli muutettu!'
                 }
             },
             poista: {
                 button_text: strings.emoji.trash + ' Poista tunnus',
                 on_select: strings.emoji.goat + ' *Bäää - Poista tunnus* ' + strings.emoji.goat + '\n\nOlet poistamassa tunnuksesi. Hyväksymällä poistat kaiken sinuun liittyvän tiedon Bläkkisvuohen tietokannoista eikä sinua enää ole mahdollista listata missään listauksissa.\n\nOletko varma, että haluat poistaa tunnuksesi?',
-                double_confirm: strings.emoji.goat + ' *Bäää - Poista tunnus* ' + strings.emoji.goat + '\n\nOletko aivan varma? Kaikki tietosi ollaan poistamassa.',
-                canceled: 'Peruit tunnuksen poistamisen.',
+                double_confirm: strings.emoji.goat + ' *Bäää - Poista tunnus* ' + strings.emoji.goat + '\n\nOletko aivan varma? Kaikki tietosi *poistetaan* jos klikkaat kyllä.',
+                canceled: strings.emoji.goat + ' *Bäää - Poista tunnus* ' + strings.emoji.goat + '\n\nPeruit tunnuksen poistamisen.',
                 deleted: strings.emoji.goat + ' *Bäää - Poista tunnus* ' + strings.emoji.goat + '\n\nKaikki tietosi on nyt poistettu. Rippaa rauhassa.'
             },
             paivita: {
