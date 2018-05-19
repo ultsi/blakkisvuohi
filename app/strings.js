@@ -46,7 +46,8 @@ strings.emoji = {
     stopwatch: '⏱',
     floppy_disk: '💾',
     bar_graph: '📊',
-    info: 'ℹ'
+    info: 'ℹ',
+    goat: '🐐'
 };
 
 strings.drink_responses = [
@@ -108,12 +109,12 @@ strings.commands = {
     },
 
     beta: {
-        on_select: '*Nyt:* {permilles}‰ - *30min:* {permilles30Min}‰\nVeressäsi on {grams} grammaa alkoholia, joka vastaa {standard_drinks} annosta. Olet selvinpäin {hours}h {minutes}min päästä.',
-        on_select_nonuser: 'BläkkisVuohi auttaa sinua ja ystäviäsi seuraamaan rippauksesi (lue: promillejesi) tasoa. Luo ensimmäiseksi tunnus valitsemalla Luo tunnus. Tunnuksen luomisen jälkeen voit alkaa kellottamaan juomia sisään juomavalikosta. Annan sinulle arvioita rippauksesta promillejen muodossa. Minut voi myös lisätä ryhmään, jolloin kerron /promillet-komennolla kaikkien ryhmässä olevien rippitasot. Jokaisen ryhmäläisen täytyy kuitenkin sanoa ryhmässä /moro, jotta he pääsevät rippilistaukseen mukaan.',
+        on_select: strings.emoji.goat + ' Bäää. *Nyt:* {permilles}‰ - *30min:* {permilles30Min}‰\nVeressäsi on {grams} grammaa alkoholia, joka vastaa {standard_drinks} annosta. Olet selvinpäin {hours}h {minutes}min päästä.{drink_list}',
+        on_select_nonuser: strings.emoji.goat + ' Bäää. BläkkisVuohi auttaa sinua ja ystäviäsi seuraamaan rippauksesi (lue: promillejesi) tasoa. Luo ensimmäiseksi tunnus valitsemalla Luo tunnus. Tunnuksen luomisen jälkeen voit alkaa kellottamaan juomia sisään juomavalikosta. Annan sinulle arvioita rippauksesta promillejen muodossa. Minut voi myös lisätä ryhmään, jolloin kerron /promillet-komennolla kaikkien ryhmässä olevien rippitasot. Jokaisen ryhmäläisen täytyy kuitenkin sanoa ryhmässä /moro, jotta he pääsevät rippilistaukseen mukaan.',
         on_select_drinks3h: '\n\nViimeisen kolmen tunnin tapahtumat:\n{drinkList3h}',
         juo: {
             button_text: strings.emoji.glasses + ' Juo',
-            on_select: 'Valitse juomasi alla olevista valikoista. Jos et löydä, klikkaa Oma juoma. Jos olet unohtanut lisätä juomia, voit lisätä ne takautuvasti valitsemalla Jälkikellotus. Jos lisäsit vahingossa väärän juoman, valitse Kumoa.',
+            on_select: 'Valitse juomasi alla olevista valikoista. Jos et löydä etsimääsi, klikkaa *Oma juoma*. Jos olet unohtanut lisätä juomia, voit lisätä ne takautuvasti valitsemalla *Jälkikellotus*. Jos lisäsit vahingossa väärän juoman, valitse *Kumoa*.',
             miedot: {
                 button_text: strings.emoji.beers + ' Miedot',
                 on_select: 'Valitse mieto.',
@@ -155,10 +156,10 @@ strings.commands = {
         },
         asetukset: {
             button_text: strings.emoji.gear + ' Asetukset',
-            on_select: 'Asetukset:\n*Nimimerkki* {username}\n*ID:* {user_id}\n*Paino:* {weight}kg\n*Pituus:* {height}cm\n*Sukupuoli:* {gender}\n*Käyttäjä luotu:* {created}',
+            on_select: '*Asetukset*\n\nAsetuksista voit muokata tunnustasi tai poistaa tunnuksesi.',
             muokkaa: {
                 button_text: strings.emoji.person_silhouette + ' Muokkaa tunnusta',
-                on_select: 'Voit muokata tässä tunnuksesi painoa, pituutta ja sukupuolta sekä päivittää nimimerkin.\n\nNykyiset tiedot:\n*Nimimerkki:* {username}\n*Paino:* {weight}kg\n*Pituus:* {height}cm\n*Sukupuoli:* {gender}',
+                on_select: 'Voit muokata tässä tunnuksesi painoa, pituutta ja sukupuolta sekä päivittää nimimerkin.\n\nNykyiset tiedot:\n*Nimimerkki:* {username}\n*Paino:* {weight}kg\n*Pituus:* {height}cm\n*Sukupuoli:* {gender}\n*ID:* {user_id}\n*Käyttäjä luotu:* {created}',
                 paino: {
                     button_text: strings.emoji.scale + ' Muokkaa painoa',
                     on_select: '*Paino nyt:* {weight}kg\n\nSyötä uusi painosi kokonaislukuna.',

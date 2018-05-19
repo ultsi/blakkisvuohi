@@ -31,23 +31,18 @@ const users = require('../../db/users.js');
 module.exports = {
     _userRequired: true,
     _onSelect: (context, user, msg, words) => {
-        return Promise.resolve(str_asetukset.on_select.format({
-            username: user.username,
-            user_id: user.userId,
-            weight: user.weight,
-            height: user.height,
-            gender: user.gender,
-            created: user.created.toString()
-        }));
+        return Promise.resolve(str_asetukset.on_select);
     },
     [str_asetukset.muokkaa.button_text]: {
         _userRequired: true,
         _onSelect: (context, user, msg, words) => {
             return Promise.resolve(str_asetukset.muokkaa.on_select.format({
                 username: user.username,
+                user_id: user.userId,
                 weight: user.weight,
                 height: user.height,
-                gender: user.gender
+                gender: user.gender,
+                created: user.created.toString()
             }));
         },
         [str_asetukset.muokkaa.paino.button_text]: {

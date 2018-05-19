@@ -65,18 +65,18 @@ const betablakkis = {
                 let time = permilles30Min / metabolismRate;
                 time = time > 0 ? time + 0.5 : time;
                 let hours = Math.floor(time);
-                const permilles_text = str_beta.on_select.format({
+                const drinks_text = drinks3h.length > 0 ? str_beta.on_select_drinks3h.format({
+                    drinkList3h: makeDrinksString(drinks3h)
+                }) : '';
+                return str_beta.on_select.format({
                     permilles: utils.roundTo(permilles, 2),
                     permilles30Min: utils.roundTo(permilles30Min, 2),
                     grams: utils.roundTo(grams),
                     standard_drinks: utils.roundTo(grams / constants.STANDARD_DRINK_GRAMS, 2),
                     hours: hours,
-                    minutes: ('0' + Math.ceil((time - hours) * 60)).slice(-2)
+                    minutes: ('0' + Math.ceil((time - hours) * 60)).slice(-2),
+                    drink_list: drinks_text
                 });
-                const drinks_text = drinks3h.length > 0 ? str_beta.on_select_drinks3h.format({
-                    drinkList3h: makeDrinksString(drinks3h)
-                }) : '';
-                return permilles_text + drinks_text;
             });
         } else {
             return Promise.resolve(str_beta.on_select_nonuser);
