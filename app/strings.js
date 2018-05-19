@@ -136,9 +136,9 @@ strings.commands = {
                 yes: 'Kyllä'
             }
         },
-        tunnus: {
+        asetukset: {
             button_text: strings.emoji.gear + ' Asetukset',
-            on_select: 'Tunnus:\n*Nimimerkki* {username}\n*ID:* {user_id}\n*Paino:* {weight}kg\n*Pituus:* {height}cm\n*Sukupuoli:* {gender}\n*Käyttäjä luotu:* {created}',
+            on_select: 'Asetukset:\n*Nimimerkki* {username}\n*ID:* {user_id}\n*Paino:* {weight}kg\n*Pituus:* {height}cm\n*Sukupuoli:* {gender}\n*Käyttäjä luotu:* {created}',
             muokkaa: {
                 button_text: strings.emoji.person_silhouette + ' Muokkaa tunnusta',
                 on_select: 'Voit muokata tässä tunnuksesi painoa, pituutta ja sukupuolta sekä päivittää nimimerkin.\n\nNykyiset tiedot:\n*Nimimerkki:* {username}\n*Paino:* {weight}kg\n*Pituus:* {height}cm\n*Sukupuoli:* {gender}',

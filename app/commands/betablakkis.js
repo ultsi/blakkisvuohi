@@ -84,7 +84,7 @@ const betablakkis = {
     },
     _root: true,
     [str_beta.juo.button_text]: require('./inline/juo.js'),
-    [str_beta.tunnus.button_text]: require('./inline/tunnus.js'),
+    [str_beta.asetukset.button_text]: require('./inline/asetukset.js'),
     [str_beta.luo_tunnus.button_text]: require('./inline/luo_tunnus.js'),
     'Tilastot': {
         _text: 'lol stats'
