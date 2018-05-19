@@ -116,7 +116,7 @@ strings.commands = {
         juo: {
             button_text: strings.emoji.glasses + ' Juo',
             on_select: strings.emoji.goat + ' *Bäää - Juo* ' + strings.emoji.goat + '\n\nValitse juomasi alla olevista valikoista. Jos et löydä etsimääsi, klikkaa *Oma juoma*. Jos olet unohtanut lisätä juomia, voit lisätä ne takautuvasti valitsemalla *Jälkikellotus*. Jos lisäsit vahingossa väärän juoman, valitse *Kumoa*.',
-            on_drink: strings.emoji.goat + ' *Bäää - Juo* ' + strings.emoji.goat + '\n\n{drink_response}{short_permilles_text}',
+            on_drink: strings.emoji.goat + ' *Bäää - Juo* ' + strings.emoji.goat + '\n\n{drink_response} {short_permilles_text}',
             miedot: {
                 button_text: strings.emoji.beers + ' Miedot',
                 on_select: strings.emoji.goat + ' *Bäää - Miedot* ' + strings.emoji.goat + '\n\nValitse mieto.',
