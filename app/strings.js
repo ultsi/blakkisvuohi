@@ -46,6 +46,7 @@ strings.emoji = {
     stopwatch: '⏱',
     floppy_disk: '💾',
     bar_graph: '📊',
+    info: 'ℹ'
 };
 
 strings.drink_responses = [
@@ -218,6 +219,34 @@ strings.commands = {
             otinko: {
                 button_text: 'Otinko',
                 on_select: 'Viimeisen kolmen vuorokauden tapahtumat:\n\n{drink_list}'
+            }
+        },
+        help: {
+            button_text: strings.emoji.info + ' Help',
+            on_select: 'Missä tarvitset apua?',
+            general: {
+                button_text: 'Yleistä',
+                on_select: '*Yleistä*\n\nBläkkisvuohi auttaa arvioimaan alkoholin määrää veressä eli promilleja. Botille tilastoidaan juomia sitä mukaa, kun niitä juodaan, ja botti laskee juoduista juomista promillet, palamisen huomioon ottaen. Lisäksi botin voi lisätä ryhmään ryhmätilastoja varten.\n\n*Käyttö*\n\nBotin käyttäminen on yksinkertaista. Juodut juomat tilastoidaan joko /juoma- tai /start- komentoja käyttäen ja botti laskee promillemäärän heti. Botin käyttö *vaatii tunnuksen* luomisen, jonka voi tehdä joko /tunnus- tai /start- komennoilla. Tunnus vaaditaan, jotta promillejen arviointi olisi mahdollisimman tarkkaa.'
+            },
+            faq: {
+                button_text: 'FAQ',
+                on_select: '*FAQ eli Usein kysytyt kysymykset*\n\nValitse yksi ala-aiheista:',
+                juominen: {
+                    button_text: 'Juominen',
+                    on_select: '*FAQ - Juominen*\n\n*Kannattaako juoma merkata avatessa vai viimeistellessä?*\nJuomat kannattaa merkata silloin, kun ne avaa. Promillearvioinnissa oletetaan juoman imeytyvän 99-prosenttisesti 30 minuutissa. Lisäksi avatessa juoman muistaa merkata paremmin.\n\n*Kuinka tarkka promillejen arviointi on?*\nNoin 1.5‰ asti hyvin tarkka - tätä pidemmälle menneitä tutkimuksia ei ole tehty (jos on, laita viestiä @ultsi), joten laskukaava alkaa heittämään 1.5‰ jälkeen. Botin arviot ovat myös linjassa mm. lintukoto.net -laskurin kanssa.\n\n*Unohdin lisätä juomat, mitä nyt?*\nKäytä /jalkikellotus-komentoa, tai /start-valikosta löytyvää Jälkikellotus-nappulaa.'
+                },
+                ryhmat: {
+                    button_text: 'Ryhmät',
+                    on_select: '*FAQ - Ryhmät*\n\n*Miten voin liittyä ryhmään tai poistua ryhmästä?*\nKirjoita /moro, jos haluat liittyä ryhmään. Kirjoita /poistu, jos haluat poistua ryhmästä. Ryhmässä liittyneenä sinun promilletasosi näkyy esim. /promillet-komennolla.\n\n*Miksi /kuvaaja -kuvassa kaikkien promillet laskee samaa tahtia?*\nPromillet kuvaavat alkoholin osuutta koko kehon verestä. Alkoholi palaa elimistössä nopeammin painavammilla ihmisillä, mutta veren määrä kehossa on tällöin myös suhteessa noin saman verran korkeampi. Tällöin promillejen väheneminen kehossa on kaikilla ihmisillä jotakuinkin sama.\n\n*Tallentaako Bläkkisvuohi ryhmän viestit?*\n*Ei tallenna.* Jos menet ryhmän käyttäjälistaukseen, Bläkkisvuohen kohdalla lukee "No access to messages", joka tarkoittaa, ettei Bläkkisvuohi voi millään tavalla lukea muita viestejä kuin komentoja.'
+                },
+                koodi: {
+                    button_text: 'Koodi',
+                    on_select: '*FAQ - Koodi*\n\n*Miten Bläkkisvuohi on koodattu?*\nLyhyesti: NodeJS-javascript-frameworkilla, sekä sen liitännäisillä ja tietokantana toimii Postgres. Pitkästi: katso koko koodi osoitteesta https://github.com/ultsi/blakkisvuohi.\n\n*Keksin uuden ominaisuuden, minne voin ilmoittaa siitä?*\nTällä hetkellä kehittäjänä toimii @ultsi, jolle voi laitta suoraan privaviestiä. Issuen lisääminen githubiin toimii kanssa. https://github.com/ultsi/blakkisvuohi/issues\n\n*Saako Bläkkisvuohen koodaamisesta rahaa?*\nItseasiassa, saa. Futuricen työntekijänä @ultsi saa avoimen lähdekoodin projektien tekemisestä korvausta \'Spice Program\'-ohjelman mukaan. (https://spiceprogram.org/)'
+                }
+            },
+            privacy: {
+                button_text: 'Yksityisyys',
+                on_select: 'Sinun yksityisyys on turvattu Bläkkisvuohen kehittäjien toimesta mahdollisimman hyvin. Tässä muutama kohta yksityisyydestä:\n\n*Mitä tietoja kerätään?*\nBläkkisvuohen käyttö edellyttää seuraavien tietojen keräämistä:\n- Telegramiin määritelty nimimerkki tai nimi\n- Tiiviste(hash) Telegram-tilisi tunnisteesta (userId)\n- Paino\n- Pituus\n- Sukupuoli\n- Merkattujen juoman alkoholipitoisuus, nimi ja juomisaika\n- Tiiviste(hash) liityttyjen ryhmien tunnisteesta (groupId)\n\n*Missä ja miten tietoja säilötään?*\nTietoja säilytetään virtuaalipalvelimella Euroopassa, ja vain Bläkkisvuohen ylläpitäjillä on sinne pääsy. Yksilöivät henkilötiedot on salattu salasanalla tietokannassa.\n\n*Minulla on lisäkysymyksiä yksityisyyteen liittyen!*\nOnnistuu, ota yhteyttä @ultsi.'
             }
         }
     },

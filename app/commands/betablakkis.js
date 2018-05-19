@@ -84,12 +84,10 @@ const betablakkis = {
     },
     _root: true,
     [str_beta.juo.button_text]: require('./inline/juo.js'),
-    [str_beta.asetukset.button_text]: require('./inline/asetukset.js'),
     [str_beta.luo_tunnus.button_text]: require('./inline/luo_tunnus.js'),
     [str_beta.tilastoja.button_text]: require('./inline/tilastoja.js'),
-    'Apua': {
-        _text: 'lol help'
-    }
+    [str_beta.asetukset.button_text]: require('./inline/asetukset.js'),
+    [str_beta.help.button_text]: require('./inline/help.js')
 };
 
 Commands.register('/beta', 'Bläkkisvuohi versio3 - betavaihe', Commands.SCOPE_PRIVATE, Commands.PRIVILEGE_ALL, Commands.TYPE_INLINE, betablakkis);
