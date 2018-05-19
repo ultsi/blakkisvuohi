@@ -26,6 +26,7 @@
 const utils = require('../../lib/utils.js');
 const constants = require('../../constants.js');
 const strings = require('../../strings.js');
+const str_juo = strings.commands.beta.juo;
 const alcomath = require('../../lib/alcomath.js');
 
 function makeDrinkOption(drink_amount, drink_name) {
@@ -47,44 +48,53 @@ function makeDrinkOption(drink_amount, drink_name) {
 }
 
 module.exports = {
-    _text: 'Valitse juomasi.',
+    _text: str_juo.on_select,
     _userRequired: true,
-    Miedot: {
-        _text: 'Valitse kaljasi.',
+    [str_juo.miedot.button_text]: {
+        _text: str_juo.miedot.on_select,
         _userRequired: true,
-        [constants.emoji.beer + ' 33cl 4.7%']: makeDrinkOption(constants.KALJA033, constants.emoji.beer + ' 33cl 4.7%'),
-        [constants.emoji.beer + ' 33cl 5.3%']: makeDrinkOption(constants.calcAlcoholMilligrams(0.053, 0.33), constants.emoji.beer + ' 33cl 5.3%'),
-        [constants.emoji.beer + ' 50cl 4.7%']: makeDrinkOption(constants.KALJA050, constants.emoji.beer + ' 50cl 4.7%'),
-        [constants.emoji.beer + ' 56.8cl 4.7%']: makeDrinkOption(constants.calcAlcoholMilligrams(0.047, 0.568), constants.emoji.beer + ' 56.8cl 4.7%'),
+        [strings.emoji.beer + ' 33cl 4.7%']: makeDrinkOption(constants.KALJA033, strings.emoji.beer + ' 33cl 4.7%'),
+        [strings.emoji.beer + ' 33cl 5.3%']: makeDrinkOption(constants.calcAlcoholMilligrams(0.053, 0.33), strings.emoji.beer + ' 33cl 5.3%'),
+        [strings.emoji.beer + ' 50cl 4.7%']: makeDrinkOption(constants.KALJA050, strings.emoji.beer + ' 50cl 4.7%'),
+        [strings.emoji.beer + ' 56.8cl 4.7%']: makeDrinkOption(constants.calcAlcoholMilligrams(0.047, 0.568), strings.emoji.beer + ' 56.8cl 4.7%'),
     },
-    Viinit: {
-        _text: 'Valitse viinisi.',
+    [str_juo.viinit.button_text]: {
+        _text: str_juo.viinit.on_select,
         _userRequired: true,
         [constants.emoji.wine + ' 12cl 12%']: makeDrinkOption(constants.calcAlcoholMilligrams(0.12, 0.12), constants.emoji.wine + ' 12cl 12%'),
-        [constants.emoji.wine + ' 12cl 16%']: makeDrinkOption(constants.calcAlcoholMilligrams(0.16, 0.12), constants.emoji.wine + ' 16cl 16%'),
+        [constants.emoji.wine + ' 16cl 12%']: makeDrinkOption(constants.calcAlcoholMilligrams(0.16, 0.12), constants.emoji.wine + ' 16cl 12%'),
+        [constants.emoji.wine + ' 20cl 12%']: makeDrinkOption(constants.calcAlcoholMilligrams(0.20, 0.12), constants.emoji.wine + ' 20cl 12%'),
     },
-    Shotit: {
-        _text: 'Valitse shottisi.',
+    [str_juo.shotit.button_text]: {
+        _text: str_juo.shotit.on_select,
         _userRequired: true,
         '4cl 20%': makeDrinkOption(constants.calcAlcoholMilligrams(0.2, 0.04), '4cl 20%'),
         '4cl 32%': makeDrinkOption(constants.calcAlcoholMilligrams(0.32, 0.04), '4cl 32%'),
         '4cl 40%': makeDrinkOption(constants.calcAlcoholMilligrams(0.40, 0.04), '4cl 40%'),
         '4cl 60%': makeDrinkOption(constants.calcAlcoholMilligrams(0.60, 0.04), '4cl 60%')
     },
-    'Oma juoma': {
-        _text: 'Tilastoi oma juomasi. Kirjoita juoma muodossa senttilitrat prosentit.\nEsim. 33cl 4.7% tai 33 4.7',
+    [str_juo.oma.button_text]: {
+        _text: str_juo.oma.on_select.format({
+            help_example: str_juo.oma.help_example
+        }),
         _userRequired: true,
         _onText: (context, user, msg, words) => {
             if (words.length !== 2) {
-                return Promise.resolve('Liian paljon tai vähän sanoja. Kirjoita juoma muodossa senttilitrat prosentit.\nEsim. 33cl 4.7% tai 33 4.7');
+                return Promise.resolve(str_juo.oma.error_words.format({
+                    help_example: str_juo.oma.help_example
+                }));
             }
             const cl = words[0].replace('cl', ''),
                 vol = words[1].replace('%', '');
 
             if (!utils.isValidFloat(cl)) {
-                return Promise.resolve('Senttilitrat ei ole numero. Kirjoita juoma muodossa senttilitrat prosentit.\nEsim. 33cl 4.7% tai 33 4.7');
+                return Promise.resolve(str_juo.oma.error_cl.format({
+                    help_example: str_juo.oma.help_example
+                }));
             } else if (!utils.isValidFloat(vol)) {
-                return Promise.resolve('Prosentti ei ole numero. Kirjoita juoma muodossa senttilitrat prosentit.\nEsim. 33cl 4.7% tai 33 4.7');
+                return Promise.resolve(str_juo.oma.error_vol.format({
+                    help_example: str_juo.oma.help_example
+                }));
             }
 
             const mg = constants.calcAlcoholMilligrams(vol / 100.0, cl / 100.0);
