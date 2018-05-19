@@ -47,7 +47,8 @@ strings.emoji = {
     floppy_disk: '💾',
     bar_graph: '📊',
     info: 'ℹ',
-    goat: '🐐'
+    goat: '🐐',
+    drink: '🍹'
 };
 
 strings.drink_responses = [

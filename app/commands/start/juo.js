@@ -57,21 +57,25 @@ module.exports = {
         [strings.emoji.beer + ' 33cl 5.3%']: makeDrinkOption(constants.calcAlcoholMilligrams(0.053, 0.33), strings.emoji.beer + ' 33cl 5.3%'),
         [strings.emoji.beer + ' 50cl 4.7%']: makeDrinkOption(constants.KALJA050, strings.emoji.beer + ' 50cl 4.7%'),
         [strings.emoji.beer + ' 56.8cl 4.7%']: makeDrinkOption(constants.calcAlcoholMilligrams(0.047, 0.568), strings.emoji.beer + ' 56.8cl 4.7%'),
+        ['Lonkero 33cl 5.3%']: makeDrinkOption(constants.calcAlcoholMilligrams(0.053, 0.33), 'Lonkero 33cl 5.3%'),
+        ['Siideri 33cl 4.7%']: makeDrinkOption(constants.calcAlcoholMilligrams(0.047, 0.33), 'Siideri 33cl 4.7%'),
     },
     [str_juo.viinit.button_text]: {
         _text: str_juo.viinit.on_select,
         _userRequired: true,
-        [constants.emoji.wine + ' 12cl 12%']: makeDrinkOption(constants.calcAlcoholMilligrams(0.12, 0.12), constants.emoji.wine + ' 12cl 12%'),
-        [constants.emoji.wine + ' 16cl 12%']: makeDrinkOption(constants.calcAlcoholMilligrams(0.16, 0.12), constants.emoji.wine + ' 16cl 12%'),
-        [constants.emoji.wine + ' 20cl 12%']: makeDrinkOption(constants.calcAlcoholMilligrams(0.20, 0.12), constants.emoji.wine + ' 20cl 12%'),
+        [strings.emoji.wine + ' 12cl 12%']: makeDrinkOption(constants.calcAlcoholMilligrams(0.12, 0.12), strings.emoji.wine + ' 12cl 12%'),
+        [strings.emoji.wine + ' 16cl 12%']: makeDrinkOption(constants.calcAlcoholMilligrams(0.16, 0.12), strings.emoji.wine + ' 16cl 12%'),
+        [strings.emoji.drink + ' 20cl 12%']: makeDrinkOption(constants.calcAlcoholMilligrams(0.20, 0.12), strings.emoji.drink + ' 20cl 12%'),
+        [strings.emoji.glasses + ' 12cl 11%']: makeDrinkOption(constants.calcAlcoholMilligrams(0.12, 0.11), strings.emoji.glasses + ' 12cl 11%')
     },
     [str_juo.shotit.button_text]: {
         _text: str_juo.shotit.on_select,
         _userRequired: true,
-        '4cl 20%': makeDrinkOption(constants.calcAlcoholMilligrams(0.2, 0.04), '4cl 20%'),
-        '4cl 32%': makeDrinkOption(constants.calcAlcoholMilligrams(0.32, 0.04), '4cl 32%'),
-        '4cl 40%': makeDrinkOption(constants.calcAlcoholMilligrams(0.40, 0.04), '4cl 40%'),
-        '4cl 60%': makeDrinkOption(constants.calcAlcoholMilligrams(0.60, 0.04), '4cl 60%')
+        [strings.emoji.shot + '4cl 20%']: makeDrinkOption(constants.calcAlcoholMilligrams(0.2, 0.04), strings.emoji.shot + '4cl 20%'),
+        [strings.emoji.shot + '4cl 32%']: makeDrinkOption(constants.calcAlcoholMilligrams(0.32, 0.04), strings.emoji.shot + '4cl 32%'),
+        [strings.emoji.shot + '4cl 38%']: makeDrinkOption(constants.calcAlcoholMilligrams(0.38, 0.04), strings.emoji.shot + '4cl 38%'),
+        [strings.emoji.shot + '4cl 40%']: makeDrinkOption(constants.calcAlcoholMilligrams(0.40, 0.04), strings.emoji.shot + '4cl 40%'),
+        [strings.emoji.shot + '4cl 60%']: makeDrinkOption(constants.calcAlcoholMilligrams(0.60, 0.04), strings.emoji.shot + '4cl 60%'),
     },
     [str_juo.oma.button_text]: {
         _text: str_juo.oma.on_select.format({
