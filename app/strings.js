@@ -44,7 +44,8 @@ strings.emoji = {
     refresh: '🔃',
     glowing_star: '🌟',
     stopwatch: '⏱',
-    floppy_disk: '💾'
+    floppy_disk: '💾',
+    bar_graph: '📊',
 };
 
 strings.drink_responses = [
@@ -201,6 +202,23 @@ strings.commands = {
             update: 'Olet jo rekisteröitynyt. Tiedot päivitetty.',
             update_error: 'Olet jo rekisteröitynyt, mutta tietojen päivityksessä tuli ongelma. Ota yhteyttä adminiin.',
             new_user: 'Moikka {username}! Tunnuksesi luotiin onnistuneesti. Muista, että kaikki antamani luvut ovat vain arvioita, eikä niihin voi täysin luottaa.\n\nJa eikun juomaan!'
+        },
+        tilastoja: {
+            button_text: strings.emoji.bar_graph + ' Tilastoja',
+            on_select: 'Valitse tarkasteltava tilasto alla olevista valikoista. *Kulutus* kertoo sinulle kokonaiskulutuksestasi lukuja ja *Otinko* listaa viimeisen 3 päivän aikana tilastoidut juomat.',
+            kulutus: {
+                button_text: 'Kulutus',
+                on_select: 'Olet *{day_count}* päivän aikana tuhonnut *{grams}* grammaa alkoholia, joka vastaa *{standard_drinks}* annosta. Keskimäärin olet juonut *{avg_standard_drinks}* annosta per päivä.\n\nJos haluat tietää lähiajan kulutuksesi, kirjoita tarkasteltavien päivien määrä numerona.',
+                prefilled: 'Olet *{day_count}* päivän aikana tuhonnut *{grams}* grammaa alkoholia, joka vastaa *{standard_drinks}* annosta. Keskimäärin olet juonut *{avg_standard_drinks}* annosta per päivä.',
+                days7: '7 päivää',
+                days14: '14 päivää',
+                days30: '30 päivää',
+                days60: '60 päivää'
+            },
+            otinko: {
+                button_text: 'Otinko',
+                on_select: 'Viimeisen kolmen vuorokauden tapahtumat:\n\n{drink_list}'
+            }
         }
     },
 
