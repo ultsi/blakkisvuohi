@@ -141,11 +141,13 @@ Commands.call = function call(firstWord, msg, words) {
         context = retrieveContext(userId, msg);
 
         if (!context) {
+            msg.chat = msg.message.chat;
             return msg.sendChatMessage(strings.commands.blakkis.command_not_found);
         }
         cmd = context.cmd;
 
         if (!cmd) {
+            msg.chat = msg.message.chat;
             return msg.sendChatMessage(strings.commands.blakkis.command_not_found);
         }
         // check that command which the data originated is the same as current context
