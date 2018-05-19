@@ -147,7 +147,7 @@ module.exports = {
             [strings.yes]: {
                 _userRequired: true,
                 _onSelect: (context, user, msg, words) => {
-                    context.setInlineState(context.state.parent.parent); // go back two levels
+                    context.setInlineState(context.state.parent.parent.parent); // go back three levels to the beginning
                     return user.delete()
                         .then(() => {
                             return str_tunnus.poista.deleted;
