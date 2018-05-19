@@ -42,7 +42,9 @@ strings.emoji = {
     male: '♂',
     trash: '🗑',
     refresh: '🔃',
-    glowing_star: '🌟'
+    glowing_star: '🌟',
+    stopwatch: '⏱',
+    floppy_disk: '💾'
 };
 
 strings.drink_responses = [
@@ -50,8 +52,8 @@ strings.drink_responses = [
     'Muista juoda vettä!', 'Juo viinaa, viina on hyvää.', 'Meno on meno.',
     'Lörs lärä, viinaa!', 'Muista juoda vettä!'
 ];
-strings.short_permilles_text = 'Nyt: {permilles}‰, 30min: {permilles30Min}‰';
-strings.long_permilles_text = 'Nyt: {permilles}‰, 30min: {permilles30Min}‰.\nVeressäsi on {grams} grammaa alkoholia, joka vastaa {standard_drinks} annosta. Olet selvinpäin {hours}h {minutes}min päästä.\n\nViimeisen kolmen päivän tapahtumat:\n{drinkList72h}';
+strings.short_permilles_text = '*Nyt:* {permilles}‰ - *30min:* {permilles30Min}‰';
+strings.long_permilles_text = '*Nyt:* {permilles}‰ - *30min:* {permilles30Min}‰.\nVeressäsi on {grams} grammaa alkoholia, joka vastaa {standard_drinks} annosta. Olet selvinpäin {hours}h {minutes}min päästä.\n\nViimeisen kolmen päivän tapahtumat:\n{drinkList72h}';
 strings.gender = {
     'male': 'Mies',
     'female': 'Nainen'
@@ -104,12 +106,12 @@ strings.commands = {
     },
 
     beta: {
-        on_select: '*Nyt:* {permilles}‰, *30min:* {permilles30Min}‰.\nVeressäsi on {grams} grammaa alkoholia, joka vastaa {standard_drinks} annosta. Olet selvinpäin {hours}h {minutes}min päästä.',
+        on_select: '*Nyt:* {permilles}‰ - *30min:* {permilles30Min}‰\nVeressäsi on {grams} grammaa alkoholia, joka vastaa {standard_drinks} annosta. Olet selvinpäin {hours}h {minutes}min päästä.',
         on_select_nonuser: 'BläkkisVuohi auttaa sinua ja ystäviäsi seuraamaan rippauksesi (lue: promillejesi) tasoa. Luo ensimmäiseksi tunnus valitsemalla Luo tunnus. Tunnuksen luomisen jälkeen voit alkaa kellottamaan juomia sisään juomavalikosta. Annan sinulle arvioita rippauksesta promillejen muodossa. Minut voi myös lisätä ryhmään, jolloin kerron /promillet-komennolla kaikkien ryhmässä olevien rippitasot. Jokaisen ryhmäläisen täytyy kuitenkin sanoa ryhmässä /moro, jotta he pääsevät rippilistaukseen mukaan.',
         on_select_drinks3h: '\n\nViimeisen kolmen tunnin tapahtumat:\n{drinkList3h}',
         juo: {
             button_text: strings.emoji.glasses + ' Juo',
-            on_select: 'Valitse juomasi alla olevista valikoista. Jos et löydä, klikkaa Oma juoma. Jos olet unohtanut lisätä juomia, voit lisätä ne takautuvasti valitsemalla Jälkikellotus.',
+            on_select: 'Valitse juomasi alla olevista valikoista. Jos et löydä, klikkaa Oma juoma. Jos olet unohtanut lisätä juomia, voit lisätä ne takautuvasti valitsemalla Jälkikellotus. Jos lisäsit vahingossa väärän juoman, valitse Kumoa.',
             miedot: {
                 button_text: strings.emoji.beers + ' Miedot',
                 on_select: 'Valitse mieto.',
@@ -130,10 +132,23 @@ strings.commands = {
                 error_cl: 'Senttilitrat ei ole numero. {help_example}',
                 error_vol: 'Prosentti ei ole numero. {help_example}'
             },
+            jalkikellotus: {
+                button_text: strings.emoji.stopwatch + ' Jälkikellotus',
+                on_select: 'Jälkikellottamalla voit tilastoida unohtuneet juomat monta tuntia jälkikäteen.\n\nKuinka pitkältä aikaväliltä haluat syöttää unohtuneita juomia? Syötä aikaväli tunneissa.\n\nEsimerkiksi kaksi ja puoli tuntia: *2.5*\nYksi tunti ja 15 minuuttia: *1.25*',
+                hours_error: 'Tunnit väärin. Syötä arvo väliltä 0-24.',
+                input_drinks_start: 'Kirjoita juomia seuraavassa muodossa: \nSenttilitrat Tilavuusprosentti. \nEsimerkiksi: 33 4.7. \n\nErota eri juomat joko rivinvaihdolla, tai kirjoita useampi viesti.',
+                input_drinks_words_error: 'Sanojen määrän täytyy olla parillinen luku.',
+                input_drinks_drink_error: 'Tarkista juoman {drink} senttilitrat ja tilavuus!',
+                input_drinks_drinks_correct: '{drinks_amount} juoma(a) syötetty onnistuneesti. Voit jatkaa juomien lisäämistä tai painaa Tallenna tilastoidaksesi syötetyt juomat.\n\nNykyiset syötetyt juomat:\n{drinks_list}',
+                drink_name: 'Jälkikellotus',
+                save: {
+                    button_text: strings.emoji.floppy_disk + ' Tallenna',
+                    on_select: '{drink_response} {drinks_amount} juomaa jälkikellotettu onnistuneesti!\n\n{short_permilles_text}'
+                }
+            },
             kumoa: {
                 button_text: strings.emoji.cross + ' Kumoa',
                 on_select: 'Olet kumoamassa viimeksi juodun juomasi. Oletko varma?',
-                yes: 'Kyllä'
             }
         },
         asetukset: {

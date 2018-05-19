@@ -42,6 +42,7 @@ class InlineKeyboardCommand {
         this.onSelectAction = definition._onSelect ? definition._onSelect : false;
         this.onTextAction = definition._onText ? definition._onText : false;
         this.onExitAction = definition._onExit ? definition._onExit : false;
+        this.isAvailableAction = definition._isAvailable ? definition._isAvailable : false;
         this.children = {};
         this.childrenArray = [];
 
@@ -55,26 +56,30 @@ class InlineKeyboardCommand {
         }
     }
 
-    isAvailableForUser(user) {
+    isAvailableForUser(context, user) {
         if (user) {
             if (this.nonUserRequired || (this.adminRequired && !user.isAdmin())) {
                 return false;
             }
-            return true;
         } else {
             if (this.userRequired || this.adminRequired) {
                 return false;
             }
-            return true;
         }
+
+        if (this.isAvailableAction) {
+            return this.isAvailableAction(context, user);
+        }
+
+        return true;
     }
 
-    getInlineKeyboard(user) {
+    getInlineKeyboard(context, user) {
         let inlineKeyboard = [];
         let pair = [];
         for (let i in this.children) {
             let child = this.children[i];
-            if (child.isAvailableForUser(user)) {
+            if (child.isAvailableForUser(context, user)) {
                 pair.push({
                     text: i,
                     callback_data: i
@@ -109,9 +114,9 @@ class InlineKeyboardCommand {
 
     sendTextAndKeyboard(text, context, user, msg) {
         if (msg.message) {
-            return context.inlineKeyboardEdit(text, this.getInlineKeyboard(user));
+            return context.inlineKeyboardEdit(text, this.getInlineKeyboard(context, user));
         } else {
-            return context.inlineKeyboardMessage(text, this.getInlineKeyboard(user));
+            return context.inlineKeyboardMessage(text, this.getInlineKeyboard(context, user));
         }
     }
 
@@ -131,7 +136,7 @@ class InlineKeyboardCommand {
             return this.onTextAction(context, user, msg, words)
                 .then((res) => {
                     if (typeof res === 'string') {
-                        return context.inlineKeyboardMessage(res, this.getInlineKeyboard(user));
+                        return context.inlineKeyboardMessage(res, this.getInlineKeyboard(context, user));
                     } else if (typeof res === 'object') {
                         return context.privateReplyWithKeyboard(res.text, res.keyboard);
                     }
@@ -139,9 +144,9 @@ class InlineKeyboardCommand {
         }
     }
 
-    onExit(context, user) {
+    onExit(context, user, nextState) {
         if (this.onExitAction) {
-            this.onExitAction(context, user);
+            this.onExitAction(context, user, this, nextState);
         }
     }
 }

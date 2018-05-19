@@ -273,12 +273,12 @@ Commands.callInline = (cmd, context, user, msg, words) => {
 
         if (nextState) {
             // Check for proper rights here too (do not allow malicious inline command data)
-            if (!nextState.isAvailableForUser(user)) {
+            if (!nextState.isAvailableForUser(context, user)) {
                 return;
             }
 
             context.setInlineState(nextState);
-            curState.onExit(context, user);
+            curState.onExit(context, user, nextState);
             return nextState.onSelect(context, user, msg, words);
         }
     }

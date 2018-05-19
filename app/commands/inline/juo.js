@@ -110,6 +110,99 @@ module.exports = {
                 });
         }
     },
+    [str_juo.jalkikellotus.button_text]: {
+        _userRequired: true,
+        _text: str_juo.jalkikellotus.on_select,
+        _onText: (context, user, msg, words) => {
+            const hours = context.fetchVariable('jalkikellotus_hours');
+            const drinks = context.fetchVariable('jalkikellotus_drinks') || [];
+
+            if (!hours) {
+                const inputHours = utils.parseFloat(words[0]);
+                if (!utils.isValidFloat(inputHours) || inputHours < 0 || inputHours > 24) {
+                    return Promise.resolve(str_juo.jalkikellotus.hours_error);
+                }
+
+                context.storeVariable('jalkikellotus_hours', inputHours);
+                return Promise.resolve(str_juo.jalkikellotus.input_drinks_start);
+            }
+
+            if (words.length < 2 || words.length % 2 !== 0) {
+                return Promise.resolve(str_juo.jalkikellotus.input_drinks_words_error);
+            }
+
+            // validate each tuple
+            for (let i = 0; i < words.length; i += 2) {
+                const centiliters = utils.parseFloat(words[i].replace('cl', ''));
+                const vol = utils.parseFloat(words[i + 1].replace('%', ''));
+                if (!utils.isValidFloat(centiliters) || !utils.isValidFloat(vol) ||
+                    centiliters < 0 || centiliters > 250 ||
+                    vol < 0 || vol >= 100) {
+                    return Promise.resolve(str_juo.jalkikellotus.input_drinks_drink_error.format({
+                        drink: i / 2 + 1
+                    }));
+                }
+            }
+
+            // Validated, save to drinks array
+            const oldDrinksLength = drinks.length;
+            for (let i = 0; i < words.length; i += 2) {
+                drinks.push({
+                    name: str_juo.jalkikellotus.drink_name,
+                    centiliters: utils.parseFloat(words[i]),
+                    vol: utils.parseFloat(words[i + 1])
+                });
+            }
+            context.storeVariable('jalkikellotus_drinks', drinks);
+
+            return Promise.resolve(str_juo.jalkikellotus.input_drinks_drinks_correct.format({
+                drinks_amount: drinks.length - oldDrinksLength,
+                drinks_list: drinks.map(drink => drink.centiliters + 'cl ' + drink.vol + '%').join('\n')
+            }));
+        },
+        [str_juo.jalkikellotus.save.button_text]: {
+            _userRequired: true,
+            _isAvailable: (context, user) => {
+                return context.fetchVariable('jalkikellotus_drinks') &&
+                    context.fetchVariable('jalkikellotus_drinks').length > 0;
+            },
+            _onSelect: (context, user, msg, words) => {
+                const hours = context.fetchVariable('jalkikellotus_hours');
+                const drinks = context.fetchVariable('jalkikellotus_drinks')
+                    .map((d) => {
+                        return {
+                            text: d.name + ' ' + d.centiliters + 'cl ' + d.vol + '%',
+                            mg: constants.calcAlcoholMilligrams(d.vol / 100, d.centiliters / 100)
+                        };
+                    });
+                return user.drinkBoozeLate(drinks, hours)
+                    .then((ebac) => {
+                        const permilles = ebac.permilles;
+                        const permilles30Min = ebac.permilles30Min;
+                        const short_permilles_text = strings.short_permilles_text.format({
+                            permilles: utils.roundTo(permilles, 2),
+                            permilles30Min: utils.roundTo(permilles30Min, 2)
+                        });
+                        return str_juo.jalkikellotus.save.on_select.format({
+                            drink_response: utils.getRandomFromArray(strings.drink_responses),
+                            drinks_amount: drinks.length,
+                            short_permilles_text: short_permilles_text
+                        });
+                    });
+            },
+            _onExit: (context, user, thisState, nextState) => {
+                context.forgetVariable('jalkikellotus_hours');
+                context.forgetVariable('jalkikellotus_drinks');
+            }
+        },
+        _onExit: (context, user, thisState, nextState) => {
+            // dont forget when moving to saving phase
+            if (nextState !== thisState.getChild(str_juo.jalkikellotus.save.button_text)) {
+                context.forgetVariable('jalkikellotus_hours');
+                context.forgetVariable('jalkikellotus_drinks');
+            }
+        }
+    },
     [str_juo.kumoa.button_text]: {
         _text: str_juo.kumoa.on_select,
         _userRequired: true,
