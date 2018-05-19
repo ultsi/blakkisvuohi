@@ -28,11 +28,12 @@ const errors = require('./errors.js');
 const strings = require('../strings.js');
 
 class InlineKeyboardCommand {
-    constructor(definition, parent) {
+    constructor(definition, commandName, parent) {
         if (!definition._root && !parent) {
             throw new errors.InvalidInlineCommand('no _root in parentless command definition');
         }
 
+        this.commandName = commandName;
         this.parent = parent || false;
         this.root = definition._root ? true : false;
         this.userRequired = definition._userRequired ? true : false;
@@ -49,7 +50,7 @@ class InlineKeyboardCommand {
         for (let i in definition) {
             if (i[0] !== '_') {
                 let cmdDefinition = definition[i];
-                let cmd = new InlineKeyboardCommand(cmdDefinition, this);
+                let cmd = new InlineKeyboardCommand(cmdDefinition, this.commandName, this);
                 this.children[i] = cmd;
                 this.childrenArray.push(cmd);
             }
@@ -82,7 +83,7 @@ class InlineKeyboardCommand {
             if (child.isAvailableForUser(context, user)) {
                 pair.push({
                     text: i,
-                    callback_data: i
+                    callback_data: this.commandName + ' ' + i
                 });
             }
             if (pair.length === 2) {
@@ -93,7 +94,7 @@ class InlineKeyboardCommand {
         if (!this.root) {
             pair.push({
                 text: strings.commands.blakkis.back,
-                callback_data: strings.commands.blakkis.back
+                callback_data: this.commandName + ' ' + strings.commands.blakkis.back
             });
             inlineKeyboard.push(pair);
             pair = [];

@@ -53,7 +53,7 @@ Commands.TYPE_INLINE = 'inline';
 Commands.__cmds__ = cmds;
 
 function registerInlineCommand(cmdName, cmdHelp, cmdScope, cmdPrivilege, cmdType, cmdDefinition) {
-    let cmdClass = new InlineKeyboardCommand(cmdDefinition);
+    let cmdClass = new InlineKeyboardCommand(cmdDefinition, cmdName);
 
     cmds[cmdName] = {
         name: cmdName,
@@ -143,8 +143,18 @@ Commands.call = function call(firstWord, msg, words) {
         if (!context) {
             return msg.sendChatMessage(strings.commands.blakkis.command_not_found);
         }
-
         cmd = context.cmd;
+
+        // check that command which the data originated is the same as current context
+        const dataCmdName = msg.data.match(/\/\w+/)[0];
+        if (cmd.name !== dataCmdName) {
+            // happens for example if user uses /kalja033 in between inline chat command use
+            cmd = cmds[dataCmdName];
+            context = initContext(userId, cmd, msg);
+            msg.chat = msg.message.chat;
+            msg.message = undefined; // this makes it send a new message instead of editing the old
+        }
+
     } else if (cmds[firstWord]) {
         cmd = cmds[firstWord];
         if (msg.chat.type === 'private') {
@@ -269,7 +279,8 @@ Commands.callInline = (cmd, context, user, msg, words) => {
     const curState = context.state;
     // button was pressed, update the keyboard and text
     if (msg.data) {
-        const nextState = msg.data === strings.commands.blakkis.back ? curState.getParent() : curState.getChild(msg.data);
+        const cmdStripped = msg.data.replace(/\/\w+ /, '');
+        const nextState = cmdStripped === strings.commands.blakkis.back ? curState.getParent() : curState.getChild(cmdStripped);
 
         if (nextState) {
             // Check for proper rights here too (do not allow malicious inline command data)
