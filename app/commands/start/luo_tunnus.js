@@ -80,12 +80,21 @@ module.exports = {
         if (terms_answer.toLowerCase() !== strings.yes.toLowerCase()) {
             return Promise.resolve(str_luo_tunnus.terms_on_reject);
         }
-
-        return users.new(userId, username, weight, gender, height, true)
+        return users.find(userId)
             .then((user) => {
-                return str_luo_tunnus.new_user.format({
-                    username: user.username
-                });
+                if (user) {
+                    return user.updateInfo(username, weight, gender, height, true)
+                        .then(() => {
+                            return str_luo_tunnus.update;
+                        });
+                } else {
+                    return users.new(userId, username, weight, gender, height, true)
+                        .then((user) => {
+                            return str_luo_tunnus.new_user.format({
+                                username: user.username
+                            });
+                        });
+                }
             });
     },
     _onExit: (context, user) => {
