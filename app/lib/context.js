@@ -55,8 +55,7 @@ contexts.Context = class {
             'parse_mode': 'Markdown',
             'reply_markup': {
                 'keyboard': keyboardButtons,
-                'resize_keyboard': true,
-                'one_time_keyboard': true
+                'resize_keyboard': true
             }
         };
         return self.msg.sendMessage(self.msg.from.id, text, options);
@@ -82,7 +81,8 @@ contexts.Context = class {
             'chat_id': self.msg.message.chat.id,
             'parse_mode': 'Markdown',
             'reply_markup': {
-                'inline_keyboard': inlineKeyboardButtons
+                'inline_keyboard': inlineKeyboardButtons,
+                'remove_keyboard': true
             }
         };
         return self.msg.editMessageText(text, options);
