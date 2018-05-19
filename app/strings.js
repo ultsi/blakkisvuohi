@@ -117,19 +117,19 @@ strings.commands = {
             on_select: strings.emoji.goat + ' *Bäää - Juo* ' + strings.emoji.goat + '\n\nValitse juomasi alla olevista valikoista. Jos et löydä etsimääsi, klikkaa *Oma juoma*. Jos olet unohtanut lisätä juomia, voit lisätä ne takautuvasti valitsemalla *Jälkikellotus*. Jos lisäsit vahingossa väärän juoman, valitse *Kumoa*.',
             miedot: {
                 button_text: strings.emoji.beers + ' Miedot',
-                on_select: 'Valitse mieto.',
+                on_select: strings.emoji.goat + ' *Bäää - Miedot* ' + strings.emoji.goat + '\n\nValitse mieto.',
             },
             viinit: {
                 button_text: strings.emoji.wine + ' Viinit',
-                on_select: 'Valitse viini.',
+                on_select: strings.emoji.goat + ' *Bäää - Viinit* ' + strings.emoji.goat + '\n\nValitse viini.',
             },
             shotit: {
                 button_text: strings.emoji.shot + ' Shotit',
-                on_select: 'Valitse shotti.',
+                on_select: strings.emoji.goat + ' *Bäää - Shotit* ' + strings.emoji.goat + '\n\nValitse shotti.',
             },
             oma: {
                 button_text: strings.emoji.memo + ' Oma juoma',
-                on_select: strings.emoji.goat + ' *Bäää - Juo* ' + strings.emoji.goat + '\n\nTilastoi oma juomasi. {help_example}',
+                on_select: strings.emoji.goat + ' *Bäää - Oma juoma* ' + strings.emoji.goat + '\n\nTilastoi oma juomasi. {help_example}',
                 help_example: 'Kirjoita juoma muodossa senttilitrat prosentit.\nEsim.\n33cl 5.1%, tai 33 5.1',
                 error_words: 'Liian paljon tai vähän sanoja. {help_example}',
                 error_cl: 'Senttilitrat ei ole numero. {help_example}',
