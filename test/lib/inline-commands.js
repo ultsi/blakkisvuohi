@@ -40,19 +40,23 @@ const mockCmdName = '/testinline',
         _text: 'root',
         _root: true,
         button1: {
-            _text: 'button1 pressed'
+            _text: 'button1 pressed',
+            dummy_child: {}
         },
         userButton: {
             _text: 'userButton pressed',
-            _userRequired: true
+            _userRequired: true,
+            dummy_child: {}
         },
         adminButton: {
             _text: 'adminButton pressed',
-            _adminRequired: true
+            _adminRequired: true,
+            dummy_child: {}
         },
         nonUserButton: {
             _text: 'non user button pressed',
-            _nonUserRequired: true
+            _nonUserRequired: true,
+            dummy_child: {}
         }
     };
 
@@ -99,7 +103,7 @@ describe('commands.js (inline)', () => {
                     return Commands.call('button1', mocked.msg, ['button1']);
                 }).then(() => {
                     assert.equal(mocked.internals.editText, mockCmdDefinition.button1._text);
-                    assert.equal(mocked.internals.editOptions.reply_markup.inline_keyboard[0][0].text, strings.commands.blakkis.back);
+                    assert.equal(mocked.internals.editOptions.reply_markup.inline_keyboard[0][1].text, strings.commands.blakkis.back);
                     done();
                 }).catch((err) => done(err));
         });
@@ -118,7 +122,7 @@ describe('commands.js (inline)', () => {
                     return Commands.call('', mocked.msg, ['']);
                 }).then(() => {
                     assert.equal(mocked.internals.editText, mockCmdDefinition.button1._text);
-                    assert.equal(mocked.internals.editOptions.reply_markup.inline_keyboard[0][0].text, strings.commands.blakkis.back);
+                    assert.equal(mocked.internals.editOptions.reply_markup.inline_keyboard[0][1].text, strings.commands.blakkis.back);
                     mocked.msg.data = strings.commands.blakkis.back;
                     mocked.msg.addMessageObj();
                     return Commands.call('', mocked.msg, ['']);

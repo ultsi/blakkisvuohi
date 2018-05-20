@@ -49,14 +49,57 @@ function makeDrinkOption(drink_amount, drink_name) {
     };
 }
 
+function makeDrinksListString(drinks) {
+    let list = [];
+    for (var i in drinks) {
+        let drink = drinks[i];
+        let drinkTime = new Date(Date.parse(drink.created));
+        let drinkHours = drinkTime.getHours() + '';
+        if (drinkHours.length === 1) {
+            drinkHours = '0' + drinkHours;
+        }
+        let drinkMinutes = drinkTime.getMinutes() + '';
+        if (drinkMinutes.length === 1) {
+            drinkMinutes = '0' + drinkMinutes;
+        }
+        list.push(drinkHours + ':' + drinkMinutes + ' ' + drink.description);
+    }
+    return list.join('\n');
+}
+
 module.exports = {
-    _text: str_juo.on_select,
+    _onSelect: (context, user, msg, words) => {
+        return user.getLastNUniqueDrinks(2)
+            .then((drinks) => {
+                // this is needed for latest1&2 isAvailable calls
+                context.storeVariable('juo_last2_drinks', drinks);
+                return str_juo.on_select;
+            });
+    },
     _userRequired: true,
+    _headerTitle: str_juo.header_title,
+    _formHeader: (context, user) => {
+        return user.getEBACWithDrinksForLastHours(1)
+            .then((res) => {
+                const ebac = res.ebac,
+                    last_drinks = res.last_drinks;
+                const drinks_text = last_drinks.length > 0 ? str_juo.header_drinks1h.format({
+                    drinkList1h: makeDrinksListString(last_drinks)
+                }) : '';
+                return str_juo.header.format({
+                    permilles: utils.roundTo(ebac.permilles, 2),
+                    permilles30Min: utils.roundTo(ebac.permilles30Min, 2),
+                    drink_list: drinks_text
+                });
+            });
+    },
     [str_juo.miedot.button_text]: {
         _text: str_juo.miedot.on_select,
+        _headerTitle: str_juo.miedot.header_title,
         _userRequired: true,
         [strings.emoji.beer + ' 33cl 4.7%']: makeDrinkOption(constants.calcAlcoholMilligrams(0.047, 0.33), strings.emoji.beer + ' 33cl 4.7%'),
         [strings.emoji.beer + ' 33cl 5.3%']: makeDrinkOption(constants.calcAlcoholMilligrams(0.053, 0.33), strings.emoji.beer + ' 33cl 5.3%'),
+        [strings.emoji.beer + ' 40cl 4.7%']: makeDrinkOption(constants.calcAlcoholMilligrams(0.047, 0.40), strings.emoji.beer + ' 40cl 4.7%'),
         [strings.emoji.beer + ' 50cl 4.7%']: makeDrinkOption(constants.calcAlcoholMilligrams(0.047, 0.50), strings.emoji.beer + ' 50cl 4.7%'),
         [strings.emoji.beer + ' 56.8cl 4.7%']: makeDrinkOption(constants.calcAlcoholMilligrams(0.047, 0.568), strings.emoji.beer + ' 56.8cl 4.7%'),
         ['Lonkero 33cl 5.3%']: makeDrinkOption(constants.calcAlcoholMilligrams(0.053, 0.33), 'Lonkero 33cl 5.3%'),
@@ -64,6 +107,7 @@ module.exports = {
     },
     [str_juo.viinit.button_text]: {
         _text: str_juo.viinit.on_select,
+        _headerTitle: str_juo.viinit.header_title,
         _userRequired: true,
         [strings.emoji.wine + ' 12cl 12%']: makeDrinkOption(constants.calcAlcoholMilligrams(0.12, 0.12), strings.emoji.wine + ' 12cl 12%'),
         [strings.emoji.wine + ' 16cl 12%']: makeDrinkOption(constants.calcAlcoholMilligrams(0.16, 0.12), strings.emoji.wine + ' 16cl 12%'),
@@ -72,6 +116,7 @@ module.exports = {
     },
     [str_juo.shotit.button_text]: {
         _text: str_juo.shotit.on_select,
+        _headerTitle: str_juo.shotit.header_title,
         _userRequired: true,
         [strings.emoji.shot + '4cl 20%']: makeDrinkOption(constants.calcAlcoholMilligrams(0.2, 0.04), strings.emoji.shot + '4cl 20%'),
         [strings.emoji.shot + '4cl 32%']: makeDrinkOption(constants.calcAlcoholMilligrams(0.32, 0.04), strings.emoji.shot + '4cl 32%'),
@@ -83,6 +128,7 @@ module.exports = {
         _text: str_juo.oma.on_select.format({
             help_example: str_juo.oma.help_example
         }),
+        _headerTitle: str_juo.oma.header_title,
         _userRequired: true,
         _onText: (context, user, msg, words) => {
             if (words.length !== 2) {
@@ -121,6 +167,7 @@ module.exports = {
     [str_juo.jalkikellotus.button_text]: {
         _userRequired: true,
         _text: str_juo.jalkikellotus.on_select,
+        _headerTitle: str_juo.jalkikellotus.header_title,
         _onText: (context, user, msg, words) => {
             const hours = context.fetchVariable('jalkikellotus_hours');
             const drinks = context.fetchVariable('jalkikellotus_drinks') || [];
@@ -183,6 +230,8 @@ module.exports = {
                             mg: constants.calcAlcoholMilligrams(d.vol / 100, d.centiliters / 100)
                         };
                     });
+                context.forgetVariable('jalkikellotus_hours');
+                context.forgetVariable('jalkikellotus_drinks')
                 return user.drinkBoozeLate(drinks, hours)
                     .then((ebac) => {
                         const permilles = ebac.permilles;
@@ -212,10 +261,30 @@ module.exports = {
         }
     },
     [str_juo.kumoa.button_text]: {
-        _text: str_juo.kumoa.on_select,
+        _headerTitle: str_juo.kumoa.header_title,
         _userRequired: true,
+        _onSelect: (context, user, msg, words) => {
+            return user.getLastDrink()
+                .then((drink) => {
+                    if (drink) {
+                        context.storeVariable('kumoa_drink', drink);
+                        return str_juo.kumoa.on_select.format({
+                            last_drink_name: drink.description,
+                            last_drink_created: drink.created
+                        });
+                    } else {
+                        return str_juo.kumoa.on_select_no_drinks;
+                    }
+                });
+        },
+        _onExit: (context, user, thisState, nextState) => {
+            context.forgetVariable('kumoa_drink');
+        },
         [strings.yes]: {
             _userRequired: true,
+            _isAvailable: (context, user) => {
+                return context.fetchVariable('kumoa_drink') !== undefined;
+            },
             _onSelect: (context, user, msg, words) => {
                 return user.undoDrink()
                     .then(() => user.getBooze())
@@ -223,13 +292,64 @@ module.exports = {
                         let ebac = alcomath.calculateEBACFromDrinks(user, drinks);
                         let permilles = ebac.permilles;
                         let permilles30Min = ebac.permilles30Min;
-                        context.setInlineState(context.state.parent);
-                        return strings.commands.laatta.success.format({
+                        return str_juo.kumoa.success.format({
                             permilles: utils.roundTo(permilles, 2),
                             permilles30Min: utils.roundTo(permilles30Min, 2)
                         });
                     });
             }
+        }
+    },
+    latest1: {
+        _userRequired: true,
+        _isAvailable: (context, user) => {
+            const drinks = context.fetchVariable('juo_last2_drinks');
+            return drinks && drinks.length >= 1;
+        },
+        _getButtonText: (context, user) => {
+            const drinks = context.fetchVariable('juo_last2_drinks');
+            return drinks[0].description;
+        },
+        _onSelect: (context, user, msg, words) => {
+            const drinks = context.fetchVariable('juo_last2_drinks');
+            return user.drinkBoozeReturnEBAC(drinks[0].alcohol, drinks[0].description)
+                .then((ebac) => {
+                    const permilles = ebac.permilles;
+                    const permilles30Min = ebac.permilles30Min;
+                    return str_juo.on_drink.format({
+                        drink_response: utils.getRandomFromArray(strings.drink_responses),
+                        short_permilles_text: strings.short_permilles_text.format({
+                            permilles: utils.roundTo(permilles, 2),
+                            permilles30Min: utils.roundTo(permilles30Min, 2)
+                        })
+                    });
+                });
+        }
+    },
+    latest2: {
+        _userRequired: true,
+        _isAvailable: (context, user) => {
+            const drinks = context.fetchVariable('juo_last2_drinks');
+            return drinks && drinks.length >= 2;
+        },
+        _getButtonText: (context, user) => {
+            const drinks = context.fetchVariable('juo_last2_drinks');
+            return drinks[1].description;
+        },
+        _onSelect: (context, user, msg, words) => {
+            const drinks = context.fetchVariable('juo_last2_drinks');
+            return user.drinkBoozeReturnEBAC(drinks[1].alcohol, drinks[1].description)
+                .then((ebac) => {
+                    const permilles = ebac.permilles;
+                    const permilles30Min = ebac.permilles30Min;
+                    return str_juo.on_drink.format({
+                        drink_response: utils.getRandomFromArray(strings.drink_responses),
+                        short_permilles_text: strings.short_permilles_text.format({
+                            permilles: utils.roundTo(permilles, 2),
+                            permilles30Min: utils.roundTo(permilles30Min, 2)
+                        })
+                    });
+                });
         }
     }
 };

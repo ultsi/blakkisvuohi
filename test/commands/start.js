@@ -155,12 +155,6 @@ describe('start.js', function() {
                 return Commands.call('', mocked.msg, '');
             })
             .then(() => {
-                assert.notEqual(mocked.internals.editText.indexOf('Bäää - Miedot'), -1);
-                mocked.msg.data = '/start ' + strings.commands.blakkis.back;
-                mocked.msg.addMessageObj();
-                return Commands.call('', mocked.msg, '');
-            })
-            .then(() => {
                 assert.notEqual(mocked.internals.editText.indexOf('Bäää - Juo'), -1);
                 mocked.msg.data = '/start ' + strings.commands.blakkis.back;
                 mocked.msg.addMessageObj();

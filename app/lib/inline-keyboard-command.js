@@ -29,9 +29,15 @@ const strings = require('../strings.js');
 
 class InlineKeyboardCommand {
     constructor(definition, commandName, parent) {
-        if (!definition._root && !parent) {
-            throw new errors.InvalidInlineCommand('no _root in parentless command definition');
+        if (!parent) {
+            if (!definition._root) {
+                throw new errors.InvalidInlineCommand('no _root in parentless command definition');
+            }
+            if (!definition._formHeader) {
+                throw new errors.InvalidInlineCommand('no _formHeader in parentless command definition');
+            }
         }
+
 
         this.commandName = commandName;
         this.parent = parent || false;
@@ -44,6 +50,9 @@ class InlineKeyboardCommand {
         this.onTextAction = definition._onText ? definition._onText : false;
         this.onExitAction = definition._onExit ? definition._onExit : false;
         this.isAvailableAction = definition._isAvailable ? definition._isAvailable : false;
+        this.formHeader = definition._formHeader ? definition._formHeader : parent.formHeader;
+        this.headerTitle = definition._headerTitle ? definition._headerTitle : parent.headerTitle;
+        this.getButtonText = definition._getButtonText ? definition._getButtonText : false;
         this.children = {};
         this.childrenArray = [];
 
@@ -81,8 +90,12 @@ class InlineKeyboardCommand {
         for (let i in this.children) {
             let child = this.children[i];
             if (child.isAvailableForUser(context, user)) {
+                let buttonName = i;
+                if (child.getButtonText) {
+                    buttonName = child.getButtonText(context, user);
+                }
                 pair.push({
-                    text: i,
+                    text: buttonName,
                     callback_data: this.commandName + ' ' + i
                 });
             }
@@ -105,6 +118,10 @@ class InlineKeyboardCommand {
         return inlineKeyboard;
     }
 
+    hasChildren() {
+        return this.childrenArray.length !== 0;
+    }
+
     getChild(name) {
         return this.children[name];
     }
@@ -114,14 +131,25 @@ class InlineKeyboardCommand {
     }
 
     sendTextAndKeyboard(text, context, user, msg) {
-        if (msg.message) {
-            return context.inlineKeyboardEdit(text, this.getInlineKeyboard(context, user));
-        } else {
-            return context.inlineKeyboardMessage(text, this.getInlineKeyboard(context, user));
-        }
+        return this.formHeader(context, user)
+            .then((header) => {
+                const fullText = header.format({
+                    title: this.headerTitle
+                }) + text;
+                if (msg.message) {
+                    return context.inlineKeyboardEdit(fullText, context.state.getInlineKeyboard(context, user));
+                } else {
+                    return context.inlineKeyboardMessage(fullText, context.state.getInlineKeyboard(context, user));
+                }
+            });
+
     }
 
     onSelect(context, user, msg, words) {
+        if (this.hasChildren() || this.onTextAction) {
+            context.setInlineState(this);
+        }
+
         if (this.onSelectAction) {
             return this.onSelectAction(context, user, msg, words)
                 .then((text) => {
@@ -137,7 +165,7 @@ class InlineKeyboardCommand {
             return this.onTextAction(context, user, msg, words)
                 .then((res) => {
                     if (typeof res === 'string') {
-                        return context.inlineKeyboardMessage(res, this.getInlineKeyboard(context, user));
+                        return context.inlineKeyboardMessage(res, context.state.getInlineKeyboard(context, user));
                     } else if (typeof res === 'object') {
                         return context.privateReplyWithKeyboard(res.text, res.keyboard);
                     }

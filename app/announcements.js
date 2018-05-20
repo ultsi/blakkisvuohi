@@ -26,5 +26,6 @@ module.exports = [
     '10.4.2018\n\n- /juoma ja /jalkikellotus hyväksyy nyt pilkut desimaalinumeroissa.\n- /jalkikellotus -komentoon ei tarvitse kirjoittaa enää juoman nimeä. \n- korjattu /jalkikellotus -bugi, jonka takia usean rivin syöttö ei toiminut.',
     '15.4.2018\n\nLisätty uusi komento: /wappu - listaa Otaniemen termisestä wapusta eli 10.4. alkaen juodut juomat.',
     '18.4.2018\n\nLisätty uusi komento: /poistu - Poistu ryhmän kaikista listauksista, esim. promille- ja stats-listauksista.',
-    '19.5.2018\n\nBläkkisvuohi v4 (beta) on täällä! Pääset käyttämään uutta Bläkkisvuohea /start-komennolla privaviestinä. Ei huolta - kaikki vanhat komennot toimivat vielä myös.'
+    '19.5.2018\n\nBläkkisvuohi v4 (beta) on täällä! Pääset käyttämään uutta Bläkkisvuohea /start-komennolla privaviestinä. Ei huolta - kaikki vanhat komennot toimivat vielä myös.',
+    '20.5.2018\n\nMonia parannuksia Bläkkisvuohi v4:seen eli /start -komentoon. Mm. pikanäppäimet viimeisimmille juomille ja paljon muuta!'
 ];

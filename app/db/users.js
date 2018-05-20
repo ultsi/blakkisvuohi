@@ -177,6 +177,36 @@ class User {
             pool.query('delete from users where userId=$1', [this.userId])
         ]);
     }
+
+    getLastDrink() {
+        return pool.query('select alcohol, description, created from users_drinks where userId=$1 order by created desc limit 1', [this.userId])
+            .then((res) => {
+                return res.rows[0];
+            });
+    }
+
+    getEBACWithDrinksForLastHours(hours) {
+        const self = this;
+        return Promise.all([
+            self.getBooze(),
+            self.getBoozeForLastHours(hours)
+        ]).then((res) => {
+            const drinks = res[0],
+                last_drinks = res[1];
+            const ebac = alcomath.calculateEBACFromDrinks(self, drinks);
+            return {
+                ebac: ebac,
+                last_drinks: last_drinks
+            };
+        });
+    }
+
+    getLastNUniqueDrinks(n) {
+        return pool.query('select alcohol, description, created from users_drinks where created IN (select max(created) from users_drinks where userId=$1 group by description) order by created desc limit $2', [this.userId, n])
+            .then((res) => {
+                return res.rows;
+            });
+    }
 }
 
 users.User = User;

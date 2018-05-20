@@ -30,6 +30,10 @@ const users = require('../../db/users.js');
 
 module.exports = {
     _userRequired: true,
+    _headerTitle: str_asetukset.header_title,
+    _formHeader: (context, user) => {
+        return Promise.resolve(str_asetukset.header);
+    },
     _onSelect: (context, user, msg, words) => {
         return Promise.resolve(str_asetukset.on_select);
     },
