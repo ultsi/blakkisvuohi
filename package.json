@@ -15,23 +15,24 @@
     "test-only": "export $(cat .env) && ./node_modules/mocha/bin/mocha -w"
   },
   "engines": {
-    "node": "8.9.4"
+    "node": "8.9.4",
+    "npm": "6.0.1"
   },
   "author": "Joonas Ulmanen",
   "license": "GPL-3.0",
   "dependencies": {
-    "body-parser": "^1.18.2",
+    "body-parser": "^1.18.3",
     "chart.js": "^2.7.2",
     "chartjs-node": "^1.7.1",
     "express": "^4.16.3",
     "loglevel": "^1.6.1",
-    "newrelic": "^4.1.0",
-    "node-pg-migrate": "^3.1.1",
+    "newrelic": "^4.1.1",
+    "node-pg-migrate": "^3.2.0",
     "node-telegram-bot-api": "^0.30.0",
     "pg": "^7.4.3"
   },
   "devDependencies": {
-    "mocha": "^5.1.1",
-    "nyc": "^11.7.3"
+    "mocha": "^5.2.0",
+    "nyc": "^11.8.0"
   }
 }
