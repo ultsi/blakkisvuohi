@@ -81,7 +81,6 @@ module.exports = function(bot) {
     require('./commands/stats.js');
     require('./commands/terms.js');
     require('./commands/tunnus.js');
-    require('./commands/wappu.js');
     require('./commands/whoami.js');
 
     // Admin commands
