@@ -184,6 +184,8 @@ module.exports = {
                             mg: constants.calcAlcoholMilligrams(d.vol / 100, d.centiliters / 100)
                         };
                     });
+                context.forgetVariable('jalkikellotus_hours');
+                context.forgetVariable('jalkikellotus_drinks')
                 return user.drinkBoozeLate(drinks, hours)
                     .then((ebac) => {
                         const permilles = ebac.permilles;
@@ -243,7 +245,6 @@ module.exports = {
                         let ebac = alcomath.calculateEBACFromDrinks(user, drinks);
                         let permilles = ebac.permilles;
                         let permilles30Min = ebac.permilles30Min;
-                        context.setInlineState(context.state.parent);
                         return str_juo.kumoa.success.format({
                             permilles: utils.roundTo(permilles, 2),
                             permilles30Min: utils.roundTo(permilles30Min, 2)

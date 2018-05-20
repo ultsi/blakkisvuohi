@@ -105,6 +105,10 @@ class InlineKeyboardCommand {
         return inlineKeyboard;
     }
 
+    hasChildren() {
+        return this.childrenArray.length !== 0;
+    }
+
     getChild(name) {
         return this.children[name];
     }
@@ -115,13 +119,16 @@ class InlineKeyboardCommand {
 
     sendTextAndKeyboard(text, context, user, msg) {
         if (msg.message) {
-            return context.inlineKeyboardEdit(text, this.getInlineKeyboard(context, user));
+            return context.inlineKeyboardEdit(text, context.state.getInlineKeyboard(context, user));
         } else {
-            return context.inlineKeyboardMessage(text, this.getInlineKeyboard(context, user));
+            return context.inlineKeyboardMessage(text, context.state.getInlineKeyboard(context, user));
         }
     }
 
     onSelect(context, user, msg, words) {
+        if (this.hasChildren() || this.onTextAction) {
+            context.setInlineState(this);
+        }
         if (this.onSelectAction) {
             return this.onSelectAction(context, user, msg, words)
                 .then((text) => {
@@ -137,7 +144,7 @@ class InlineKeyboardCommand {
             return this.onTextAction(context, user, msg, words)
                 .then((res) => {
                     if (typeof res === 'string') {
-                        return context.inlineKeyboardMessage(res, this.getInlineKeyboard(context, user));
+                        return context.inlineKeyboardMessage(res, context.state.getInlineKeyboard(context, user));
                     } else if (typeof res === 'object') {
                         return context.privateReplyWithKeyboard(res.text, res.keyboard);
                     }

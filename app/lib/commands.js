@@ -278,8 +278,7 @@ Commands.callInline = (cmd, context, user, msg, words) => {
     if (!context.state) {
         // set current state to root object in command tree
         // show root _text
-        context.setInlineState(cmd.definition);
-        return context.state.onSelect(context, user, msg, words);
+        return cmd.definition.onSelect(context, user, msg, words);
     }
     const curState = context.state;
     // button was pressed, update the keyboard and text
@@ -293,7 +292,6 @@ Commands.callInline = (cmd, context, user, msg, words) => {
                 return;
             }
 
-            context.setInlineState(nextState);
             curState.onExit(context, user, nextState);
             return nextState.onSelect(context, user, msg, words);
         }
