@@ -137,21 +137,25 @@ Commands.call = function call(firstWord, msg, words) {
     // Find out cmd and context first
     let cmd, context;
     if (msg.data) {
+        const dataCmdName = msg.data.match(/\/\w+/);
         // inline keyboard stuff, retrieve context
         context = retrieveContext(userId, msg);
 
         if (!context) {
+            cmd = cmds[dataCmdName];
+            context = initContext(userId, cmd, msg);
             msg.chat = msg.message.chat;
-            return msg.sendChatMessage(strings.commands.blakkis.command_not_found);
+            msg.message = undefined; // this makes it send a new message instead of editing the old
         }
+
         cmd = context.cmd;
 
         if (!cmd) {
             msg.chat = msg.message.chat;
             return msg.sendChatMessage(strings.commands.blakkis.command_not_found);
         }
+
         // check that command which the data originated is the same as current context
-        const dataCmdName = msg.data.match(/\/\w+/);
         if (dataCmdName && dataCmdName[0] !== cmd.name) {
             // happens for example if user uses /kalja033 in between inline chat command use
             cmd = cmds[dataCmdName];
