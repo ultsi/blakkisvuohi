@@ -177,6 +177,13 @@ class User {
             pool.query('delete from users where userId=$1', [this.userId])
         ]);
     }
+
+    getLastDrink() {
+        return pool.query('select alcohol, description, created from users_drinks where userId=$1 order by created desc limit 1', [this.userId])
+            .then((res) => {
+                return res.rows[0];
+            });
+    }
 }
 
 users.User = User;

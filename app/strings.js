@@ -153,7 +153,9 @@ strings.commands = {
             },
             kumoa: {
                 button_text: strings.emoji.cross + ' Kumoa',
-                on_select: strings.emoji.goat + ' *Bäää - Kumoa* ' + strings.emoji.goat + '\n\nOlet kumoamassa viimeksi juodun juomasi. Oletko varma?',
+                on_select: strings.emoji.goat + ' *Bäää - Kumoa* ' + strings.emoji.goat + '\n\nOlet kumoamassa viimeksi juodun juomasi. Oletko varma?\n\nKumottava juoma:\n*Nimi:* {last_drink_name}\n*Juotu:* {last_drink_created}',
+                on_select_no_drinks: strings.emoji.goat + ' *Bäää - Kumoa* ' + strings.emoji.goat + '\n\nEi kumottavia juomia.',
+                success: strings.emoji.goat + ' *Bäää - Kumoa* ' + strings.emoji.goat + '\n\nKumoaminen onnistui. Olet enää nyt *{permilles}‰* humalassa ja 30min päästä *{permilles30Min}‰* humalassa.',
             }
         },
         asetukset: {

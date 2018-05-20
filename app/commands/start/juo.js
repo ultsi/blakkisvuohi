@@ -213,10 +213,29 @@ module.exports = {
         }
     },
     [str_juo.kumoa.button_text]: {
-        _text: str_juo.kumoa.on_select,
+        _onSelect: (context, user, msg, words) => {
+            return user.getLastDrink()
+                .then((drink) => {
+                    if (drink) {
+                        context.storeVariable('kumoa_drink', drink);
+                        return str_juo.kumoa.on_select.format({
+                            last_drink_name: drink.description,
+                            last_drink_created: drink.created
+                        });
+                    } else {
+                        return str_juo.kumoa.on_select_no_drinks;
+                    }
+                });
+        },
+        _onExit: (context, user, thisState, nextState) => {
+            context.forgetVariable('kumoa_drink');
+        },
         _userRequired: true,
         [strings.yes]: {
             _userRequired: true,
+            _isAvailable: (context, user) => {
+                return context.fetchVariable('kumoa_drink') !== undefined;
+            },
             _onSelect: (context, user, msg, words) => {
                 return user.undoDrink()
                     .then(() => user.getBooze())
@@ -225,7 +244,7 @@ module.exports = {
                         let permilles = ebac.permilles;
                         let permilles30Min = ebac.permilles30Min;
                         context.setInlineState(context.state.parent);
-                        return strings.commands.laatta.success.format({
+                        return str_juo.kumoa.success.format({
                             permilles: utils.roundTo(permilles, 2),
                             permilles30Min: utils.roundTo(permilles30Min, 2)
                         });
