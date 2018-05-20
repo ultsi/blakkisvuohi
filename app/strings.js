@@ -72,7 +72,7 @@ strings.commands = {
         announcements: 'Ilmoituksia:\n\n{announcements}',
         unauthorized: 'Ei käyttöoikeutta.',
         user404: 'Rekisteröidy ensiksi käyttämällä komentoa /tunnus.',
-        help_text: 'BläkkisVuohi auttaa sinua ja ystäviäsi seuraamaan rippauksesi (lue: promillejesi) tasoa. Luo ensimmäiseksi tunnus komennolla /tunnus. Tunnuksen luomisen jälkeen voit alkaa kellottamaan juomia sisään komennolla /juoma. Annan sinulle arvioita rippauksesta komennolla /promillet. Minut voi myös lisätä ryhmään, jolloin kerron /promillet-komennolla kaikkien ryhmässä olevien rippitasot. Jokaisen ryhmäläisen täytyy kuitenkin sanoa ryhmässä /moro, jotta he pääsevät rippilistaukseen mukaan.',
+        help_text: 'BläkkisVuohi auttaa sinua ja ystäviäsi seuraamaan rippauksesi (lue: promillejesi) tasoa. Aloita komennolla /start tai seuraa näitä ohjeita.\n\nLuo ensimmäiseksi tunnus komennolla /tunnus. Tunnuksen luomisen jälkeen voit alkaa kellottamaan juomia sisään komennolla /juoma. Annan sinulle arvioita rippauksesta komennolla /promillet. Minut voi myös lisätä ryhmään, jolloin kerron /promillet-komennolla kaikkien ryhmässä olevien rippitasot. Jokaisen ryhmäläisen täytyy kuitenkin sanoa ryhmässä /moro, jotta he pääsevät rippilistaukseen mukaan.',
         cmd_list: 'Komennot\n\n{cmd_list}',
         use_only_in_private: 'Käytä komentoa vain minun kanssa privaviestinä!',
         use_only_in_chats: 'Käytä komentoa vain chateissa!',
@@ -367,13 +367,6 @@ strings.commands = {
         cmd_description: '/stats - listaa ryhmän tai sinun kulutustilastoja. Lisäämällä numeron komennon perään voit valita, kuinka monelta päivältä taaksepäin haluat tilastot',
         private: 'Olet {day_count} päivän aikana tuhonnut {grams} grammaa alkoholia, joka vastaa {standard_drinks} annosta. Keskimäärin olet juonut {avg_standard_drinks} annosta per päivä. .',
         group: 'Tilastoja:\n\nRyhmän jäsenet ovat {day_count} päivän aikana tuhonneet {grams} grammaa alkoholia, joka vastaa {standard_drinks} annosta. Keskimäärin on juotu {avg_standard_drinks} annosta per päivä. Lisäksi kaikki käyttäjät globaalisti ovat yhteensä tilastoineet {global_drinks_count} juomaa. Hienosti.\n\nTop10 tilastot:\n\n{top10List}'
-    },
-
-    /* /wappu */
-    wappu: {
-        cmd_description: '/wappu - Listaa Otaniemen termisestä wapusta alkaen (10.4.) juodut juomat sekä keskiarvon globaalisti',
-        private: 'Olet {day_count} päivän aikana tuhonnut {grams} grammaa alkoholia, joka vastaa {standard_drinks} annosta. Keskimäärin olet juonut {avg_standard_drinks} annosta per päivä. Hyvää wappua!',
-        group: 'Wapputilastoja:\n\nWappupäiviä: {day_count}\nAlkoholia tuhottu: {count}kpl / {grams}g / {standard_drinks} annosta.\nJuotu per päivä: {avg_count}kpl / {avg_standard_drinks} annosta.\nKaikki käyttäjät tuhonneet: {global_drinks_count}kpl / {global_drinks_grams}g / {global_drinks_standard} annosta. \n\nHyvää wappua!\n\nTop10 tilastot:\n\n{top10List}'
     },
 
     /* /terms */

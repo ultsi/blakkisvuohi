@@ -17,8 +17,8 @@
 */
 
 /*
-    betablakkis.js
-    Beta bläkkis command, uses inline chat for all functionality
+    start.js
+    Start - basis of bläkkisvuohi v4, uses inline chat for all functionality
 */
 
 'use strict';
@@ -47,7 +47,7 @@ function makeDrinksString(drinks) {
     return list.join('\n');
 }
 
-const betablakkis = {
+const start = {
     _onSelect: (context, user, msg, words) => {
         if (user) {
             return user.getEBACWithDrinksForLastHours(3)
@@ -93,4 +93,4 @@ const betablakkis = {
     [str_start.help.button_text]: require('./start/help.js')
 };
 
-Commands.register('/start', 'Bläkkisvuohi v3', Commands.SCOPE_PRIVATE, Commands.PRIVILEGE_ALL, Commands.TYPE_INLINE, betablakkis);
+Commands.register('/start', 'Bläkkisvuohi v4 -valikko', Commands.SCOPE_PRIVATE, Commands.PRIVILEGE_ALL, Commands.TYPE_INLINE, start);
