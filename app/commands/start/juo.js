@@ -57,6 +57,7 @@ module.exports = {
         _userRequired: true,
         [strings.emoji.beer + ' 33cl 4.7%']: makeDrinkOption(constants.calcAlcoholMilligrams(0.047, 0.33), strings.emoji.beer + ' 33cl 4.7%'),
         [strings.emoji.beer + ' 33cl 5.3%']: makeDrinkOption(constants.calcAlcoholMilligrams(0.053, 0.33), strings.emoji.beer + ' 33cl 5.3%'),
+        [strings.emoji.beer + ' 40cl 4.7%']: makeDrinkOption(constants.calcAlcoholMilligrams(0.047, 0.40), strings.emoji.beer + ' 40cl 4.7%'),
         [strings.emoji.beer + ' 50cl 4.7%']: makeDrinkOption(constants.calcAlcoholMilligrams(0.047, 0.50), strings.emoji.beer + ' 50cl 4.7%'),
         [strings.emoji.beer + ' 56.8cl 4.7%']: makeDrinkOption(constants.calcAlcoholMilligrams(0.047, 0.568), strings.emoji.beer + ' 56.8cl 4.7%'),
         ['Lonkero 33cl 5.3%']: makeDrinkOption(constants.calcAlcoholMilligrams(0.053, 0.33), 'Lonkero 33cl 5.3%'),
