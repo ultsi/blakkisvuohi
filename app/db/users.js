@@ -184,6 +184,22 @@ class User {
                 return res.rows[0];
             });
     }
+
+    getEBACWithDrinksForLastHours(hours) {
+        const self = this;
+        return Promise.all([
+            self.getBooze(),
+            self.getBoozeForLastHours(hours)
+        ]).then((res) => {
+            const drinks = res[0],
+                last_drinks = res[1];
+            const ebac = alcomath.calculateEBACFromDrinks(self, drinks);
+            return {
+                ebac: ebac,
+                last_drinks: last_drinks
+            };
+        });
+    }
 }
 
 users.User = User;

@@ -30,23 +30,32 @@ const utils = require('../../lib/utils.js');
 
 module.exports = {
     _text: str_help.on_select,
+    _headerTitle: str_help.header_title,
+    _formHeader: (context, user) => {
+        return Promise.resolve(str_help.header);
+    },
     [str_help.general.button_text]: {
         _text: str_help.general.on_select,
+        _headerTitle: str_help.general.header_title,
     },
     [str_help.faq.button_text]: {
         _text: str_help.faq.on_select,
+        _headerTitle: str_help.faq.header_title,
         [str_help.faq.juominen.button_text]: {
             _text: str_help.faq.juominen.on_select,
+            _headerTitle: str_help.faq.juominen.header_title,
         },
         [str_help.faq.ryhmat.button_text]: {
             _text: str_help.faq.ryhmat.on_select,
+            _headerTitle: str_help.faq.ryhmat.header_title,
         },
         [str_help.faq.koodi.button_text]: {
             _text: str_help.faq.koodi.on_select,
+            _headerTitle: str_help.faq.koodi.header_title,
         }
     },
     [str_help.privacy.button_text]: {
         _text: str_help.privacy.on_select,
-
+        _headerTitle: str_help.privacy.header_title,
     },
 };

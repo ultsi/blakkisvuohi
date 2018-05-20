@@ -91,6 +91,7 @@ function makeDrinksString(drinks) {
 module.exports = {
     _userRequired: true,
     _text: str_tilastoja.on_select,
+    _headerTitle: str_tilastoja.header_title,
     [str_tilastoja.kulutus.button_text]: {
         _userRequired: true,
         _onSelect: (context, user, msg, words) => {

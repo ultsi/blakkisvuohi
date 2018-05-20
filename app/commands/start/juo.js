@@ -49,11 +49,46 @@ function makeDrinkOption(drink_amount, drink_name) {
     };
 }
 
+function makeDrinksListString(drinks) {
+    let list = [];
+    for (var i in drinks) {
+        let drink = drinks[i];
+        let drinkTime = new Date(Date.parse(drink.created));
+        let drinkHours = drinkTime.getHours() + '';
+        if (drinkHours.length === 1) {
+            drinkHours = '0' + drinkHours;
+        }
+        let drinkMinutes = drinkTime.getMinutes() + '';
+        if (drinkMinutes.length === 1) {
+            drinkMinutes = '0' + drinkMinutes;
+        }
+        list.push(drinkHours + ':' + drinkMinutes + ' ' + drink.description);
+    }
+    return list.join('\n');
+}
+
 module.exports = {
     _text: str_juo.on_select,
     _userRequired: true,
+    _headerTitle: str_juo.header_title,
+    _formHeader: (context, user) => {
+        return user.getEBACWithDrinksForLastHours(1)
+            .then((res) => {
+                const ebac = res.ebac,
+                    last_drinks = res.last_drinks;
+                const drinks_text = last_drinks.length > 0 ? str_juo.header_drinks1h.format({
+                    drinkList1h: makeDrinksListString(last_drinks)
+                }) : '';
+                return str_juo.header.format({
+                    permilles: utils.roundTo(ebac.permilles, 2),
+                    permilles30Min: utils.roundTo(ebac.permilles30Min, 2),
+                    drink_list: drinks_text
+                });
+            });
+    },
     [str_juo.miedot.button_text]: {
         _text: str_juo.miedot.on_select,
+        _headerTitle: str_juo.miedot.header_title,
         _userRequired: true,
         [strings.emoji.beer + ' 33cl 4.7%']: makeDrinkOption(constants.calcAlcoholMilligrams(0.047, 0.33), strings.emoji.beer + ' 33cl 4.7%'),
         [strings.emoji.beer + ' 33cl 5.3%']: makeDrinkOption(constants.calcAlcoholMilligrams(0.053, 0.33), strings.emoji.beer + ' 33cl 5.3%'),
@@ -65,6 +100,7 @@ module.exports = {
     },
     [str_juo.viinit.button_text]: {
         _text: str_juo.viinit.on_select,
+        _headerTitle: str_juo.viinit.header_title,
         _userRequired: true,
         [strings.emoji.wine + ' 12cl 12%']: makeDrinkOption(constants.calcAlcoholMilligrams(0.12, 0.12), strings.emoji.wine + ' 12cl 12%'),
         [strings.emoji.wine + ' 16cl 12%']: makeDrinkOption(constants.calcAlcoholMilligrams(0.16, 0.12), strings.emoji.wine + ' 16cl 12%'),
@@ -73,6 +109,7 @@ module.exports = {
     },
     [str_juo.shotit.button_text]: {
         _text: str_juo.shotit.on_select,
+        _headerTitle: str_juo.shotit.header_title,
         _userRequired: true,
         [strings.emoji.shot + '4cl 20%']: makeDrinkOption(constants.calcAlcoholMilligrams(0.2, 0.04), strings.emoji.shot + '4cl 20%'),
         [strings.emoji.shot + '4cl 32%']: makeDrinkOption(constants.calcAlcoholMilligrams(0.32, 0.04), strings.emoji.shot + '4cl 32%'),
@@ -84,6 +121,7 @@ module.exports = {
         _text: str_juo.oma.on_select.format({
             help_example: str_juo.oma.help_example
         }),
+        _headerTitle: str_juo.oma.header_title,
         _userRequired: true,
         _onText: (context, user, msg, words) => {
             if (words.length !== 2) {
@@ -122,6 +160,7 @@ module.exports = {
     [str_juo.jalkikellotus.button_text]: {
         _userRequired: true,
         _text: str_juo.jalkikellotus.on_select,
+        _headerTitle: str_juo.jalkikellotus.header_title,
         _onText: (context, user, msg, words) => {
             const hours = context.fetchVariable('jalkikellotus_hours');
             const drinks = context.fetchVariable('jalkikellotus_drinks') || [];
@@ -215,6 +254,8 @@ module.exports = {
         }
     },
     [str_juo.kumoa.button_text]: {
+        _headerTitle: str_juo.kumoa.header_title,
+        _userRequired: true,
         _onSelect: (context, user, msg, words) => {
             return user.getLastDrink()
                 .then((drink) => {
@@ -232,7 +273,6 @@ module.exports = {
         _onExit: (context, user, thisState, nextState) => {
             context.forgetVariable('kumoa_drink');
         },
-        _userRequired: true,
         [strings.yes]: {
             _userRequired: true,
             _isAvailable: (context, user) => {

@@ -31,6 +31,7 @@ const users = require('../../db/users.js');
 module.exports = {
     _nonUserRequired: true,
     _text: str_luo_tunnus.on_select,
+    _headerTitle: str_luo_tunnus.header_title,
     _onText: (context, user, msg, words) => {
         const username = users.getUsernameFromMsg(msg);
         const userId = msg.from.id;

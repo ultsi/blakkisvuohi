@@ -29,9 +29,15 @@ const strings = require('../strings.js');
 
 class InlineKeyboardCommand {
     constructor(definition, commandName, parent) {
-        if (!definition._root && !parent) {
-            throw new errors.InvalidInlineCommand('no _root in parentless command definition');
+        if (!parent) {
+            if (!definition._root) {
+                throw new errors.InvalidInlineCommand('no _root in parentless command definition');
+            }
+            if (!definition._formHeader) {
+                throw new errors.InvalidInlineCommand('no _formHeader in parentless command definition');
+            }
         }
+
 
         this.commandName = commandName;
         this.parent = parent || false;
@@ -44,6 +50,8 @@ class InlineKeyboardCommand {
         this.onTextAction = definition._onText ? definition._onText : false;
         this.onExitAction = definition._onExit ? definition._onExit : false;
         this.isAvailableAction = definition._isAvailable ? definition._isAvailable : false;
+        this.formHeader = definition._formHeader ? definition._formHeader : parent.formHeader;
+        this.headerTitle = definition._headerTitle ? definition._headerTitle : parent.headerTitle;
         this.children = {};
         this.childrenArray = [];
 
@@ -118,17 +126,25 @@ class InlineKeyboardCommand {
     }
 
     sendTextAndKeyboard(text, context, user, msg) {
-        if (msg.message) {
-            return context.inlineKeyboardEdit(text, context.state.getInlineKeyboard(context, user));
-        } else {
-            return context.inlineKeyboardMessage(text, context.state.getInlineKeyboard(context, user));
-        }
+        return this.formHeader(context, user)
+            .then((header) => {
+                const fullText = header.format({
+                    title: this.headerTitle
+                }) + text;
+                if (msg.message) {
+                    return context.inlineKeyboardEdit(fullText, context.state.getInlineKeyboard(context, user));
+                } else {
+                    return context.inlineKeyboardMessage(fullText, context.state.getInlineKeyboard(context, user));
+                }
+            });
+
     }
 
     onSelect(context, user, msg, words) {
         if (this.hasChildren() || this.onTextAction) {
             context.setInlineState(this);
         }
+
         if (this.onSelectAction) {
             return this.onSelectAction(context, user, msg, words)
                 .then((text) => {

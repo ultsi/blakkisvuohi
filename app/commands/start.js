@@ -25,7 +25,6 @@
 
 const Commands = require('../lib/commands.js');
 const utils = require('../lib/utils.js');
-const constants = require('../constants.js');
 const strings = require('../strings.js');
 const str_start = strings.commands.start;
 const alcomath = require('../lib/alcomath.js');
@@ -51,35 +50,39 @@ function makeDrinksString(drinks) {
 const betablakkis = {
     _onSelect: (context, user, msg, words) => {
         if (user) {
-            return Promise.all([
-                user.getBooze(),
-                user.getBoozeForLastHours(3)
-            ]).then((res) => {
-                const drinks = res[0],
-                    drinks3h = res[1];
-                let ebac = alcomath.calculateEBACFromDrinks(user, drinks);
-                let permilles = ebac.permilles;
-                let permilles30Min = ebac.permilles30Min;
-                let grams = ebac.grams;
-                let metabolismRate = alcomath.getUserMetabolismRate(user);
-                let time = permilles30Min / metabolismRate;
-                time = time > 0 ? time + 0.5 : time;
-                let hours = Math.floor(time);
-                const drinks_text = drinks3h.length > 0 ? str_start.on_select_drinks3h.format({
-                    drinkList3h: makeDrinksString(drinks3h)
-                }) : '';
-                return str_start.on_select.format({
-                    permilles: utils.roundTo(permilles, 2),
-                    permilles30Min: utils.roundTo(permilles30Min, 2),
-                    grams: utils.roundTo(grams),
-                    standard_drinks: utils.roundTo(grams / constants.STANDARD_DRINK_GRAMS, 2),
-                    hours: hours,
-                    minutes: ('0' + Math.ceil((time - hours) * 60)).slice(-2),
-                    drink_list: drinks_text
+            return user.getEBACWithDrinksForLastHours(3)
+                .then((res) => {
+                    const ebac = res.ebac,
+                        last_drinks = res.last_drinks;
+                    const hours = Math.floor(ebac.burn_hours);
+                    const drinks_text = last_drinks.length > 0 ? str_start.on_select_drinks3h.format({
+                        drinkList3h: makeDrinksString(last_drinks)
+                    }) : '';
+                    return str_start.on_select.format({
+                        grams: utils.roundTo(ebac.grams, 0),
+                        standard_drinks: alcomath.toStandardDrinks(ebac.grams, 2),
+                        hours: hours,
+                        minutes: ('0' + Math.ceil((ebac.burn_hours - hours) * 60)).slice(-2),
+                        drink_list: drinks_text
+                    });
                 });
-            });
         } else {
             return Promise.resolve(str_start.on_select_nonuser);
+        }
+    },
+    _headerTitle: str_start.header_title,
+    _formHeader: (context, user) => {
+        if (user) {
+            return user.getEBACWithDrinksForLastHours(3)
+                .then((res) => {
+                    const ebac = res.ebac;
+                    return str_start.header_user.format({
+                        permilles: utils.roundTo(ebac.permilles, 2),
+                        permilles30Min: utils.roundTo(ebac.permilles30Min, 2)
+                    });
+                });
+        } else {
+            return Promise.resolve(str_start.header_nonuser);
         }
     },
     _root: true,

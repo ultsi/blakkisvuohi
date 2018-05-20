@@ -24,6 +24,7 @@
 'use strict';
 
 const constants = require('../constants.js');
+const utils = require('../lib/utils.js');
 let alcomath = module.exports = {};
 
 /*  Variation of the Widmark equation used from the Original article "The Estimation of Blood Alcohol Concentration"
@@ -133,7 +134,8 @@ alcomath.calculateEBACFromDrinks = (user, drinks) => {
         return {
             permilles: 0,
             permilles30Min: 0,
-            grams: 0
+            grams: 0,
+            burn_hours: 0
         };
     }
 
@@ -158,11 +160,14 @@ alcomath.calculateEBACFromDrinks = (user, drinks) => {
 
     const permilles = Math.max(absorbedAlcoholConcentration - MR * Math.max((now - startTime) / constants.HOUR_IN_MILLIS, 0), 0);
     const permilles30Min = Math.max(absorbedAlcoholConcentrationIn30 - MR * Math.max((in30Mins - startTime) / constants.HOUR_IN_MILLIS, 0), 0);
+    let burn_hours = permilles30Min / alcomath.getUserMetabolismRate(user);
+    burn_hours = burn_hours > 0 ? burn_hours + 0.5 : burn_hours;
 
     return {
         permilles: permilles,
         permilles30Min: permilles30Min,
-        grams: alcomath.estimateUnburnedAlcohol(user, permilles)
+        grams: alcomath.estimateUnburnedAlcohol(user, permilles),
+        burn_hours: burn_hours
     };
 };
 
@@ -199,4 +204,9 @@ alcomath.calculateEBACByHourFromDrinks = (user, drinks, lastNHours, predictNHour
     }
 
     return permillesByHour;
+};
+
+alcomath.toStandardDrinks = (alcohol_grams, decimals) => {
+    decimals = decimals || 1;
+    return utils.roundTo(alcohol_grams / constants.STANDARD_DRINK_GRAMS, decimals);
 };
