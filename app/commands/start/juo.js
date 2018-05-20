@@ -68,7 +68,14 @@ function makeDrinksListString(drinks) {
 }
 
 module.exports = {
-    _text: str_juo.on_select,
+    _onSelect: (context, user, msg, words) => {
+        return user.getLastNUniqueDrinks(2)
+            .then((drinks) => {
+                // this is needed for latest1&2 isAvailable calls
+                context.storeVariable('juo_last2_drinks', drinks);
+                return str_juo.on_select;
+            });
+    },
     _userRequired: true,
     _headerTitle: str_juo.header_title,
     _formHeader: (context, user) => {
@@ -291,6 +298,58 @@ module.exports = {
                         });
                     });
             }
+        }
+    },
+    latest1: {
+        _userRequired: true,
+        _isAvailable: (context, user) => {
+            const drinks = context.fetchVariable('juo_last2_drinks');
+            return drinks && drinks.length >= 1;
+        },
+        _getButtonText: (context, user) => {
+            const drinks = context.fetchVariable('juo_last2_drinks');
+            return drinks[0].description;
+        },
+        _onSelect: (context, user, msg, words) => {
+            const drinks = context.fetchVariable('juo_last2_drinks');
+            return user.drinkBoozeReturnEBAC(drinks[0].alcohol, drinks[0].description)
+                .then((ebac) => {
+                    const permilles = ebac.permilles;
+                    const permilles30Min = ebac.permilles30Min;
+                    return str_juo.on_drink.format({
+                        drink_response: utils.getRandomFromArray(strings.drink_responses),
+                        short_permilles_text: strings.short_permilles_text.format({
+                            permilles: utils.roundTo(permilles, 2),
+                            permilles30Min: utils.roundTo(permilles30Min, 2)
+                        })
+                    });
+                });
+        }
+    },
+    latest2: {
+        _userRequired: true,
+        _isAvailable: (context, user) => {
+            const drinks = context.fetchVariable('juo_last2_drinks');
+            return drinks && drinks.length >= 2;
+        },
+        _getButtonText: (context, user) => {
+            const drinks = context.fetchVariable('juo_last2_drinks');
+            return drinks[1].description;
+        },
+        _onSelect: (context, user, msg, words) => {
+            const drinks = context.fetchVariable('juo_last2_drinks');
+            return user.drinkBoozeReturnEBAC(drinks[1].alcohol, drinks[1].description)
+                .then((ebac) => {
+                    const permilles = ebac.permilles;
+                    const permilles30Min = ebac.permilles30Min;
+                    return str_juo.on_drink.format({
+                        drink_response: utils.getRandomFromArray(strings.drink_responses),
+                        short_permilles_text: strings.short_permilles_text.format({
+                            permilles: utils.roundTo(permilles, 2),
+                            permilles30Min: utils.roundTo(permilles30Min, 2)
+                        })
+                    });
+                });
         }
     }
 };

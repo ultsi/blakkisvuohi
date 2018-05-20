@@ -52,6 +52,7 @@ class InlineKeyboardCommand {
         this.isAvailableAction = definition._isAvailable ? definition._isAvailable : false;
         this.formHeader = definition._formHeader ? definition._formHeader : parent.formHeader;
         this.headerTitle = definition._headerTitle ? definition._headerTitle : parent.headerTitle;
+        this.getButtonText = definition._getButtonText ? definition._getButtonText : false;
         this.children = {};
         this.childrenArray = [];
 
@@ -89,8 +90,12 @@ class InlineKeyboardCommand {
         for (let i in this.children) {
             let child = this.children[i];
             if (child.isAvailableForUser(context, user)) {
+                let buttonName = i;
+                if (child.getButtonText) {
+                    buttonName = child.getButtonText(context, user);
+                }
                 pair.push({
-                    text: i,
+                    text: buttonName,
                     callback_data: this.commandName + ' ' + i
                 });
             }

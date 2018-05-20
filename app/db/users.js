@@ -200,6 +200,13 @@ class User {
             };
         });
     }
+
+    getLastNUniqueDrinks(n) {
+        return pool.query('select alcohol, description, created from users_drinks where created IN (select max(created) from users_drinks where userId=$1 group by description) order by created desc limit $2', [this.userId, n])
+            .then((res) => {
+                return res.rows;
+            });
+    }
 }
 
 users.User = User;

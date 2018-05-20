@@ -121,7 +121,7 @@ strings.commands = {
             header: strings.emoji.goat + ' *Bäää - {title}* ' + strings.emoji.goat + '\n\n*Nyt:* {permilles}‰ - *30min:* {permilles30Min}‰\n{drink_list}\n',
             header_drinks1h: '*Viimeisen tunnin tapahtumat:*\n{drinkList1h}\n',
             header_title: 'Juo',
-            on_select: 'Valitse juomasi alla olevista valikoista. Jos et löydä etsimääsi, klikkaa *Oma juoma*. Jos olet unohtanut lisätä juomia, voit lisätä ne takautuvasti valitsemalla *Jälkikellotus*. Jos lisäsit vahingossa väärän juoman, valitse *Kumoa*.',
+            on_select: 'Valitse juomasi alla olevista valikoista. Jos et löydä etsimääsi, klikkaa *Oma juoma*. Jos olet unohtanut lisätä juomia, voit lisätä ne takautuvasti valitsemalla *Jälkikellotus*. Jos lisäsit vahingossa väärän juoman, valitse *Kumoa*. Kaksi alinta nappia ovat pikavalinnat kahdelle viimeisimmälle juomalle.',
             on_drink: '{drink_response} Juoma tallennettu.',
             miedot: {
                 button_text: strings.emoji.beers + ' Miedot',
