@@ -69,7 +69,7 @@ function makeDrinksListString(drinks) {
 
 module.exports = {
     _onSelect: (context, user, msg, words) => {
-        return user.getLastNUniqueDrinks(2)
+        return user.getLastNUniqueDrinks(2, str_juo.jalkikellotus.drink_name)
             .then((drinks) => {
                 // this is needed for latest1&2 isAvailable calls
                 context.storeVariable('juo_last2_drinks', drinks);
