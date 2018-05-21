@@ -202,9 +202,9 @@ class User {
     }
 
     getLastNUniqueDrinks(n, exclude_description) {
-        n = n || 1;
-        exclude_description = exclude_description || '';
-        return pool.query('select alcohol, description, created from users_drinks where created IN (select max(created) from users_drinks where userId=$1 and description not like \'$3\' group by description) order by created desc limit $2', [this.userId, n, exclude_description])
+        n = n ? n : 1;
+        exclude_description = exclude_description ? exclude_description : '';
+        return pool.query('select alcohol, description, created from users_drinks where created IN (select max(created) from users_drinks where userId=$1 and description not like $2::text group by description) order by created desc limit $3', [this.userId, exclude_description, n])
             .then((res) => {
                 return res.rows;
             });

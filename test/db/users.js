@@ -392,4 +392,26 @@ describe('users.js', function() {
                 .catch((err) => done(err));
         });
     });
+
+    describe('User.getLastNUniqueDrinks', function() {
+        it('should return 2 unique drinks', function(done) {
+            const user = blakkistest.users[0];
+            user.getLastNUniqueDrinks()
+                .then((rows) => {
+                    assert.notEqual(rows.length, 0);
+                    done();
+                })
+                .catch((err) => done(err));
+        });
+
+        it('should return no drinks with exclude kalja', function(done) {
+            const user = blakkistest.users[0];
+            user.getLastNUniqueDrinks(2, 'kalja')
+                .then((rows) => {
+                    assert.equal(rows.length, 0);
+                    done();
+                })
+                .catch((err) => done(err));
+        });
+    });
 });
