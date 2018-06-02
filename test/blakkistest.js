@@ -115,6 +115,7 @@ blakkistest.mockMsgAndBot = () => {
     mock.msg.addMessageObj = () => {
         mock.msg.message = {
             message_id: mock.messageId,
+            chat_id: mock.chatId,
             chat: {}
         };
     };
