@@ -81,6 +81,26 @@ stats.getGroupStats = function(group, hours) {
     });
 };
 
+stats.getGroupAlcoholSumStats = function(group, hours) {
+    const hoursAgo = utils.getDateMinusHours(hours);
+    log.debug('Fetching group stats from database');
+    return Promise.all([
+        pool.query('select drinks.userid, nick, sum from (select userid, sum(alcohol) as sum from users_drinks where users_drinks.created >= $2 group by userid) as drinks left outer join users on users.userid=drinks.userid left outer join users_in_groups on users_in_groups.userid=users.userid where users_in_groups.groupid=$1 order by sum desc limit 10', [group.groupId, hoursAgo]),
+        pool.query('select sum(alcohol) as sum, min(created) as created from users_in_groups left outer join users_drinks on users_drinks.userid=users_in_groups.userid and users_in_groups.groupid=$1 and users_drinks.created >= $2', [group.groupId, hoursAgo]),
+        pool.query('select sum(alcohol) from users_drinks')
+    ]).then((res) => {
+        return Promise.resolve({
+            top10UserStats: res[0].rows,
+            groupDrinkSum: res[1].rows[0],
+            drinkSum: res[2].rows[0].sum
+        });
+    }).catch((err) => {
+        log.error(err);
+        log.debug(err.stack);
+        return Promise.reject(err);
+    });
+};
+
 stats.getWappuStats = function(group, hours) {
     const hoursAgo = utils.getDateMinusHours(hours);
     log.debug('Fetching group stats from database');
