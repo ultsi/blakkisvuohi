@@ -246,10 +246,10 @@ Commands.call = function call(firstWord, msg, words) {
                     let phase = cmd.definition[context.phase];
                     if (context.phase === 'start' && !context.fetchVariable('_started')) {
                         context.storeVariable('_started', true);
-                        return context.sendMessage(phase.startMessage);
+                        return context.sendMessageObj(phase.startMessage);
                     }
                     if (!phase.validateInput(context, msg, words, user)) {
-                        return context.sendMessage(phase.errorMessage);
+                        return context.sendMessageObj(phase.errorMessage);
                     }
                     log.debug('Executing phase ' + context.phase + ' of usercmd ' + cmd.name);
                     return phase.onValidInput(context, msg, words, user)
@@ -261,7 +261,7 @@ Commands.call = function call(firstWord, msg, words) {
                             if (!context.hasEnded() && phase && phase.nextPhase) {
                                 context.toPhase(phase.nextPhase);
                                 let newPhase = cmd.definition[context.phase];
-                                return context.sendMessage(newPhase.startMessage);
+                                return context.sendMessageObj(newPhase.startMessage);
                             } else {
                                 return context.end();
                             }

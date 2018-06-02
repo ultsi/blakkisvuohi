@@ -144,7 +144,7 @@ describe('context.js', function() {
         it('should do nothing with a invalid message object', function(done) {
             const mocked = blakkistest.mockMsgAndBot();
             const context = new contexts.Context({}, mocked.msg);
-            context.sendMessage()
+            context.sendMessageObj()
                 .then(() => done(new Error(`should't execute`)))
                 .catch((err) => {
                     assert.equal(mocked.internals.sentChatId, false);
@@ -159,7 +159,7 @@ describe('context.js', function() {
             const context = new contexts.Context({}, mocked.msg);
             const text = 'sendMessage test 1';
             const privMsg = message.PrivateMessage(text);
-            context.sendMessage(privMsg);
+            context.sendMessageObj(privMsg);
             assert.equal(mocked.internals.sentChatId, mocked.privateId);
             assert.equal(mocked.internals.sentText, text);
         });
@@ -169,7 +169,7 @@ describe('context.js', function() {
             const context = new contexts.Context({}, mocked.msg);
             const text = 'sendMessage test 2';
             const chatMsg = message.ChatMessage(text);
-            context.sendMessage(chatMsg);
+            context.sendMessageObj(chatMsg);
             assert.equal(mocked.internals.sentChatId, mocked.chatId);
             assert.equal(mocked.internals.sentText, text);
         });
@@ -179,7 +179,7 @@ describe('context.js', function() {
             const context = new contexts.Context({}, mocked.msg);
             const text = 'sendMessage test 2';
             const photoMsg = message.Photo(text);
-            context.sendMessage(photoMsg);
+            context.sendMessageObj(photoMsg);
             assert.equal(mocked.internals.sentChatId, mocked.chatId);
             assert.equal(mocked.internals.sentStream, text);
         });

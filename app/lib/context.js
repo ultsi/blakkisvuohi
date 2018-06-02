@@ -36,21 +36,54 @@ contexts.Context = class {
             state: null,
             parent: null
         };
+        this.lastSentMessage = {};
+    }
+
+    sendMessage(to_id, text, options) {
+        options = options ? options : {};
+        this.lastSentMessage = {
+            to: to_id,
+            text: text,
+            options: options
+        };
+        return this.msg.sendMessage(to_id, text, options);
+    }
+
+    editMessage(message_id, chat_id, text, options) {
+        options = options ? options : {};
+        if (!message_id || !chat_id) {
+            log.error('message_id and chat_id not both supplied!');
+            return Promise.reject(new Error('message_id and chat_id not both supplied!'));
+        }
+        if (this.lastSentMessage.text === text && this.lastSentMessage.options === options) {
+            // do not send edit query if nothing to edit
+            return Promise.resolve();
+        }
+
+        options.message_id = message_id;
+        options.chat_id = chat_id;
+
+        this.lastSentMessage = {
+            to: chat_id,
+            edit_message_id: message_id,
+            text: text,
+            options: options
+        };
+
+        return this.msg.editMessageText(text, options);
     }
 
     privateReply(text) {
-        let self = this;
         let options = {
             'parse_mode': 'Markdown',
             'reply_markup': {
                 'remove_keyboard': true
             }
         };
-        return self.msg.sendMessage(self.msg.from.id, text, options);
+        return this.sendMessage(this.msg.from.id, text, options);
     }
 
     privateReplyWithKeyboard(text, keyboardButtons) {
-        let self = this;
         let options = {
             'parse_mode': 'Markdown',
             'reply_markup': {
@@ -58,12 +91,10 @@ contexts.Context = class {
                 'resize_keyboard': true
             }
         };
-        return self.msg.sendMessage(self.msg.from.id, text, options);
+        return this.sendMessage(this.msg.from.id, text, options);
     }
 
     inlineKeyboardMessage(text, inlineKeyboardButtons) {
-        let self = this;
-        log.debug('inlineKeyboardMessage', text, inlineKeyboardButtons);
         let options = {
             'parse_mode': 'Markdown',
             'reply_markup': {
@@ -71,46 +102,40 @@ contexts.Context = class {
                 'remove_keyboard': true
             }
         };
-        return self.msg.sendMessage(self.msg.from.id, text, options);
+        return this.sendMessage(this.msg.from.id, text, options);
     }
 
     inlineKeyboardEdit(text, inlineKeyboardButtons) {
-        let self = this;
-        let options = {
-            'message_id': self.msg.message.message_id,
-            'chat_id': self.msg.message.chat.id,
+        const options = {
             'parse_mode': 'Markdown',
             'reply_markup': {
                 'inline_keyboard': inlineKeyboardButtons,
                 'remove_keyboard': true
             }
         };
-        return self.msg.editMessageText(text, options);
+        return this.editMessage(this.msg.message.message_id, this.msg.message.chat_id, text, options);
     }
 
     chatReply(text) {
-        let self = this;
-        return self.msg.sendMessage(self.msg.chat.id, text);
+        return this.msg.sendMessage(this.msg.chat.id, text);
     }
 
     photoReply(stream, caption) {
-        let self = this;
-        return self.msg.sendPhoto(self.msg.chat.id, stream, {
+        return this.msg.sendPhoto(this.msg.chat.id, stream, {
             caption: caption
         });
     }
 
-    sendMessage(message) {
+    sendMessageObj(message) {
         if (!message || !message.type || !message.text) {
             return Promise.reject(new Error('invalid message object'));
         }
-        let self = this;
 
         if (message.type === 'photo') {
-            return self.msg.sendPhoto(self.msg.chat.id, message.buffer, message.options);
+            return this.msg.sendPhoto(this.msg.chat.id, message.buffer, message.options);
         } else {
-            let to = message.type === 'private_message' ? self.msg.from : self.msg.chat;
-            return self.msg.sendMessage(to.id, message.text, message.options);
+            let to = message.type === 'private_message' ? this.msg.from : this.msg.chat;
+            return this.msg.sendMessage(to.id, message.text, message.options);
         }
     }
 
