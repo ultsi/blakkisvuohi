@@ -55,8 +55,8 @@ contexts.Context = class {
             log.error('message_id and chat_id not both supplied!');
             return Promise.reject(new Error('message_id and chat_id not both supplied!'));
         }
-        if (this.lastSentMessage.text === text && this.lastSentMessage.options === options) {
-            // do not send edit query if nothing to edit
+        if (this.lastSentMessage.text === text) {
+            // do not send edit query if text wasn't edited
             return Promise.resolve();
         }
 
