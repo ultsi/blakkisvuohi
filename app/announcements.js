@@ -27,5 +27,6 @@ module.exports = [
     '15.4.2018\n\nLisätty uusi komento: /wappu - listaa Otaniemen termisestä wapusta eli 10.4. alkaen juodut juomat.',
     '18.4.2018\n\nLisätty uusi komento: /poistu - Poistu ryhmän kaikista listauksista, esim. promille- ja stats-listauksista.',
     '19.5.2018\n\nBläkkisvuohi v4 (beta) on täällä! Pääset käyttämään uutta Bläkkisvuohea /start-komennolla privaviestinä. Ei huolta - kaikki vanhat komennot toimivat vielä myös.',
-    '20.5.2018\n\nMonia parannuksia Bläkkisvuohi v4:seen eli /start -komentoon. Mm. pikanäppäimet viimeisimmille juomille ja paljon muuta!'
+    '20.5.2018\n\nMonia parannuksia Bläkkisvuohi v4:seen eli /start -komentoon. Mm. pikanäppäimet viimeisimmille juomille ja paljon muuta!',
+    '2.6.2018\n\n- Lisätty /stats2, joka listaa ryhmän top10-kuluttajat annoksissa!\n- Useita pieniä bugikorjauksia.'
 ];
