@@ -131,7 +131,21 @@ function sendErrorMessage(msg, err) {
     }
 }
 
-Commands.call = function call(firstWord, msg, words) {
+Commands.rawCall = function(msg) {
+    if (!msg.text) {
+        return Promise.resolve();
+    }
+    const words = msg.text.split(/\s/g);
+    const bot_suffix = words[0].match(/@(.+)/);
+    if (bot_suffix && bot_suffix[1] && bot_suffix[1].toLowerCase() !== settings.bot_username) {
+        return Promise.resolve();
+    }
+
+    const cmd_only = words[0].replace(/@.+/, '').toLowerCase(); // remove trailing @username
+    return Commands.call(cmd_only, msg, words, bot_suffix);
+}
+
+Commands.call = function call(firstWord, msg, words, bot_suffix) {
     const userId = msg.from.id;
 
     // Find out cmd and context first
@@ -194,7 +208,12 @@ Commands.call = function call(firstWord, msg, words) {
     return utils.hookNewRelic('command/' + cmd.name, function() {
         log.debug((msg.from.username || msg.from.first_name) + ': ' + firstWord);
         if (cmd.scope === Commands.SCOPE_PRIVATE && !context.isPrivateChat()) {
-            return Promise.reject(new errors.PrivateCommandUsedInChat(cmd.name));
+            if (bot_suffix) {
+                return Promise.reject(new errors.PrivateCommandUsedInChat(cmd.name));
+            } else {
+                // do not nag without proper @botname suffix in chats
+                return Promise.resolve();
+            }
         } else if (cmd.scope === Commands.SCOPE_CHAT && context.isPrivateChat()) {
             return Promise.reject(new errors.ChatCommandUsedInPrivate(cmd.name));
         } else if (context.phase === -1) {

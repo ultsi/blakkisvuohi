@@ -46,15 +46,10 @@ module.exports = function(bot) {
     // Initialize message hook to Command framework
     bot.on('message', (msg) => {
         syslog.debug(msg);
-        if (!msg.text) {
-            return;
-        }
-        const words = msg.text.split(/\s/g);
-        const cmd_only = words[0].replace(/@.+/, '').toLowerCase(); // remove trailing @username
 
         utils.attachMethods(msg, bot);
 
-        Commands.call(cmd_only, msg, words);
+        Commands.rawCall(msg);
     });
 
     bot.on('callback_query', (msg) => {

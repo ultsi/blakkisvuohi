@@ -27,5 +27,6 @@ module.exports = {
     'log_system_level': 'info',
     'log_db_level': 'info',
     'log_commands_level': 'info',
-    'admin_id': 62461364 // @ultsi
+    'admin_id': 62461364, // @ultsi,
+    bot_username: 'blakkisvuohibot'
 };
