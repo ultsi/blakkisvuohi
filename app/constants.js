@@ -43,6 +43,7 @@ constants.NELONEN = constants.calcAlcoholMilligrams(0.055, 0.33);
 constants.KALJA05 = constants.calcAlcoholMilligrams(0.047, 0.50);
 constants.SHOTTI40 = constants.calcAlcoholMilligrams(0.4, 0.04);
 constants.STANDARD_DRINK_GRAMS = 12.0;
+constants.SINGLE_DRINK_ALCOHOL_LIMIT = constants.calcAlcoholMilligrams(0.14, 0.75); // 14% sparkling wine bottle
 
 constants.emoji = {
     beer: '🍺',

@@ -25,6 +25,7 @@
 const log = require('loglevel').getLogger('commands');
 const Commands = require('../lib/commands.js');
 const utils = require('../lib/utils.js');
+const alcomath = require('../lib/alcomath.js');
 const constants = require('../constants.js');
 const strings = require('../strings.js');
 const message = require('../lib/message.js');
@@ -128,7 +129,7 @@ let command = {
         startMessage: message.PrivateMessage(strings.commands.juoma.self_define_vol),
         validateInput: (context, msg, words, user) => {
             let vol = utils.parseFloat(words[0]);
-            return utils.isValidFloat(vol) && vol > 0 || vol < 100;
+            return utils.isValidFloat(vol) && vol > 0 && vol < 100;
         },
         onValidInput: (context, msg, words, user) => {
             context.storeVariable('vol', utils.parseFloat(words[0]));
@@ -141,14 +142,17 @@ let command = {
     omacl: {
         startMessage: message.PrivateMessage(strings.commands.juoma.self_define_cl),
         validateInput: (context, msg, words, user) => {
-            let cl = parseInt(words[0]);
-            return utils.isValidInt(cl) && cl > 0 || cl < 250;
+            const cl = parseInt(words[0]);
+            return utils.isValidInt(cl) && cl > 0;
         },
         onValidInput: (context, msg, words, user) => {
             let vol = context.fetchVariable('vol');
             let cl = parseInt(words[0]);
             let mg = constants.calcAlcoholMilligrams(vol / 100.0, cl / 100.0);
             context.toPhase('END');
+            if (alcomath.isAlcoholAmountOutOfLimits(mg)) {
+                return context.privateReply(strings.commands.juoma.self_define_error_alcohol_limit)
+            }
             return saveDrink(context, user, mg, 'Oma juoma - ' + cl + 'cl ' + vol + '%');
         },
         nextPhase: 'omacl',

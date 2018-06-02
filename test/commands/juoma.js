@@ -55,7 +55,7 @@ describe('juoma.js', function() {
                 assert.equal(mocked.internals.sentText, strings.commands.juoma.choose_mild);
                 const option = mocked.internals.sentOptions.reply_markup.keyboard[0][0];
                 mocked.msg.text = option;
-                return Commands.call(option, mocked.msg, option);
+                return Commands.call(option, mocked.msg, [option]);
             })
             .then(() => {
                 assert.notEqual(mocked.internals.sentText.indexOf('‰'), -1);
@@ -88,7 +88,7 @@ describe('juoma.js', function() {
                 assert.equal(mocked.internals.sentText, strings.commands.juoma.choose_booze);
                 const option = mocked.internals.sentOptions.reply_markup.keyboard[0][0];
                 mocked.msg.text = option;
-                return Commands.call(option, mocked.msg, option);
+                return Commands.call(option, mocked.msg, [option]);
             })
             .then(() => {
                 assert.notEqual(mocked.internals.sentText.indexOf('‰'), -1);
@@ -121,13 +121,13 @@ describe('juoma.js', function() {
                 assert.equal(mocked.internals.sentText, strings.commands.juoma.self_define_vol);
                 const vol = '12';
                 mocked.msg.text = vol;
-                return Commands.call(vol, mocked.msg, vol);
+                return Commands.call(vol, mocked.msg, [vol]);
             })
             .then(() => {
                 assert.equal(mocked.internals.sentText, strings.commands.juoma.self_define_cl);
                 const cl = '33';
                 mocked.msg.text = cl;
-                return Commands.call(cl, mocked.msg, cl);
+                return Commands.call(cl, mocked.msg, [cl]);
             })
             .then(() => {
                 assert.notEqual(mocked.internals.sentText.indexOf('‰'), -1);
@@ -135,6 +135,141 @@ describe('juoma.js', function() {
             })
             .then((rows) => {
                 assert.equal(rows.length, 3); // 2 beers already in
+                return done();
+            })
+            .catch((err) => done(err));
+    });
+
+    it('Calling /juoma and and inputting own drink with invalid vol should error', function(done) {
+        const mocked = blakkistest.mockMsgAndBot();
+        const user = blakkistest.users[0];
+        mocked.msg.from.id = blakkistest.realIds[0];
+        mocked.msg.from.username = user.username;
+
+        user.getBooze()
+            .then((rows) => {
+                assert.equal(rows.length, 2); // 2 beers already in
+                return Commands.call('/juoma', mocked.msg, ['/juoma']);
+            })
+            .then(() => {
+                assert.equal(mocked.internals.sentText, strings.commands.juoma.start);
+                mocked.msg.text = strings.commands.juoma.milds;
+                return Commands.call(strings.commands.juoma.self_define, mocked.msg, [strings.commands.juoma.self_define]);
+            })
+            .then(() => {
+                assert.equal(mocked.internals.sentText, strings.commands.juoma.self_define_vol);
+                const vol = '-1';
+                mocked.msg.text = vol;
+                return Commands.call(vol, mocked.msg, [vol]);
+            })
+            .then(() => {
+                assert.equal(mocked.internals.sentText, strings.commands.juoma.self_define_vol);
+                const vol = '101';
+                mocked.msg.text = vol;
+                return Commands.call(vol, mocked.msg, [vol]);
+            })
+            .then(() => {
+                assert.equal(mocked.internals.sentText, strings.commands.juoma.self_define_vol);
+                const vol = 'a';
+                mocked.msg.text = vol;
+                return Commands.call(vol, mocked.msg, [vol]);
+            })
+            .then(() => {
+                assert.equal(mocked.internals.sentText, strings.commands.juoma.self_define_vol);
+                return user.getBooze();
+            })
+            .then((rows) => {
+                assert.equal(rows.length, 2); // 2 beers already in
+                return done();
+            })
+            .catch((err) => done(err));
+    });
+
+    it('Calling /juoma and and inputting own drink with invalid cl should error', function(done) {
+        const mocked = blakkistest.mockMsgAndBot();
+        const user = blakkistest.users[0];
+        mocked.msg.from.id = blakkistest.realIds[0];
+        mocked.msg.from.username = user.username;
+
+        user.getBooze()
+            .then((rows) => {
+                assert.equal(rows.length, 2); // 2 beers already in
+                return Commands.call('/juoma', mocked.msg, ['/juoma']);
+            })
+            .then(() => {
+                assert.equal(mocked.internals.sentText, strings.commands.juoma.start);
+                mocked.msg.text = strings.commands.juoma.milds;
+                return Commands.call(strings.commands.juoma.self_define, mocked.msg, [strings.commands.juoma.self_define]);
+            })
+            .then(() => {
+                assert.equal(mocked.internals.sentText, strings.commands.juoma.self_define_vol);
+                const vol = '1';
+                mocked.msg.text = vol;
+                return Commands.call(vol, mocked.msg, [vol]);
+            })
+            .then(() => {
+                assert.equal(mocked.internals.sentText, strings.commands.juoma.self_define_cl);
+                const cl = '-1';
+                mocked.msg.text = cl;
+                return Commands.call(cl, mocked.msg, [cl]);
+            })
+            .then(() => {
+                assert.equal(mocked.internals.sentText, strings.commands.juoma.self_define_cl);
+                const cl = 'a';
+                mocked.msg.text = cl;
+                return Commands.call(cl, mocked.msg, [cl]);
+            })
+            .then(() => {
+                assert.equal(mocked.internals.sentText, strings.commands.juoma.self_define_cl);
+                const cl = '0';
+                mocked.msg.text = cl;
+                return Commands.call(cl, mocked.msg, [cl]);
+            })
+            .then(() => {
+                assert.equal(mocked.internals.sentText, strings.commands.juoma.self_define_cl);
+                return user.getBooze();
+            })
+            .then((rows) => {
+                assert.equal(rows.length, 2); // 2 beers already in
+                return done();
+            })
+            .catch((err) => done(err));
+    });
+
+    it('Calling /juoma and and inputting own drink with too much alcohol should error', function(done) {
+        const mocked = blakkistest.mockMsgAndBot();
+        const user = blakkistest.users[0];
+        mocked.msg.from.id = blakkistest.realIds[0];
+        mocked.msg.from.username = user.username;
+
+        user.getBooze()
+            .then((rows) => {
+                assert.equal(rows.length, 2); // 2 beers already in
+                return Commands.call('/juoma', mocked.msg, ['/juoma']);
+            })
+            .then(() => {
+                assert.equal(mocked.internals.sentText, strings.commands.juoma.start);
+                mocked.msg.text = strings.commands.juoma.milds;
+                return Commands.call(strings.commands.juoma.self_define, mocked.msg, [strings.commands.juoma.self_define]);
+            })
+            .then(() => {
+                assert.equal(mocked.internals.sentText, strings.commands.juoma.self_define_vol);
+                const vol = '80';
+                mocked.msg.text = vol;
+                return Commands.call(vol, mocked.msg, [vol]);
+            })
+            .then(() => {
+                assert.equal(mocked.internals.sentText, strings.commands.juoma.self_define_cl);
+                const cl = '100';
+                mocked.msg.text = cl;
+                return Commands.call(cl, mocked.msg, [cl]);
+            })
+            .then(() => {
+                assert.equal(mocked.internals.sentText, strings.commands.juoma.self_define_error_alcohol_limit);
+                return user.getBooze();
+            })
+            .then((rows) => {
+                assert.equal(rows.length, 2); // 2 beers already in
                 return done();
             })
             .catch((err) => done(err));

@@ -145,7 +145,8 @@ strings.commands = {
                 help_example: 'Kirjoita juoma muodossa senttilitrat prosentit.\nEsim.\n33cl 5.1%, tai 33 5.1',
                 error_words: 'Liian paljon tai vähän sanoja. {help_example}',
                 error_cl: 'Senttilitrat ei ole numero. {help_example}',
-                error_vol: 'Prosentti ei ole numero. {help_example}'
+                error_vol: 'Prosentti ei ole numero. {help_example}',
+                error_exceeds: 'Absoluuttisen alkoholin määrä on liian suuri. Tarkista numerot.'
             },
             jalkikellotus: {
                 button_text: strings.emoji.stopwatch + ' Jälkikellotus',
@@ -155,6 +156,7 @@ strings.commands = {
                 input_drinks_start: 'Kirjoita juomia seuraavassa muodossa: \nSenttilitrat Tilavuusprosentti. \nEsimerkiksi: 33 4.7. \n\nErota eri juomat joko rivinvaihdolla, tai kirjoita useampi viesti.',
                 input_drinks_words_error: 'Sanojen määrän täytyy olla parillinen luku.',
                 input_drinks_drink_error: 'Tarkista juoman {drink} senttilitrat ja tilavuus!',
+                error_out_of_limits: 'Tarkista juoman {drink} senttilitrat ja tilavuus, nyt alkoholin määrä ylittää rajat!',
                 input_drinks_drinks_correct: '{drinks_amount} juoma(a) syötetty onnistuneesti. Voit jatkaa juomien lisäämistä tai painaa Tallenna tilastoidaksesi syötetyt juomat.\n\nNykyiset syötetyt juomat:\n{drinks_list}',
                 drink_name: 'Jälkikellotus',
                 save: {
@@ -296,6 +298,7 @@ strings.commands = {
         input_drinks_start: 'Kirjoita juomia seuraavassa muodossa: \nSenttilitrat Tilavuusprosentti. \nEsimerkiksi: 33 4.7. \n\nErota eri juomat joko rivinvaihdolla, tai kirjoita useampi viesti. Lopeta ja tallenna juomat kirjoittamalla stop.',
         input_drinks_error: 'Kirjoititko varmasti ohjeiden mukaisesti?',
         input_drinks_drink_error: 'Tarkista juoman {drink} senttilitrat ja tilavuus!',
+        error_out_of_limits: 'Tarkista juoman {drink} senttilitrat ja tilavuus, nyt alkoholin määrä ylittää rajat!',
         input_drinks_drink_saved: 'Juoma tallennettu!',
         drink_name: 'Jälkikellotus'
     },
@@ -313,6 +316,7 @@ strings.commands = {
         choose_booze: 'Valitse tiukka',
         self_define_vol: 'Syötä juoman tilavuusprosentti numerona. Esim: 12.5 (viini), 5.5 (lonkero), 60 (absintti)',
         self_define_cl: 'Syötä juoman määrä senttilitroissa numerona. Esim: 4 (shotti), 33 (tölkki), 70 (viinipullo)',
+        self_define_error_alcohol_limit: 'Absoluuttisen alkoholin määrä on liian suuri. Aloita uusiksi'
     },
 
     /* /kalja033 */

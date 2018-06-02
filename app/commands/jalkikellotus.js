@@ -29,6 +29,7 @@ const utils = require('../lib/utils.js');
 const message = require('../lib/message.js');
 const constants = require('../constants.js');
 const strings = require('../strings.js');
+const alcomath = require('../lib/alcomath.js');
 
 let command = {
 
@@ -62,10 +63,15 @@ let command = {
                 let name = strings.commands.jalkikellotus.drink_name;
                 let centiliters = utils.parseFloat(words[i]);
                 let vol = utils.parseFloat(words[i + 1]);
-                if (!utils.isValidFloat(centiliters) || !utils.isValidFloat(vol) ||
-                    centiliters < 0 || centiliters > 250 ||
-                    vol < 0 || vol >= 100) {
+                if (!utils.isValidFloat(centiliters) || !utils.isValidFloat(vol) || centiliters <= 0 || vol <= 0 || vol > 100) {
                     context.privateReply(strings.commands.jalkikellotus.input_drinks_drink_error.format({
+                        drink: i / 2 + 1
+                    }));
+                    return false;
+                }
+                const mg = constants.calcAlcoholMilligrams(vol / 100.0, centiliters / 100.0);
+                if (alcomath.isAlcoholAmountOutOfLimits(mg)) {
+                    context.privateReply(strings.commands.jalkikellotus.error_out_of_limits.format({
                         drink: i / 2 + 1
                     }));
                     return false;
