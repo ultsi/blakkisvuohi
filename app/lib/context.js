@@ -113,7 +113,7 @@ contexts.Context = class {
                 'remove_keyboard': true
             }
         };
-        return this.editMessage(this.msg.message.message_id, this.msg.message.chat_id, text, options);
+        return this.editMessage(this.msg.message.message_id, this.msg.message.chat.id, text, options);
     }
 
     chatReply(text) {
