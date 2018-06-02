@@ -207,7 +207,7 @@ alcomath.calculateEBACByHourFromDrinks = (user, drinks, lastNHours, predictNHour
 };
 
 alcomath.toStandardDrinks = (alcohol_grams, decimals) => {
-    decimals = decimals || 1;
+    decimals = decimals ? decimals : 1;
     return utils.roundTo(alcohol_grams / constants.STANDARD_DRINK_GRAMS, decimals);
 };
 
