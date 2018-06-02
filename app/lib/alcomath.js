@@ -210,3 +210,7 @@ alcomath.toStandardDrinks = (alcohol_grams, decimals) => {
     decimals = decimals || 1;
     return utils.roundTo(alcohol_grams / constants.STANDARD_DRINK_GRAMS, decimals);
 };
+
+alcomath.isAlcoholAmountOutOfLimits = (mg) => {
+    return mg > constants.SINGLE_DRINK_ALCOHOL_LIMIT;
+};

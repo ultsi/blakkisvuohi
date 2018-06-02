@@ -150,6 +150,11 @@ module.exports = {
             }
 
             const mg = constants.calcAlcoholMilligrams(vol / 100.0, cl / 100.0);
+
+            if (alcomath.isAlcoholAmountOutOfLimits(mg)) {
+                return Promise.resolve(str_juo.oma.error_exceeds);
+            }
+
             return user.drinkBoozeReturnEBAC(mg, `Oma juoma - ${cl}cl ${vol}%`)
                 .then((ebac) => {
                     const permilles = ebac.permilles;
@@ -197,7 +202,14 @@ module.exports = {
                         drink: i / 2 + 1
                     }));
                 }
+                const mg = constants.calcAlcoholMilligrams(vol / 100.0, centiliters / 100.0);
+                if (alcomath.isAlcoholAmountOutOfLimits(mg)) {
+                    return Promise.resolve(str_juo.jalkikellotus.error_out_of_limits.format({
+                        drink: i / 2 + 1
+                    }));
+                }
             }
+
 
             // Validated, save to drinks array
             const oldDrinksLength = drinks.length;
