@@ -101,17 +101,18 @@ describe('commands.js', function() {
                 }).catch((err) => done(err));
         });
 
-        it('a private command should not be able to be called in a chat and a private msg should be sent', function(done) {
+        it('a private command should not be able to be called in a chat and a private msg should not be sent if no identifier', function(done) {
             const mocked = blakkistest.mockMsgAndBot();
-            mocked.msg.from.id = blakkistest.realIds[0];
-            mocked.msg.chat.type = 'chat';
             Commands.register('/testusercommand2', 'help', Commands.SCOPE_PRIVATE, Commands.PRIVILEGE_USER, Commands.TYPE_SINGLE, () => {
                 done(new Error('private command /testusercommand2 used in chat'));
                 return Promise.resolve();
             });
-            Commands.call('/testusercommand2', mocked.msg, ['/testusercommand2'])
+            mocked.msg.from.id = blakkistest.realIds[0];
+            mocked.msg.chat.type = 'chat';
+            mocked.msg.text = '/testusercommand2';
+            Commands.rawCall(mocked.msg)
                 .then(() => {
-                    assert.equal(mocked.internals.sentText, strings.commands.blakkis.use_only_in_private);
+                    assert.equal(mocked.internals.sentText, false);
                     done();
                 }).catch((err) => done(err));
         });
