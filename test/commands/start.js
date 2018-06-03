@@ -99,11 +99,11 @@ describe('start.js', function() {
                 return Commands.call('', mocked.msg, '');
             })
             .then(() => {
-                assert.notEqual(mocked.internals.editText.indexOf('Bäää - Juo'), -1);
+                assert.notEqual(mocked.internals.editText.indexOf('Bäää - Miedot'), -1);
                 return user.getBooze();
             })
             .then((rows) => {
-                assert.notEqual(mocked.internals.editText.indexOf('Bäää - Juo'), -1);
+                assert.notEqual(mocked.internals.editText.indexOf('Bäää - Miedot'), -1);
                 assert.equal(rows.length, 3);
                 assert(rows.find(x => x.description === strings.emoji.beer + ' 33cl 4.7%'));
                 done();
@@ -143,11 +143,11 @@ describe('start.js', function() {
                 return Commands.call('', mocked.msg, '');
             })
             .then(() => {
-                assert.notEqual(mocked.internals.editText.indexOf('Bäää - Juo'), -1);
+                assert.notEqual(mocked.internals.editText.indexOf('Bäää - Miedot'), -1);
                 return user.getBooze();
             })
             .then((rows) => {
-                assert.notEqual(mocked.internals.editText.indexOf('Bäää - Juo'), -1);
+                assert.notEqual(mocked.internals.editText.indexOf('Bäää - Miedot'), -1);
                 assert.equal(rows.length, 3);
                 assert(rows.find(x => x.description === strings.emoji.beer + ' 33cl 4.7%'));
                 mocked.msg.data = '/start ' + strings.commands.blakkis.back;
@@ -161,7 +161,7 @@ describe('start.js', function() {
                 return Commands.call('', mocked.msg, '');
             })
             .then(() => {
-                assert.notEqual(mocked.internals.editText.indexOf('Bäää (beta)'), -1);
+                assert.notEqual(mocked.internals.editText.indexOf('Bäää - Bläkkisvuohi'), -1);
                 mocked.msg.data = '/start ' + strings.commands.blakkis.back;
                 mocked.msg.addMessageObj();
                 done();

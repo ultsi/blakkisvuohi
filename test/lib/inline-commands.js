@@ -39,6 +39,8 @@ const mockCmdName = '/testinline',
     mockCmdDefinition = {
         _text: 'root',
         _root: true,
+        _formHeader: () => Promise.resolve(''),
+        _headerTitle: 'header',
         button1: {
             _text: 'button1 pressed',
             dummy_child: {}
