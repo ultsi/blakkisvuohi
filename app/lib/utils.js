@@ -234,6 +234,25 @@ utils.decrypt = function(data) {
     return encrypted;
 };
 
+utils.groupDrinksByUser = (drinks) => {
+    let drinksByUser = {};
+    for (let i in drinks) {
+        const drink = drinks[i];
+        if (!drinksByUser[drink.userid]) {
+            drinksByUser[drink.userid] = {
+                userid: drink.userid,
+                nick: utils.decrypt(drink.nick),
+                weight: drink.weight,
+                gender: drink.gender,
+                height: drink.height,
+                drinks: []
+            };
+        }
+        drinksByUser[drink.userid].drinks.push(drink);
+    }
+    return drinksByUser;
+};
+
 /*
     Placeholder string format
     https://stackoverflow.com/questions/18405736/is-there-a-c-sharp-string-format-equivalent-in-javascript

@@ -209,6 +209,14 @@ class User {
                 return res.rows;
             });
     }
+
+    getDrinkTimesByUser() {
+        return pool.query('select users.userId, users.nick, users.weight, users.gender, users.height, coalesce(alcohol, 0) as alcohol, description, users_drinks.created from users_drinks join users on users.userId=users_drinks.userId where users.userId=$1 and users_drinks.created >= NOW() - \'2 day\'::INTERVAL order by users_drinks.created asc', [this.userId])
+            .then((res) => {
+                const drinksByUser = utils.groupDrinksByUser(res.rows);
+                return Promise.resolve(drinksByUser);
+            });
+    }
 }
 
 users.User = User;
