@@ -161,16 +161,25 @@ class InlineKeyboardCommand {
     }
 
     onText(context, user, msg, words) {
-        if (this.onTextAction) {
-            return this.onTextAction(context, user, msg, words)
-                .then((res) => {
-                    if (typeof res === 'string') {
-                        return context.inlineKeyboardMessage(res, context.state.getInlineKeyboard(context, user));
-                    } else if (typeof res === 'object') {
-                        return context.privateReplyWithKeyboard(res.text, res.keyboard);
-                    }
-                });
-        }
+        return this.formHeader(context, user)
+            .then((header) => {
+                if (this.onTextAction) {
+                    return this.onTextAction(context, user, msg, words)
+                        .then((res) => {
+                            if (typeof res === 'string') {
+                                const fullText = header.format({
+                                    title: this.headerTitle
+                                }) + res;
+                                return context.inlineKeyboardMessage(fullText, context.state.getInlineKeyboard(context, user));
+                            } else if (typeof res === 'object') {
+                                const fullText = header.format({
+                                    title: this.headerTitle
+                                }) + res.text;
+                                return context.privateReplyWithKeyboard(fullText, res.keyboard);
+                            }
+                        });
+                }
+            });
     }
 
     onExit(context, user, nextState) {

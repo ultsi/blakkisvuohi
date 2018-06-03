@@ -124,9 +124,9 @@ describe('alcomath.js', function() {
     });
 
     describe('calculateEBACFromDrinks', function() {
-        it('should return <0.001 permilles for drink.now', function() {
+        it('should return <0.01 permilles for drink.now', function() {
             const ebac = alcomath.calculateEBACFromDrinks(testUsers.male, drinks.now);
-            assert(ebac.permilles < 0.001);
+            assert(ebac.permilles < 0.01);
         });
 
         it('should return permilles30Min > permilles for drink.now', function() {
