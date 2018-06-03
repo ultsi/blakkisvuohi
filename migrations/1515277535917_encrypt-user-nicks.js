@@ -8,7 +8,7 @@
     (at your option) any later version.
 
     This program is distributed in the hope that it will be useful,
-    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    but WITHOUT ANY WARRANTY without even the implied warranty of
     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
     GNU General Public License for more details.
 
@@ -16,69 +16,69 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-'use strict';
-const pg = require('pg');
+'use strict'
+const pg = require('pg')
 const pool = new pg.Pool({
-    connectionString: process.env.DATABASE_URL
-});
-const utils = require('../app/lib/utils.js');
+    connectionString: process.env.DATABASE_URL,
+})
+const utils = require('../src/lib/utils.js')
 
 exports.up = () => {
     return pool.query('select userid, nick from users')
         .then((res) => {
             try {
-                const rows = res.rows;
+                const rows = res.rows
                 if (rows.length > 0) {
-                    const valuePairs = rows.map((u, key) => '($' + (2 * key + 1) + ', $' + (2 * key + 2) + ')');
+                    const valuePairs = rows.map((u, key) => '($' + (2 * key + 1) + ', $' + (2 * key + 2) + ')')
                     const params = rows.reduce((arr, u) => {
-                        arr.push(u.userid);
-                        arr.push(utils.encrypt(u.nick));
-                        return arr;
-                    }, []);
-                    const queryStr = 'UPDATE users set nick = u.value from (VALUES ' + valuePairs.join(', ') + ') as u(id, value) WHERE u.id = users.userid';
+                        arr.push(u.userid)
+                        arr.push(utils.encrypt(u.nick))
+                        return arr
+                    }, [])
+                    const queryStr = 'UPDATE users set nick = u.value from (VALUES ' + valuePairs.join(', ') + ') as u(id, value) WHERE u.id = users.userid'
                     return pool.query(queryStr, params)
                         .then(() => {
-                            return Promise.resolve();
+                            return Promise.resolve()
                         }).catch((err) => {
-                            console.log(err);
-                            return Promise.reject(err);
-                        });
+                            console.log(err)
+                            return Promise.reject(err)
+                        })
                 } else {
-                    return Promise.resolve();
+                    return Promise.resolve()
                 }
             } catch (err) {
-                console.log(err);
-                return Promise.reject(err);
+                console.log(err)
+                return Promise.reject(err)
             }
         }).catch((err) => {
-            console.log(err);
-            return Promise.reject(err);
-        });
-};
+            console.log(err)
+            return Promise.reject(err)
+        })
+}
 
 exports.down = () => {
     return pool.query('select userid, nick from users')
         .then((res) => {
             try {
-                const rows = res.rows;
-                const valuePairs = rows.map((u, key) => '($' + (2 * key + 1) + ', $' + (2 * key + 2) + ')');
+                const rows = res.rows
+                const valuePairs = rows.map((u, key) => '($' + (2 * key + 1) + ', $' + (2 * key + 2) + ')')
                 const params = rows.reduce((arr, u) => {
-                    arr.push(u.userid);
-                    arr.push(utils.decrypt(u.nick));
-                    return arr;
-                }, []);
-                const queryStr = 'UPDATE users set nick = u.value from (VALUES ' + valuePairs.join(', ') + ') as u(id, value) WHERE u.id = users.userid';
+                    arr.push(u.userid)
+                    arr.push(utils.decrypt(u.nick))
+                    return arr
+                }, [])
+                const queryStr = 'UPDATE users set nick = u.value from (VALUES ' + valuePairs.join(', ') + ') as u(id, value) WHERE u.id = users.userid'
                 return pool.query(queryStr, params)
                     .then(() => {
-                        return Promise.resolve();
+                        return Promise.resolve()
                     }).catch((err) => {
-                        return Promise.reject(err);
-                    });
+                        return Promise.reject(err)
+                    })
             } catch (err) {
-                console.log(err);
-                return Promise.reject(err);
+                console.log(err)
+                return Promise.reject(err)
             }
         }).catch((err) => {
-            return Promise.reject(err);
-        });
-};
+            return Promise.reject(err)
+        })
+}

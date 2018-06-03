@@ -8,7 +8,7 @@
     (at your option) any later version.
 
     This program is distributed in the hope that it will be useful,
-    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    but WITHOUT ANY WARRANTY without even the implied warranty of
     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
     GNU General Public License for more details.
 
@@ -23,39 +23,39 @@
 
 /* globals describe, it */
 
-'use strict';
-const linechart = require('../../app/lib/linechart.js');
+'use strict'
+import * as linechart from '../../src/lib/linechart'
 
 
-const assert = require('assert');
+const assert = require('assert')
 
 describe('linegraph.js', function() {
     describe('linechart.getLineGraphBuffer()', function() {
-        this.slow(200);
+        this.slow(200)
         it('should return a png buffer with empty data', function(done) {
             linechart.getLineGraphBuffer([], '')
                 .then((buffer) => {
-                    assert.notEqual(buffer, undefined);
-                    assert.equal(typeof buffer, 'object');
-                    assert(buffer instanceof Buffer);
-                    done();
+                    assert.notEqual(buffer, undefined)
+                    assert.equal(typeof buffer, 'object')
+                    assert(buffer instanceof Buffer)
+                    done()
                 })
                 .catch((err) => {
-                    done(err);
-                });
-        });
+                    done(err)
+                })
+        })
 
         it('should return a png buffer with some data and text', function(done) {
             linechart.getLineGraphBuffer([1, 2, 3, 4, 5, 6], 'test text')
                 .then((buffer) => {
-                    assert.notEqual(buffer, undefined);
-                    assert.equal(typeof buffer, 'object');
-                    assert(buffer instanceof Buffer);
-                    done();
+                    assert.notEqual(buffer, undefined)
+                    assert.equal(typeof buffer, 'object')
+                    assert(buffer instanceof Buffer)
+                    done()
                 })
                 .catch((err) => {
-                    done(err);
-                });
-        });
-    });
-});
+                    done(err)
+                })
+        })
+    })
+})

@@ -8,7 +8,7 @@
     (at your option) any later version.
 
     This program is distributed in the hope that it will be useful,
-    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    but WITHOUT ANY WARRANTY without even the implied warranty of
     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
     GNU General Public License for more details.
 
@@ -16,16 +16,16 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-'use strict';
+'use strict'
 
 exports.up = (pgm) => {
-    pgm.sql('create extension if not exists pgcrypto');
-    pgm.sql('update users set userid=encode(digest(userid || \'\', \'sha256\'), \'hex\')');
-    pgm.sql('update users_drinks set userid=encode(digest(userid || \'\', \'sha256\'), \'hex\')');
-    pgm.sql('update users_in_groups set userid=encode(digest(userid || \'\', \'sha256\'), \'hex\')');
-    pgm.sql('update users_in_groups set groupid=encode(digest(groupid || \'\', \'sha256\'), \'hex\')');
-};
+    pgm.sql('create extension if not exists pgcrypto')
+    pgm.sql('update users set userid=encode(digest(userid || \'\', \'sha256\'), \'hex\')')
+    pgm.sql('update users_drinks set userid=encode(digest(userid || \'\', \'sha256\'), \'hex\')')
+    pgm.sql('update users_in_groups set userid=encode(digest(userid || \'\', \'sha256\'), \'hex\')')
+    pgm.sql('update users_in_groups set groupid=encode(digest(groupid || \'\', \'sha256\'), \'hex\')')
+}
 
 exports.down = (pgm) => {
     // no downs
-};
+}

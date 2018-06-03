@@ -8,7 +8,7 @@
     (at your option) any later version.
 
     This program is distributed in the hope that it will be useful,
-    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    but WITHOUT ANY WARRANTY without even the implied warranty of
     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
     GNU General Public License for more details.
 
@@ -23,33 +23,33 @@
 
 /* globals describe, it, beforeEach */
 
-'use strict';
-require('../../app/commands/kalja033.js');
+'use strict'
+require('../../src/commands/kalja033.js')
 
-const assert = require('assert');
-const blakkistest = require('../blakkistest.js');
-const Commands = require('../../app/lib/commands.js');
+const assert = require('assert')
+import * as blakkistest from '../blakkistest'
+import * as Commands from '../../src/lib/commands'
 
 describe('kalja033.js', function() {
-    beforeEach(blakkistest.resetDbWithTestUsersAndGroupsAndDrinks);
+    beforeEach(blakkistest.resetDbWithTestUsersAndGroupsAndDrinks)
     it('Calling /kalja033 should add a drink to db for the user and return ebac', function(done) {
-        const mocked = blakkistest.mockMsgAndBot();
-        const user = blakkistest.users[0];
-        mocked.msg.from.id = blakkistest.realIds[0];
+        const mocked = blakkistest.mockMsgAndBot()
+        const user = blakkistest.users[0]
+        mocked.msg.from.id = blakkistest.realIds[0]
 
         user.getBooze()
             .then((rows) => {
-                assert.equal(rows.length, 2);
-                assert(!rows.find(x => x.description === '/kalja033'));
-                return Commands.call('/kalja033', mocked.msg, ['/kalja033']);
+                assert.equal(rows.length, 2)
+                assert(!rows.find(x => x.description === '/kalja033'))
+                return Commands.call('/kalja033', mocked.msg, ['/kalja033'])
             })
             .then(() => user.getBooze())
             .then((rows) => {
-                assert.equal(rows.length, 3);
-                assert(rows.find(x => x.description === '/kalja033'));
-                assert.notEqual(mocked.internals.sentText.match('‰'), null);
-                done();
+                assert.equal(rows.length, 3)
+                assert(rows.find(x => x.description === '/kalja033'))
+                assert.notEqual(mocked.internals.sentText.match('‰'), null)
+                done()
             })
-            .catch((err) => done(err));
-    });
-});
+            .catch((err) => done(err))
+    })
+})

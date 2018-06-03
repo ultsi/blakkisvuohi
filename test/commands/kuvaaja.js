@@ -8,7 +8,7 @@
     (at your option) any later version.
 
     This program is distributed in the hope that it will be useful,
-    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    but WITHOUT ANY WARRANTY without even the implied warranty of
     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
     GNU General Public License for more details.
 
@@ -23,26 +23,26 @@
 
 /* globals describe, it, beforeEach */
 
-'use strict';
-require('../../app/commands/kuvaaja.js');
+'use strict'
+require('../../src/commands/kuvaaja.js')
 
-const assert = require('assert');
-const blakkistest = require('../blakkistest.js');
-const Commands = require('../../app/lib/commands.js');
+const assert = require('assert')
+import * as blakkistest from '../blakkistest'
+import * as Commands from '../../src/lib/commands'
 
 describe('kuvaaja.js', function() {
-    beforeEach(blakkistest.resetDbWithTestUsersAndGroupsAndDrinks);
+    beforeEach(blakkistest.resetDbWithTestUsersAndGroupsAndDrinks)
     it('Calling /kuvaaja should sent a photo to the group', function(done) {
-        const mocked = blakkistest.mockMsgAndBot();
-        mocked.msg.from.id = blakkistest.realIds[0];
-        mocked.msg.chat.type = 'chat';
-        mocked.msg.chat.id = blakkistest.groups[0].realId;
+        const mocked = blakkistest.mockMsgAndBot()
+        mocked.msg.from.id = blakkistest.realIds[0]
+        mocked.msg.chat.type = 'chat'
+        mocked.msg.chat.id = blakkistest.groups[0].realId
         Commands.call('/kuvaaja', mocked.msg, ['/kuvaaja'])
             .then(() => {
-                assert.equal(mocked.internals.sentChatId, mocked.msg.chat.id);
-                assert.notEqual(mocked.internals.sentStream, false);
-                done();
+                assert.equal(mocked.internals.sentChatId, mocked.msg.chat.id)
+                assert.notEqual(mocked.internals.sentStream, false)
+                done()
             })
-            .catch((err) => done(err));
-    });
-});
+            .catch((err) => done(err))
+    })
+})

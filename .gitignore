@@ -4,3 +4,4 @@ node_modules/*
 .env_docker
 env.cmd
 .nyc_output/
+dist/

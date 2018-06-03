@@ -8,7 +8,7 @@
     (at your option) any later version.
 
     This program is distributed in the hope that it will be useful,
-    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    but WITHOUT ANY WARRANTY without even the implied warranty of
     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
     GNU General Public License for more details.
 
@@ -23,51 +23,51 @@
 
 /* globals describe, it, beforeEach */
 
-'use strict';
-require('../../app/commands/stats.js');
+'use strict'
+require('../../src/commands/stats.js')
 
-const assert = require('assert');
-const blakkistest = require('../blakkistest.js');
-const Commands = require('../../app/lib/commands.js');
+const assert = require('assert')
+import * as blakkistest from '../blakkistest'
+import * as Commands from '../../src/lib/commands'
 
 describe('stats.js', function() {
-    beforeEach(blakkistest.resetDbWithTestUsersAndGroupsAndDrinks);
+    beforeEach(blakkistest.resetDbWithTestUsersAndGroupsAndDrinks)
     it('Calling /stats in group should list basic info with top10Users', function(done) {
-        const mocked = blakkistest.mockMsgAndBot();
-        mocked.msg.from.id = blakkistest.realIds[0];
-        mocked.msg.chat.type = 'chat';
-        mocked.msg.chat.id = blakkistest.groups[0].realId;
+        const mocked = blakkistest.mockMsgAndBot()
+        mocked.msg.from.id = blakkistest.realIds[0]
+        mocked.msg.chat.type = 'chat'
+        mocked.msg.chat.id = blakkistest.groups[0].realId
         Commands.call('/stats', mocked.msg, ['/stats'])
             .then(() => {
-                assert.equal(mocked.internals.sentChatId, mocked.msg.chat.id);
-                assert.equal(mocked.internals.sentText.match(/\n/g).length, 7); // Tilastoja\n\nStats...\n\nTop10 tilastot:\n\n1\n2
-                done();
+                assert.equal(mocked.internals.sentChatId, mocked.msg.chat.id)
+                assert.equal(mocked.internals.sentText.match(/\n/g).length, 7) // Tilastoja\n\nStats...\n\nTop10 tilastot:\n\n1\n2
+                done()
             })
-            .catch((err) => done(err));
-    });
+            .catch((err) => done(err))
+    })
 
     it('Calling /stats in an empty group should list basic info with no top10Users', function(done) {
-        const mocked = blakkistest.mockMsgAndBot();
-        mocked.msg.from.id = blakkistest.realIds[0];
-        mocked.msg.chat.type = 'chat';
+        const mocked = blakkistest.mockMsgAndBot()
+        mocked.msg.from.id = blakkistest.realIds[0]
+        mocked.msg.chat.type = 'chat'
         Commands.call('/stats', mocked.msg, ['/stats'])
             .then(() => {
-                assert.equal(mocked.internals.sentChatId, mocked.msg.chat.id);
-                assert.equal(mocked.internals.sentText.match(/\n/g).length, 6); // Tilastoja\n\nStats...\n\nTop10 tilastot:\n\n
-                done();
+                assert.equal(mocked.internals.sentChatId, mocked.msg.chat.id)
+                assert.equal(mocked.internals.sentText.match(/\n/g).length, 6) // Tilastoja\n\nStats...\n\nTop10 tilastot:\n\n
+                done()
             })
-            .catch((err) => done(err));
-    });
+            .catch((err) => done(err))
+    })
 
     it('Calling /stats privately should list basic info about user', function(done) {
-        const mocked = blakkistest.mockMsgAndBot();
-        mocked.msg.from.id = blakkistest.realIds[0];
+        const mocked = blakkistest.mockMsgAndBot()
+        mocked.msg.from.id = blakkistest.realIds[0]
         Commands.call('/stats', mocked.msg, ['/stats'])
             .then(() => {
-                assert.equal(mocked.internals.sentChatId, mocked.msg.from.id);
-                assert.equal(mocked.internals.sentText.match(/\n/g), null); // Tilastoja\n\nStats...\n\nTop10 tilastot:\n\n
-                done();
+                assert.equal(mocked.internals.sentChatId, mocked.msg.from.id)
+                assert.equal(mocked.internals.sentText.match(/\n/g), null) // Tilastoja\n\nStats...\n\nTop10 tilastot:\n\n
+                done()
             })
-            .catch((err) => done(err));
-    });
-});
+            .catch((err) => done(err))
+    })
+})

@@ -8,7 +8,7 @@
     (at your option) any later version.
 
     This program is distributed in the hope that it will be useful,
-    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    but WITHOUT ANY WARRANTY without even the implied warranty of
     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
     GNU General Public License for more details.
 
@@ -23,54 +23,54 @@
 
 /* globals describe, it, beforeEach */
 
-'use strict';
-require('../../app/commands/annokset.js');
+'use strict'
+require('../../src/commands/annokset.js')
 
-const assert = require('assert');
-const blakkistest = require('../blakkistest.js');
-const Commands = require('../../app/lib/commands.js');
-const strings = require('../../app/strings.js');
+const assert = require('assert')
+import * as blakkistest from '../blakkistest'
+import * as Commands from '../../src/lib/commands'
+import * as strings from '../../src/strings'
 
 describe('annokset.js', function() {
-    beforeEach(blakkistest.resetDbWithTestUsersAndGroupsAndDrinks);
+    beforeEach(blakkistest.resetDbWithTestUsersAndGroupsAndDrinks)
     it('Calling /annokset in group should list 2 users with drinks in group with group title', function(done) {
-        const mocked = blakkistest.mockMsgAndBot();
-        mocked.msg.from.id = blakkistest.realIds[0];
-        mocked.msg.chat.type = 'chat';
-        mocked.msg.chat.id = blakkistest.groups[0].realId;
+        const mocked = blakkistest.mockMsgAndBot()
+        mocked.msg.from.id = blakkistest.realIds[0]
+        mocked.msg.chat.type = 'chat'
+        mocked.msg.chat.id = blakkistest.groups[0].realId
         Commands.call('/annokset', mocked.msg, ['/annokset'])
             .then(() => {
-                assert.equal(mocked.internals.sentChatId, mocked.msg.chat.id);
-                assert.notEqual(mocked.internals.sentText.indexOf(strings.commands.annokset.text_group.unformat()), -1);
-                assert.equal(mocked.internals.sentText.match(/\n/g).length, 3); // 1 header line + 2 breaks + 2 users separated by 1 linebreak
-                done();
+                assert.equal(mocked.internals.sentChatId, mocked.msg.chat.id)
+                assert.notEqual(mocked.internals.sentText.indexOf(strings.commands.annokset.text_group.unformat()), -1)
+                assert.equal(mocked.internals.sentText.match(/\n/g).length, 3) // 1 header line + 2 breaks + 2 users separated by 1 linebreak
+                done()
             })
-            .catch((err) => done(err));
-    });
+            .catch((err) => done(err))
+    })
 
     it('Calling /annokset in an empty group should list no users', function(done) {
-        const mocked = blakkistest.mockMsgAndBot();
-        mocked.msg.from.id = blakkistest.realIds[0];
-        mocked.msg.chat.type = 'chat';
+        const mocked = blakkistest.mockMsgAndBot()
+        mocked.msg.from.id = blakkistest.realIds[0]
+        mocked.msg.chat.type = 'chat'
         Commands.call('/annokset', mocked.msg, ['/annokset'])
             .then(() => {
-                assert.equal(mocked.internals.sentChatId, mocked.msg.chat.id);
-                assert.notEqual(mocked.internals.sentText.indexOf(strings.commands.annokset.text_group.unformat()), -1);
-                assert.equal(mocked.internals.sentText.match(/\n/g).length, 3); // 1 header line + 2 breaks + 0 users
-                done();
+                assert.equal(mocked.internals.sentChatId, mocked.msg.chat.id)
+                assert.notEqual(mocked.internals.sentText.indexOf(strings.commands.annokset.text_group.unformat()), -1)
+                assert.equal(mocked.internals.sentText.match(/\n/g).length, 3) // 1 header line + 2 breaks + 0 users
+                done()
             })
-            .catch((err) => done(err));
-    });
+            .catch((err) => done(err))
+    })
 
     it('Calling /annokset privately should list user\'s own permilles', function(done) {
-        const mocked = blakkistest.mockMsgAndBot();
-        mocked.msg.from.id = blakkistest.realIds[0];
+        const mocked = blakkistest.mockMsgAndBot()
+        mocked.msg.from.id = blakkistest.realIds[0]
         Commands.call('/annokset', mocked.msg, ['/annokset'])
             .then(() => {
-                assert.equal(mocked.internals.sentChatId, mocked.msg.from.id); // 1 header line + 2 breaks + 0 users
-                assert.notEqual(mocked.internals.sentText.match('‰'), null);
-                done();
+                assert.equal(mocked.internals.sentChatId, mocked.msg.from.id) // 1 header line + 2 breaks + 0 users
+                assert.notEqual(mocked.internals.sentText.match('‰'), null)
+                done()
             })
-            .catch((err) => done(err));
-    });
-});
+            .catch((err) => done(err))
+    })
+})

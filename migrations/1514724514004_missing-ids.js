@@ -8,7 +8,7 @@
     (at your option) any later version.
 
     This program is distributed in the hope that it will be useful,
-    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    but WITHOUT ANY WARRANTY without even the implied warranty of
     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
     GNU General Public License for more details.
 
@@ -16,7 +16,7 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-'use strict';
+'use strict'
 
 exports.up = (pgm) => {
     pgm.addColumns('users_drinks', {
@@ -25,10 +25,10 @@ exports.up = (pgm) => {
             notNull: true,
             unique: true
         }
-    });
-    pgm.dropConstraint('users_drinks', 'users_drinks_pkey');
-};
+    })
+    pgm.dropConstraint('users_drinks', 'users_drinks_pkey')
+}
 
 exports.down = (pgm) => {
-    pgm.dropColumns('users_drinks', ['id']);
-};
+    pgm.dropColumns('users_drinks', ['id'])
+}

@@ -8,7 +8,7 @@
     (at your option) any later version.
 
     This program is distributed in the hope that it will be useful,
-    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    but WITHOUT ANY WARRANTY without even the implied warranty of
     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
     GNU General Public License for more details.
 
@@ -23,39 +23,39 @@
 
 /* globals describe, it, beforeEach */
 
-'use strict';
-require('../../app/commands/moro.js');
+'use strict'
+require('../../src/commands/moro.js')
 
-const assert = require('assert');
-const blakkistest = require('../blakkistest.js');
-const Commands = require('../../app/lib/commands.js');
-const groups = require('../../app/db/groups.js');
-const strings = require('../../app/strings.js');
+const assert = require('assert')
+import * as blakkistest from '../blakkistest'
+import * as Commands from '../../src/lib/commands'
+import * as groups from '../../src/db/groups'
+import * as strings from '../../src/strings'
 
 describe('moro.js', function() {
-    beforeEach(blakkistest.resetDbWithTestUsersAndGroupsAndDrinks);
+    beforeEach(blakkistest.resetDbWithTestUsersAndGroupsAndDrinks)
     it('Calling /moro should join the user to the group', function(done) {
-        const mocked = blakkistest.mockMsgAndBot();
-        const groupId = mocked.chatId + 1;
-        const group = new groups.Group(groupId);
-        mocked.msg.from.id = blakkistest.realIds[0];
-        mocked.msg.chat.id = groupId;
-        mocked.msg.chat.type = 'chat';
+        const mocked = blakkistest.mockMsgAndBot()
+        const groupId = mocked.chatId + 1
+        const group = new groups.Group(groupId)
+        mocked.msg.from.id = blakkistest.realIds[0]
+        mocked.msg.chat.id = groupId
+        mocked.msg.chat.type = 'chat'
 
         group.getDrinkSum()
             .then((res) => {
-                assert.equal(res.sum, 0);
-                return Commands.call('/moro', mocked.msg, ['/moro']);
+                assert.equal(res.sum, 0)
+                return Commands.call('/moro', mocked.msg, ['/moro'])
             })
             .then(() => group.getDrinkSum())
             .then((res) => {
-                assert.equal(mocked.internals.sentChatId, mocked.msg.chat.id);
+                assert.equal(mocked.internals.sentChatId, mocked.msg.chat.id)
                 assert.equal(mocked.internals.sentText, strings.commands.moro.join_text.format({
                     chat_title: mocked.msg.chat.title
-                }));
-                assert.equal(res.sum, 12347 * 2);
-                done();
+                }))
+                assert.equal(res.sum, 12347 * 2)
+                done()
             })
-            .catch((err) => done(err));
-    });
-});
+            .catch((err) => done(err))
+    })
+})

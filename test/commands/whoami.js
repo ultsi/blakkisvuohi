@@ -8,7 +8,7 @@
     (at your option) any later version.
 
     This program is distributed in the hope that it will be useful,
-    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    but WITHOUT ANY WARRANTY without even the implied warranty of
     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
     GNU General Public License for more details.
 
@@ -23,29 +23,29 @@
 
 /* globals describe, it, beforeEach */
 
-'use strict';
-require('../../app/commands/whoami.js');
+'use strict'
+require('../../src/commands/whoami.js')
 
-const assert = require('assert');
-const blakkistest = require('../blakkistest.js');
-const Commands = require('../../app/lib/commands.js');
+const assert = require('assert')
+import * as blakkistest from '../blakkistest'
+import * as Commands from '../../src/lib/commands'
 
 describe('whoami.js', function() {
-    beforeEach(blakkistest.resetDbWithTestUsersAndGroupsAndDrinks);
+    beforeEach(blakkistest.resetDbWithTestUsersAndGroupsAndDrinks)
     it('Calling /whoami should print user\'s data', function(done) {
-        const mocked = blakkistest.mockMsgAndBot();
-        const user = blakkistest.users[0];
-        mocked.msg.from.id = blakkistest.realIds[0];
+        const mocked = blakkistest.mockMsgAndBot()
+        const user = blakkistest.users[0]
+        mocked.msg.from.id = blakkistest.realIds[0]
         Commands.call('/whoami', mocked.msg, ['/whoami'])
             .then(() => {
-                assert.equal(mocked.internals.sentChatId, mocked.msg.from.id);
-                assert.notEqual(mocked.internals.sentText.match(user.userId), null);
-                assert.notEqual(mocked.internals.sentText.match(user.username), null);
-                assert.notEqual(mocked.internals.sentText.match(user.weight), null);
-                assert.notEqual(mocked.internals.sentText.match(user.height), null);
-                assert.notEqual(mocked.internals.sentText.match(user.gender), null);
-                done();
+                assert.equal(mocked.internals.sentChatId, mocked.msg.from.id)
+                assert.notEqual(mocked.internals.sentText.match(user.userId), null)
+                assert.notEqual(mocked.internals.sentText.match(user.username), null)
+                assert.notEqual(mocked.internals.sentText.match(user.weight), null)
+                assert.notEqual(mocked.internals.sentText.match(user.height), null)
+                assert.notEqual(mocked.internals.sentText.match(user.gender), null)
+                done()
             })
-            .catch((err) => done(err));
-    });
-});
+            .catch((err) => done(err))
+    })
+})

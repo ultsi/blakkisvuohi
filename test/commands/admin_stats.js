@@ -8,7 +8,7 @@
     (at your option) any later version.
 
     This program is distributed in the hope that it will be useful,
-    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    but WITHOUT ANY WARRANTY without even the implied warranty of
     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
     GNU General Public License for more details.
 
@@ -23,23 +23,23 @@
 
 /* globals describe, it */
 
-'use strict';
-require('../../app/commands/admin_stats.js');
+'use strict'
+require('../../src/commands/admin_stats.js')
 
-const assert = require('assert');
-const blakkistest = require('../blakkistest.js');
-const Commands = require('../../app/lib/commands.js');
-const settings = require('../../app/settings.js');
+const assert = require('assert')
+import * as blakkistest from '../blakkistest'
+import * as Commands from '../../src/lib/commands'
+import * as settings from '../../src/settings'
 
 describe('admin_stats.js', function() {
     it('Calling /admin_stats should print global stats', function(done) {
-        const mocked = blakkistest.mockMsgAndBot();
-        mocked.msg.from.id = settings.admin_id;
+        const mocked = blakkistest.mockMsgAndBot()
+        mocked.msg.from.id = settings.admin_id
         Commands.call('/admin_stats', mocked.msg, ['/admin_stats'])
             .then(() => {
-                assert.equal(mocked.internals.sentChatId, mocked.msg.from.id);
-                assert(mocked.internals.sentText.match(/\n/g).length > 4);
-                done();
-            }).catch((err) => done(err));
-    });
-});
+                assert.equal(mocked.internals.sentChatId, mocked.msg.from.id)
+                assert(mocked.internals.sentText.match(/\n/g).length > 4)
+                done()
+            }).catch((err) => done(err))
+    })
+})

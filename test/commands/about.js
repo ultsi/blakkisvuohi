@@ -8,7 +8,7 @@
     (at your option) any later version.
 
     This program is distributed in the hope that it will be useful,
-    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    but WITHOUT ANY WARRANTY without even the implied warranty of
     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
     GNU General Public License for more details.
 
@@ -23,22 +23,22 @@
 
 /* globals describe, it */
 
-'use strict';
-require('../../app/commands/about.js');
+'use strict'
+require('../../src/commands/about.js')
 
-const assert = require('assert');
-const blakkistest = require('../blakkistest.js');
-const Commands = require('../../app/lib/commands.js');
-const strings = require('../../app/strings.js');
+const assert = require('assert')
+import * as blakkistest from '../blakkistest'
+import * as Commands from '../../src/lib/commands'
+import * as strings from '../../src/strings'
 
 describe('about.js', function() {
     it('Calling /about should print about text', function(done) {
-        const mocked = blakkistest.mockMsgAndBot();
+        const mocked = blakkistest.mockMsgAndBot()
         Commands.call('/about', mocked.msg, ['/about'])
             .then(() => {
-                assert.equal(mocked.internals.sentChatId, mocked.privateId);
-                assert.equal(mocked.internals.sentText, strings.commands.about.text);
-                done();
-            }).catch((err) => done(err));
-    });
-});
+                assert.equal(mocked.internals.sentChatId, mocked.privateId)
+                assert.equal(mocked.internals.sentText, strings.commands.about.text)
+                done()
+            }).catch((err) => done(err))
+    })
+})

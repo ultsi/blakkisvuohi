@@ -8,7 +8,7 @@
     (at your option) any later version.
 
     This program is distributed in the hope that it will be useful,
-    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    but WITHOUT ANY WARRANTY without even the implied warranty of
     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
     GNU General Public License for more details.
 
@@ -23,148 +23,148 @@
 
 /* globals describe, it, beforeEach */
 
-'use strict';
+'use strict'
 
-const blakkistest = require('../blakkistest.js');
-const assert = require('assert');
-const groups = require('../../app/db/groups.js');
-const utils = require('../../app/lib/utils.js');
+import * as blakkistest from '../blakkistest'
+const assert = require('assert')
+import * as groups from '../../src/db/groups'
+import * as utils from '../../src/lib/utils'
 
-const pg = require('pg');
+const pg = require('pg')
 const pool = new pg.Pool({
-    connectionString: process.env.DATABASE_URL
-});;
+    connectionString: process.env.DATABASE_URL,
+})
 
 describe('groups.js', function() {
-    beforeEach(blakkistest.resetDbWithTestUsersAndGroupsAndDrinks);
+    beforeEach(blakkistest.resetDbWithTestUsersAndGroupsAndDrinks)
 
     describe('groups.Group()', function() {
         it('should return a group object with hashed group id', function() {
-            const group = new groups.Group(0);
-            assert.equal(group.groupId, utils.hashSha256(0));
-        });
-    });
+            const group = new groups.Group(0)
+            assert.equal(group.groupId, utils.hashSha256(0))
+        })
+    })
 
     describe('Group.getDrinkSum()', function() {
         it('should return sum of drinks for group and min(created) Date', function(done) {
-            const group = blakkistest.groups[0].group;
+            const group = blakkistest.groups[0].group
             group.getDrinkSum()
                 .then((res) => {
-                    assert.equal(res.sum, 12347 * 3);
-                    assert(res.created instanceof Date);
-                    done();
+                    assert.equal(res.sum, 12347 * 3)
+                    assert(res.created instanceof Date)
+                    done()
                 })
-                .catch((err) => done(err));
-        });
+                .catch((err) => done(err))
+        })
 
         it('should return sum 0 for non-existing group  and min(created) Date', function(done) {
-            const group = new groups.Group(100);
+            const group = new groups.Group(100)
             group.getDrinkSum()
                 .then((res) => {
-                    assert.equal(res.sum, 0);
-                    assert(res.created instanceof Date);
-                    done();
+                    assert.equal(res.sum, 0)
+                    assert(res.created instanceof Date)
+                    done()
                 })
-                .catch((err) => done(err));
-        });
-    });
+                .catch((err) => done(err))
+        })
+    })
 
     describe('Group.getDrinkSumForXHours()', function() {
         it('should return different sum of drinks and dates for different hours', function(done) {
-            const group = blakkistest.groups[0].group;
-            const user = blakkistest.users[0];
+            const group = blakkistest.groups[0].group
+            const user = blakkistest.users[0]
             group.getDrinkSumForXHours(24)
                 .then((res) => {
-                    assert.equal(res.sum, 12347 * 3);
-                    assert(res.created instanceof Date);
+                    assert.equal(res.sum, 12347 * 3)
+                    assert(res.created instanceof Date)
                     // insert drink 3 hours into the past
                     return user.drinkBoozeLate([{
                         mg: 12347,
                         text: 'kalja'
-                    }], 2);
+                    }], 2)
                 })
                 .then(() => group.getDrinkSumForXHours(24))
                 .then((res) => {
-                    assert.equal(res.sum, 12347 * 4);
-                    assert(res.created instanceof Date);
-                    return group.getDrinkSumForXHours(2);
+                    assert.equal(res.sum, 12347 * 4)
+                    assert(res.created instanceof Date)
+                    return group.getDrinkSumForXHours(2)
                 })
                 .then((res) => {
-                    assert.equal(res.sum, 12347 * 3);
-                    assert(res.created instanceof Date);
-                    done();
+                    assert.equal(res.sum, 12347 * 3)
+                    assert(res.created instanceof Date)
+                    done()
                 })
-                .catch((err) => done(err));
-        });
+                .catch((err) => done(err))
+        })
 
         it('should return sum 0 for non-existing group  and min(created) Date', function(done) {
-            const group = new groups.Group(100);
+            const group = new groups.Group(100)
             group.getDrinkSum()
                 .then((res) => {
-                    assert.equal(res.sum, 0);
-                    assert(res.created instanceof Date);
-                    done();
+                    assert.equal(res.sum, 0)
+                    assert(res.created instanceof Date)
+                    done()
                 })
-                .catch((err) => done(err));
-        });
-    });
+                .catch((err) => done(err))
+        })
+    })
 
     describe('Group.getDrinkSumsByUser()', function() {
         it('should return sums grouped by user', function(done) {
-            const group = blakkistest.groups[0].group;
+            const group = blakkistest.groups[0].group
             group.getDrinkSumsByUser()
                 .then((rows) => {
-                    const user0 = rows[blakkistest.users[0].userId];
-                    assert.equal(user0.sum, 12347 * 2);
-                    const user1 = rows[blakkistest.users[1].userId];
-                    assert.equal(user1.sum, 12347);
-                    done();
+                    const user0 = rows[blakkistest.users[0].userId]
+                    assert.equal(user0.sum, 12347 * 2)
+                    const user1 = rows[blakkistest.users[1].userId]
+                    assert.equal(user1.sum, 12347)
+                    done()
                 })
-                .catch((err) => done(err));
-        });
-    });
+                .catch((err) => done(err))
+        })
+    })
 
     describe('Group.getDrinkTimesByUser()', function() {
         it('should return group\'s users\' drinks for a group', function(done) {
-            const group = blakkistest.groups[0].group;
+            const group = blakkistest.groups[0].group
             group.getDrinkTimesByUser()
                 .then((drinksByUser) => {
-                    const user0 = drinksByUser[blakkistest.users[0].userId];
-                    assert.equal(user0.drinks.length, 2);
-                    const user1 = drinksByUser[blakkistest.users[1].userId];
-                    assert.equal(user1.drinks.length, 1);
-                    done();
+                    const user0 = drinksByUser[blakkistest.users[0].userId]
+                    assert.equal(user0.drinks.length, 2)
+                    const user1 = drinksByUser[blakkistest.users[1].userId]
+                    assert.equal(user1.drinks.length, 1)
+                    done()
                 })
-                .catch((err) => done(err));
-        });
-    });
+                .catch((err) => done(err))
+        })
+    })
 
     describe('Group.getPermillesListing()', function() {
         it('should return group\'s permilles listing', function(done) {
-            const group = blakkistest.groups[0].group;
+            const group = blakkistest.groups[0].group
             group.getPermillesListing()
                 .then((permillesSorted) => {
-                    assert.equal(permillesSorted[0][0], blakkistest.users[0].username);
-                    assert.equal(permillesSorted[1][0], blakkistest.users[1].username);
-                    assert(permillesSorted[0][1] > permillesSorted[1][1]);
-                    done();
+                    assert.equal(permillesSorted[0][0], blakkistest.users[0].username)
+                    assert.equal(permillesSorted[1][0], blakkistest.users[1].username)
+                    assert(permillesSorted[0][1] > permillesSorted[1][1])
+                    done()
                 })
-                .catch((err) => done(err));
-        });
-    });
+                .catch((err) => done(err))
+        })
+    })
 
     // TODO FIX SD LISTING
     describe('Group.getStandardDrinksListing()', function() {
         it('should return group\'s standard drink listing', function(done) {
-            const group = blakkistest.groups[0].group;
+            const group = blakkistest.groups[0].group
             group.getStandardDrinksListing()
                 .then((standardDrinksSorted) => {
-                    assert.equal(standardDrinksSorted[0][0], blakkistest.users[0].username);
-                    assert.equal(standardDrinksSorted[1][0], blakkistest.users[1].username);
-                    assert(standardDrinksSorted[0][1] > standardDrinksSorted[1][1]);
-                    done();
+                    assert.equal(standardDrinksSorted[0][0], blakkistest.users[0].username)
+                    assert.equal(standardDrinksSorted[1][0], blakkistest.users[1].username)
+                    assert(standardDrinksSorted[0][1] > standardDrinksSorted[1][1])
+                    done()
                 })
-                .catch((err) => done(err));
-        });
-    });
-});
+                .catch((err) => done(err))
+        })
+    })
+})

@@ -8,7 +8,7 @@
     (at your option) any later version.
 
     This program is distributed in the hope that it will be useful,
-    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    but WITHOUT ANY WARRANTY without even the implied warranty of
     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
     GNU General Public License for more details.
 
@@ -23,60 +23,60 @@
 
 /* globals describe, it */
 
-'use strict';
-const assert = require('assert');
-const message = require('../../app/lib/message.js');
+'use strict'
+const assert = require('assert')
+import * as message from '../../src/lib/message'
 
 describe('message.js', function() {
     describe('new Message()', function() {
         it('should return a new Message object', function() {
-            const msg = new message.Message('text', {});
-            assert(msg instanceof message.Message);
-        });
-    });
+            const msg = new message.Message('text', {})
+            assert(msg instanceof message.Message)
+        })
+    })
 
     describe('ChatMessage()', function() {
         it('should return a new Message object, that has type "chat_message"', function() {
-            const msg = message.ChatMessage('text', {});
-            assert(msg instanceof message.Message);
-            assert.equal(msg.type, 'chat_message');
-        });
-    });
+            const msg = message.ChatMessage('text', {})
+            assert(msg instanceof message.Message)
+            assert.equal(msg.type, 'chat_message')
+        })
+    })
 
     describe('PrivateMessage()', function() {
         it('should return a new Message object, that has type "private_message"', function() {
-            const msg = message.PrivateMessage('text', {});
-            assert(msg instanceof message.Message);
-            assert.equal(msg.type, 'private_message');
-        });
-    });
+            const msg = message.PrivateMessage('text', {})
+            assert(msg instanceof message.Message)
+            assert.equal(msg.type, 'private_message')
+        })
+    })
 
     describe('PrivateMessage()', function() {
         it('should return a new Message object, that has type "private_message"', function() {
-            const msg = message.PrivateMessage('text', {});
-            assert(msg instanceof message.Message);
-            assert.equal(msg.type, 'private_message');
-        });
-    });
+            const msg = message.PrivateMessage('text', {})
+            assert(msg instanceof message.Message)
+            assert.equal(msg.type, 'private_message')
+        })
+    })
 
     describe('PrivateKeyboardMessage()', function() {
         it('should return a new Message object, that has type "private_message" and has keyboard options', function() {
             const keyboard = [
                 ['A', 'B']
-            ];
-            const msg = message.PrivateKeyboardMessage('text', keyboard);
-            assert(msg instanceof message.Message);
-            assert.equal(msg.type, 'private_message');
-            assert.equal(msg.options.parse_mode, 'Markdown');
-            assert.equal(msg.options.reply_markup.keyboard, keyboard);
-        });
-    });
+            ]
+            const msg = message.PrivateKeyboardMessage('text', keyboard)
+            assert(msg instanceof message.Message)
+            assert.equal(msg.type, 'private_message')
+            assert.equal(msg.options.parse_mode, 'Markdown')
+            assert.equal(msg.options.reply_markup.keyboard, keyboard)
+        })
+    })
 
     describe('Photo()', function() {
         it('should return a new Message object, that has type "photo"', function() {
-            const msg = message.Photo('text');
-            assert(msg instanceof message.Message);
-            assert.equal(msg.type, 'photo');
-        });
-    });
-});
+            const msg = message.Photo('text')
+            assert(msg instanceof message.Message)
+            assert.equal(msg.type, 'photo')
+        })
+    })
+})
