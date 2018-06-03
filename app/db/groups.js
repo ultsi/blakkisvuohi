@@ -40,25 +40,6 @@ function Group(groupId) {
 
 groups.Group = Group;
 
-function groupDrinksByUser(drinks) {
-    let drinksByUser = {};
-    for (var i in drinks) {
-        let drink = drinks[i];
-        if (!drinksByUser[drink.userid]) {
-            drinksByUser[drink.userid] = {
-                userid: drink.userid,
-                nick: utils.decrypt(drink.nick),
-                weight: drink.weight,
-                gender: drink.gender,
-                height: drink.height,
-                drinks: []
-            };
-        }
-        drinksByUser[drink.userid].drinks.push(drink);
-    }
-    return drinksByUser;
-}
-
 Group.prototype.getDrinkSum = function() {
     return pool.query('select coalesce(sum(alcohol), 0) as sum, coalesce(min(users_drinks.created), now()) as created from users_in_groups left outer join users_drinks on users_drinks.userid=users_in_groups.userid and users_in_groups.groupid=$1', [this.groupId])
         .then((res) => Promise.resolve(res.rows[0]));
@@ -93,7 +74,7 @@ Group.prototype.getDrinkSumsByUser = function(hours) {
 Group.prototype.getDrinkTimesByUser = function() {
     return pool.query('select users.userId, users.nick, users.weight, users.gender, users.height, coalesce(alcohol, 0) as alcohol, description, users_drinks.created from users_in_groups left outer join users_drinks on users_in_groups.userId=users_drinks.userId join users on users.userId=users_in_groups.userId where users_in_groups.groupId=$1 and users_drinks.created >= NOW() - \'2 day\'::INTERVAL order by users_drinks.created asc', [this.groupId])
         .then((res) => {
-            let drinksByUser = groupDrinksByUser(res.rows);
+            let drinksByUser = utils.groupDrinksByUser(res.rows);
             return Promise.resolve(drinksByUser);
         });
 };

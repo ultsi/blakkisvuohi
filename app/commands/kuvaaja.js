@@ -35,14 +35,15 @@ const strings = require('../strings.js');
 function kuvaaja(context, msg, words, user) {
     log.debug('Trying to form graph image');
 
-    let graphTitle = strings.commands.kuvaaja.graph_title.format({
-        chat_title: msg.chat.title
+    const graphTitle = strings.commands.kuvaaja.graph_title.format({
+        chat_title: msg.chat.title || user.username
     });
     context.end();
 
-    let group = new groups.Group(msg.chat.id);
-    return group.getDrinkTimesByUser(msg.chat.id)
-        .then((drinksByUser) => {
+    const group = new groups.Group(msg.chat.id);
+    const drinkTimes = context.isPrivateChat() ? user.getDrinkTimesByUser() : group.getDrinkTimesByUser();
+
+    return drinkTimes.then((drinksByUser) => {
             const lastNHours = 24;
             const predictNHours = 12;
             let labels = [];
