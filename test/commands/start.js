@@ -30,6 +30,7 @@ const assert = require('assert');
 const blakkistest = require('../blakkistest.js');
 const Commands = require('../../app/lib/commands.js');
 const strings = require('../../app/strings.js');
+const users = require('../../app/db/users.js');
 
 describe('start.js', function() {
     beforeEach(blakkistest.resetDbWithTestUsersAndGroupsAndDrinks);
@@ -164,6 +165,176 @@ describe('start.js', function() {
                 assert.notEqual(mocked.internals.editText.indexOf('Bäää - Bläkkisvuohi'), -1);
                 mocked.msg.data = '/start ' + strings.commands.blakkis.back;
                 mocked.msg.addMessageObj();
+                done();
+            })
+            .catch((err) => done(err));
+    });
+});
+
+describe('start/asetukset.js', function() {
+    beforeEach(blakkistest.resetDbWithTestUsersAndGroupsAndDrinks);
+    it('Going to asetukset should print correct header and text and options', function(done) {
+        const mocked = blakkistest.mockMsgAndBot();
+        mocked.msg.from.id = blakkistest.realIds[0];
+        Commands.call('/start', mocked.msg, ['/start'])
+            .then(() => {
+                assert.equal(mocked.internals.sentChatId, mocked.msg.from.id);
+                assert.notEqual(mocked.internals.sentText.indexOf('Bäää'), -1);
+                assert.notEqual(mocked.internals.sentOptions.reply_markup.inline_keyboard.length, 0);
+                mocked.msg.data = '/start ' + strings.commands.start.asetukset.button_text;
+                mocked.msg.addMessageObj();
+                return Commands.call('', mocked.msg, ['']);
+            })
+            .then(() => {
+                assert.notEqual(mocked.internals.editText.indexOf(strings.commands.start.asetukset.header_title), -1);
+                assert.notEqual(mocked.internals.editText.indexOf(strings.commands.start.asetukset.on_select), -1);
+                assert.notEqual(mocked.internals.editOptions.reply_markup.inline_keyboard.length, 0);
+                done();
+            })
+            .catch((err) => done(err));
+    });
+
+    it('Asetukset->Muokkaa should show correct text and options', function(done) {
+        const mocked = blakkistest.mockMsgAndBot();
+        mocked.msg.from.id = blakkistest.realIds[0];
+        Commands.call('/start', mocked.msg, ['/start'])
+            .then(() => {
+                assert.equal(mocked.internals.sentChatId, mocked.msg.from.id);
+                assert.notEqual(mocked.internals.sentText.indexOf('Bäää'), -1);
+                assert.notEqual(mocked.internals.sentOptions.reply_markup.inline_keyboard.length, 0);
+                mocked.msg.data = '/start ' + strings.commands.start.asetukset.button_text;
+                mocked.msg.addMessageObj();
+                return Commands.call('', mocked.msg, ['']);
+            })
+            .then(() => {
+                assert.notEqual(mocked.internals.editText.indexOf(strings.commands.start.asetukset.header_title), -1);
+                assert.notEqual(mocked.internals.editText.indexOf(strings.commands.start.asetukset.on_select), -1);
+                assert.notEqual(mocked.internals.editOptions.reply_markup.inline_keyboard.length, 0);
+                mocked.msg.data = '/start ' + strings.commands.start.asetukset.muokkaa.button_text;
+                mocked.msg.addMessageObj();
+                return Commands.call('', mocked.msg, ['']);
+            })
+            .then(() => {
+                assert.notEqual(mocked.internals.editText.indexOf(strings.commands.start.asetukset.header_title), -1);
+                assert.notEqual(mocked.internals.editText.indexOf(strings.commands.start.asetukset.muokkaa.on_select.substring(0, 10)), -1);
+                assert.notEqual(mocked.internals.editText.indexOf(blakkistest.users[0].username), -1);
+                assert.notEqual(mocked.internals.editOptions.reply_markup.inline_keyboard.length, 0);
+                done();
+            })
+            .catch((err) => done(err));
+    });
+
+    it('Asetukset->Muokkaa->Paino should show correct texts and editing weight should work', function(done) {
+        const mocked = blakkistest.mockMsgAndBot();
+        mocked.msg.from.id = blakkistest.realIds[0];
+        Commands.call('/start', mocked.msg, ['/start'])
+            .then(() => {
+                mocked.msg.data = '/start ' + strings.commands.start.asetukset.button_text;
+                mocked.msg.addMessageObj();
+                return Commands.call('', mocked.msg, ['']);
+            })
+            .then(() => {
+                mocked.msg.data = '/start ' + strings.commands.start.asetukset.muokkaa.button_text;
+                mocked.msg.addMessageObj();
+                return Commands.call('', mocked.msg, ['']);
+            })
+            .then(() => {
+                mocked.msg.data = '/start ' + strings.commands.start.asetukset.muokkaa.paino.button_text;
+                mocked.msg.addMessageObj();
+                return Commands.call('', mocked.msg, ['']);
+            })
+            .then(() => {
+                assert.notEqual(mocked.internals.editText.indexOf(strings.commands.start.asetukset.header_title), -1);
+                assert.notEqual(mocked.internals.editText.indexOf(strings.commands.start.asetukset.muokkaa.paino.on_select.substring(0, 5)), -1);
+                assert.notEqual(mocked.internals.editText.indexOf(blakkistest.users[0].weight), -1);
+                return Commands.call('120', mocked.msg, ['120']);
+            })
+            .then(() => {
+                assert.notEqual(mocked.internals.sentText.indexOf(strings.commands.start.asetukset.header_title), -1);
+                assert.notEqual(mocked.internals.sentText.indexOf(strings.commands.start.asetukset.muokkaa.paino.on_change), -1);
+
+                return users.find(mocked.msg.from.id);
+            })
+            .then((user) => {
+                assert.notEqual(user.weight, blakkistest.users[0].weight);
+                done();
+            })
+            .catch((err) => done(err));
+    });
+
+    it('Asetukset->Muokkaa->Pituus should show correct texts and editing height should work', function(done) {
+        const mocked = blakkistest.mockMsgAndBot();
+        mocked.msg.from.id = blakkistest.realIds[0];
+        Commands.call('/start', mocked.msg, ['/start'])
+            .then(() => {
+                mocked.msg.data = '/start ' + strings.commands.start.asetukset.button_text;
+                mocked.msg.addMessageObj();
+                return Commands.call('', mocked.msg, ['']);
+            })
+            .then(() => {
+                mocked.msg.data = '/start ' + strings.commands.start.asetukset.muokkaa.button_text;
+                mocked.msg.addMessageObj();
+                return Commands.call('', mocked.msg, ['']);
+            })
+            .then(() => {
+                mocked.msg.data = '/start ' + strings.commands.start.asetukset.muokkaa.pituus.button_text;
+                mocked.msg.addMessageObj();
+                return Commands.call('', mocked.msg, ['']);
+            })
+            .then(() => {
+                assert.notEqual(mocked.internals.editText.indexOf(strings.commands.start.asetukset.header_title), -1);
+                assert.notEqual(mocked.internals.editText.indexOf(strings.commands.start.asetukset.muokkaa.pituus.on_select.substring(0, 5)), -1);
+                assert.notEqual(mocked.internals.editText.indexOf(blakkistest.users[0].height), -1);
+                return Commands.call('140', mocked.msg, ['140']);
+            })
+            .then(() => {
+                assert.notEqual(mocked.internals.sentText.indexOf(strings.commands.start.asetukset.header_title), -1);
+                assert.notEqual(mocked.internals.sentText.indexOf(strings.commands.start.asetukset.muokkaa.pituus.on_change), -1);
+
+                return users.find(mocked.msg.from.id);
+            })
+            .then((user) => {
+                assert.notEqual(user.height, blakkistest.users[0].height);
+                done();
+            })
+            .catch((err) => done(err));
+    });
+
+    it('Asetukset->Muokkaa->Sukupuoli should show correct texts and editing gender should work', function(done) {
+        const mocked = blakkistest.mockMsgAndBot();
+        mocked.msg.from.id = blakkistest.realIds[0];
+        Commands.call('/start', mocked.msg, ['/start'])
+            .then(() => {
+                mocked.msg.data = '/start ' + strings.commands.start.asetukset.button_text;
+                mocked.msg.addMessageObj();
+                return Commands.call('', mocked.msg, ['']);
+            })
+            .then(() => {
+                mocked.msg.data = '/start ' + strings.commands.start.asetukset.muokkaa.button_text;
+                mocked.msg.addMessageObj();
+                return Commands.call('', mocked.msg, ['']);
+            })
+            .then(() => {
+                mocked.msg.data = '/start ' + strings.commands.start.asetukset.muokkaa.sukupuoli.button_text;
+                mocked.msg.addMessageObj();
+                return Commands.call('', mocked.msg, ['']);
+            })
+            .then(() => {
+                assert.notEqual(mocked.internals.editText.indexOf(strings.commands.start.asetukset.header_title), -1);
+                assert.notEqual(mocked.internals.editText.indexOf(strings.commands.start.asetukset.muokkaa.sukupuoli.on_select.substring(0, 5)), -1);
+                assert.notEqual(mocked.internals.editText.indexOf(blakkistest.users[0].gender), -1);
+                mocked.msg.addMessageObj();
+                mocked.msg.data = '/start ' + 'Nainen';
+                return Commands.call('', mocked.msg, ['']);
+            })
+            .then(() => {
+                assert.notEqual(mocked.internals.editText.indexOf(strings.commands.start.asetukset.header_title), -1);
+                assert.notEqual(mocked.internals.editText.indexOf(strings.commands.start.asetukset.muokkaa.sukupuoli.on_change), -1);
+
+                return users.find(mocked.msg.from.id);
+            })
+            .then((user) => {
+                assert.notEqual(user.gender, blakkistest.users[0].gender);
                 done();
             })
             .catch((err) => done(err));
