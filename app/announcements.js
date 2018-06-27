@@ -28,5 +28,6 @@ module.exports = [
     '18.4.2018\n\nLisätty uusi komento: /poistu - Poistu ryhmän kaikista listauksista, esim. promille- ja stats-listauksista.',
     '19.5.2018\n\nBläkkisvuohi v4 (beta) on täällä! Pääset käyttämään uutta Bläkkisvuohea /start-komennolla privaviestinä. Ei huolta - kaikki vanhat komennot toimivat vielä myös.',
     '20.5.2018\n\nMonia parannuksia Bläkkisvuohi v4:seen eli /start -komentoon. Mm. pikanäppäimet viimeisimmille juomille ja paljon muuta!',
-    '2.6.2018\n\n- Lisätty /stats2, joka listaa ryhmän top10-kuluttajat annoksissa!\n- Useita pieniä bugikorjauksia.'
+    '2.6.2018\n\n- Lisätty /stats2, joka listaa ryhmän top10-kuluttajat annoksissa!\n- Useita pieniä bugikorjauksia.',
+    '--- On ilon ja onnen päivä! Bläkkisvuohi täyttää 1v! ---\n\nKiitos, että olet käyttänyt Bläkkisvuohea tämän sumean vuoden aikana. Ensiaskelistaan 28.6.2017 lähtien Bläkkis on kasvanut pienestä kilistä täysimittaiseksi vuoheksi, ja näiden 365 päivän aikana käyttäjiä on kertynyt mukaan yli 900! Vuohi on pitänyt tähän mennessä kirjaa 56000 juomasta, eli noin 140 juomasta päivässä.\n\nBläkkisvuohi 1v kunniaksi, on aika nostaa malja. Merkkaa siis tänään yksi juoma tilastoihin hienon taipaleen merkiksi. Tai huomenna. Tai milloin vain! Vuohi elää ja bläkkistelee sinun ansiosta!\n\nPäivityksiä:\n- /kuvaaja toimii privaatisti'
 ];
