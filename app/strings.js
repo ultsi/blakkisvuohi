@@ -54,7 +54,9 @@ strings.emoji = {
 strings.drink_responses = [
     'Bäää.', 'Uuteen nousuun.', 'Muista juoda vettä!', 'Aamu alkaa A:lla.',
     'Muista juoda vettä!', 'Juo viinaa, viina on hyvää.', 'Meno on meno.',
-    'Lörs lärä, viinaa!', 'Muista juoda vettä!'
+    'Lörs lärä, viinaa!', 'Muista juoda vettä!', 'Bäätöntä menoa!',
+    'Loers laerae, booze!', 'Remember to drink water!', 'To the new rise.',
+    'Go is go.', 'Morning begins with A', 'Drink booze, booze is good.'
 ];
 strings.short_permilles_text = '*Nyt:* {permilles}‰ - *30min:* {permilles30Min}‰';
 strings.long_permilles_text = '*Nyt:* {permilles}‰ - *30min:* {permilles30Min}‰.\nVeressäsi on {grams} grammaa alkoholia, joka vastaa {standard_drinks} annosta. Olet selvinpäin {hours}h {minutes}min päästä.\n\nViimeisen kolmen päivän tapahtumat:\n{drinkList72h}';
