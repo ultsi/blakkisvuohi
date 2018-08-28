@@ -157,7 +157,7 @@ strings.commands = {
                 hours_error: 'Tunnit väärin. Syötä arvo väliltä 0-24.',
                 input_drinks_start: 'Kirjoita juomia seuraavassa muodossa: \nSenttilitrat Tilavuusprosentti. \nEsimerkiksi: 33 4.7. \n\nErota eri juomat joko rivinvaihdolla, tai kirjoita useampi viesti.',
                 input_drinks_words_error: 'Sanojen määrän täytyy olla parillinen luku.',
-                input_drinks_drink_error: 'Tarkista juoman {drink} senttilitrat ja tilavuus!',
+                input_drinks_drink_error: 'Tarkista juoman {drink} senttilitrat ja tilavuusprosentti!',
                 error_out_of_limits: 'Tarkista juoman {drink} senttilitrat ja tilavuus, nyt alkoholin määrä ylittää rajat!',
                 input_drinks_drinks_correct: '{drinks_amount} juoma(a) syötetty onnistuneesti. Voit jatkaa juomien lisäämistä tai painaa Tallenna tilastoidaksesi syötetyt juomat.\n\nNykyiset syötetyt juomat:\n{drinks_list}',
                 drink_name: 'Jälkikellotus',
