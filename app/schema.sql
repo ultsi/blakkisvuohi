@@ -17,10 +17,14 @@
 */
 
 create table if not exists users (
-    userId int not null primary key,
+    userId text not null primary key,
     nick text not null,
     weight int not null,
-    gender text not null
+    gender text not null,
+    height int not null default 175,
+    read_terms boolean not null default false,
+    read_announcements int not null default 0,
+    created timestamp with time zone not null default now()
 );
 
 create table if not exists groups (
@@ -30,15 +34,15 @@ create table if not exists groups (
 );
 
 create table if not exists users_in_groups (
-    userId int not null,
-    groupId bigint not null,
+    userId text not null,
+    groupId text not null,
     primary key (userId, groupId)
 );
 
 create table if not exists users_drinks (
-    userId int not null,
+    id serial primary key,
+    userId text not null,
     alcohol int not null, /* in milligrams */
     description text,
-    created timestamp with time zone not null default now(),
-    primary key (created)
+    created timestamp with time zone not null default now()
 );
