@@ -2,7 +2,9 @@
 
 A telegram bot designed to help monitor current EBAC level. Has group functionality to list all users' EBAC in permilles or Finnish standard drinks (12.0 grams). Try it out at [https://t.me/blakkisvuohibot](https://t.me/blakkisvuohibot)!
 
-Thanks Yago for the excellent [Telegram Bot API framework for NodeJS](https://github.com/yagop/node-telegram-bot-api).
+Thanks Yago for the excellent [Telegram Bot API framework for NodeJS](https://github.com/yagop/node-telegram-bot-api). 
+
+This project is supported by the awesome [Futurice Open Source and Social Impact program](https://spiceprogram.org/).
 
 ## How to run
 
